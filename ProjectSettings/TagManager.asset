@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Metal
+  - Wood
+  - MetalFloor
+  - Grass
+  - Stone
+  - Glass
+  - Bullet
+  - HitPart
+  - Enemy
+  - Flashlight
+  - PickableItem
+  - Sun
+  - Dirt
+  - WoodenFloor
+  - StoneFloor
+  - VentilationGrid
+  - Grave
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Player
+  - Water
+  - UI
+  - CrossHair
+  - Enemy
+  - Bullet
+  - Ground
+  - Wall
+  - Obstacle
+  - HitPart
+  - DefensiveBuild
+  - Barricade
+  - DropItem
+  - OverViewObject
+  - Debris
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
