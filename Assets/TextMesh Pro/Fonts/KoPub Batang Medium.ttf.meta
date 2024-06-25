@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: fe7fa0e5aa626ff41a92ad7aeaf6f4ed
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - KoPubBatang
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 38db211ffda00ea428a0116c30012a1f, type: 3}
+  - {fileID: 12800000, guid: fa980e70fca94f74aa6424dfc8e50990, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
