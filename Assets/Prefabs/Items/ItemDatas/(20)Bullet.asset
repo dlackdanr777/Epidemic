@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d178c9df962fda24d87e2bbdc8a86efb, type: 3}
+  m_Name: (20)Bullet
+  m_EditorClassIdentifier: 
+  _id: 20
+  _name: "\uC18C\uCD1D\uD0C4"
+  _description: "5.56x45mm NATO \uD0C4\uC774\uB2E4.\r\n\uC704\uAE09\uC0C1\uD669\uC5D0\uC11C
+    \uC720\uC6A9\uD560 \uAC83 \uAC19\uB2E4."
+  _icon: {fileID: 21300000, guid: 718c8b1bf1be5e6409af17838a9fb9f5, type: 3}
+  _amount: 1
+  _maxAmount: 300
