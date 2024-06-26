@@ -14,6 +14,8 @@ public class UIDivItem : PopupUI
     [SerializeField] private Button _valueAddButton;
     [SerializeField] private Button _valueSubButton;
 
+
+    private UIInventory _uiInventory;
     private bool _isAddButtonClick;
     private bool _isSubButtonClick;
     private float _addButtonTimer;
@@ -22,8 +24,9 @@ public class UIDivItem : PopupUI
 
     private Coroutine _coroutine;
 
-    public void Start()
+    public void Init(UIInventory uiInventory)
     {
+        _uiInventory = uiInventory;
         EventTrigger.Entry addButtonDownEvent = new EventTrigger.Entry();
         EventTrigger.Entry addButtonUpEvent = new EventTrigger.Entry();
         addButtonDownEvent.eventID = EventTriggerType.PointerDown;
@@ -54,7 +57,7 @@ public class UIDivItem : PopupUI
 
     public override void ChildSetActive(bool value)
     {
-        DragInventorySlot.Instance.SetColor(0);
+        _uiInventory.DragInvenSlot.ResetDragItem();
         base.ChildSetActive(value);
     }
 
@@ -91,6 +94,7 @@ public class UIDivItem : PopupUI
         }
     }
 
+
     private IEnumerator EnableInput()
     {
         while (true)
@@ -104,6 +108,7 @@ public class UIDivItem : PopupUI
         }
     }
 
+
     public void DivItem(Item item)
     {
         Regex regexNumber = new Regex(@"[0-9]");
@@ -113,18 +118,19 @@ public class UIDivItem : PopupUI
             int divAmount = int.Parse(_AmountText.text);
             if (divAmount != 0)
             {
-                GameManager.Instance.Player.Inventory.DivItem(item, divAmount);
+                Inventory.Instance.DivItem(item, divAmount);
             }
             else
             {
-                Debug.Log("0은  나눌 수 없습니다.");
+                DebugLog.Log("0은  나눌 수 없습니다.");
             }
         }
         else
         {
-            Debug.Log("숫자 이외는 입력 할 수 없습니다.");
+            DebugLog.Log("숫자 이외는 입력 할 수 없습니다.");
         }
     }
+
 
     private void onClickedAddButtonUp()
     {
@@ -132,11 +138,13 @@ public class UIDivItem : PopupUI
         _addButtonTimer = 0;
     }
 
+
     private void onClickedAddButtonDown()
     {
         _isAddButtonClick = true;
         AddValue();
     }
+
 
     private void onClickedAddButton()
     {
@@ -147,17 +155,20 @@ public class UIDivItem : PopupUI
         }
     }
 
+
     private void onClickedSubButtonUp()
     {
         _isSubButtonClick = false;
         _subButtonTimer = 0;
     }
 
+
     private void onClickedSubButtonDown()
     {
         _isSubButtonClick = true;
         SubValue();
     }
+
     private void onClickedSubButton()
     {
         if (_isSubButtonClick) { _subButtonTimer += Time.deltaTime; }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 
 public class ObjectPoolManager : MonoBehaviour
@@ -30,6 +31,7 @@ public class ObjectPoolManager : MonoBehaviour
     private GameObject _zombieParent;
     private Queue<GameObject> _zombiePool = new Queue<GameObject>();
 
+    private Player _player;
 
     private void Awake()
     {
@@ -92,8 +94,11 @@ public class ObjectPoolManager : MonoBehaviour
 
 
 
-    public void SpawnZombie(EnemyType zombieType, Vector3 pos, Quaternion rot)
+    public void SpawnZombie(Vector3 pos, Quaternion rot)
     {
+        if(_player == null)
+            _player = FindAnyObjectByType<Player>();
+
         GameObject zombie;
         if(_zombiePool.Count == 0)
         {
@@ -110,7 +115,7 @@ public class ObjectPoolManager : MonoBehaviour
         zombie.transform.position = pos;
         zombie.transform.rotation = rot;
         enemy.Navmesh.NaveMeshEnabled(true);
-        enemy.Target = GameManager.Instance.Player.transform;
+        enemy.Target = _player.transform;
     }
 
 

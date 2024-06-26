@@ -12,7 +12,7 @@ public class ObstacleBuild : MonoBehaviour, Iinteractive
     [SerializeField] private int _necessaryitemAmount;
 
     private GameObject[] _obstacle;
-    private Inventory _inventory;
+    private Inventory _inventory => Inventory.Instance;
 
     private bool _buildEnable;
 
@@ -22,7 +22,6 @@ public class ObstacleBuild : MonoBehaviour, Iinteractive
     public void Start()
     {
         _obstacle = new GameObject[_obstacleBluePrint.Length];
-        _inventory = GameManager.Instance.Player.Inventory;
         _text.gameObject.SetActive(false);
 
         for (int i = 0; i < _obstacle.Length; i++)

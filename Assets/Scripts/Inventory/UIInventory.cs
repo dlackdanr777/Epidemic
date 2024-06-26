@@ -8,77 +8,50 @@ public class UIInventory : PopupUI
     [Header("Components")]
     [SerializeField] private Transform _gridLayout; //슬롯들을 자식으로 가지고있는 오브젝트
     [SerializeField] private Button _sortButton;
-    public UIDivItem UiDivItem;
-    public UIItemDescription UiItemDescription;
+    [SerializeField] private UIInventorySlot _slotPrefab;
+
+    [SerializeField] private UIDivItem _uiDivItem; 
+    public UIDivItem UIDivItem => _uiDivItem;
+
+    [SerializeField] private DragInventorySlot _dragSlot;
+    public DragInventorySlot DragInvenSlot => _dragSlot;
+
+    [SerializeField] private UIItemDescription _uiItemDescription;
+
+    public UIItemDescription UIItemDescription => _uiItemDescription;
 
     private UIInventorySlot[] _slots;
-    private Inventory _inventory;
+    private Inventory _inventory => Inventory.Instance;
 
 
-
-    public  void Start()
+    public override void Awake()
     {
-        _inventory = GameManager.Instance.Player.Inventory;
+        base.Awake();
         _sortButton.onClick.AddListener(_inventory.SortInventory);
         SetSlots();
+        _uiDivItem.Init(this);
+
+        Inventory.OnUpdateHandler += UpdateUI;
         UpdateUI();
     }
 
-
     private void SetSlots()
     {
-        _slots = _gridLayout.GetComponentsInChildren<UIInventorySlot>();
-        for(int i = 0, count = _slots.Length; i < count; i++)
+        int itemCount = Inventory.Instance.GetItemCount();
+        _slots = new UIInventorySlot[itemCount];
+        for(int i = 0; i < itemCount; i++)
         {
-            _slots[i].SlotIndex = i;
-            _slots[i].Init(this);
+            UIInventorySlot slot = Instantiate(_slotPrefab, _gridLayout);
+            slot.Init(this, i);
+            _slots[i] = slot;
         }
-    }
-
-
-    public UIInventorySlot GetSlotByIndex(int index)
-    {
-        if(index >= 0 && index < _slots.Length)
-        {
-            UIInventorySlot slot = _slots[index];
-            return slot;
-        }
-        return null;
-    }
-
-
-    public void SlotSwap(UIInventorySlot slotA, UIInventorySlot slotB)
-    {
-        Item tempItem = slotA._item;
-        slotA.UpdateUI(slotB._item);
-        slotB.UpdateUI(tempItem);
-    }
-
-
-    public void ChangeSlotItem(UIInventorySlot slot, Item item)
-    {
-        slot._item = item;
-        UpdateSlotUI(slot);
-    }
-
-
-    public int GetNullSlot()
-    {
-        for(int i = 0, count = _slots.Length; i < count; i++)
-        {
-            if (_slots[i].GetisNull())
-            {
-                return i;
-            }
-        }
-        return -1;
     }
 
 
     public override void ChildSetActive(bool value)
     {
-        UiDivItem.ChildSetActive(false);
-        UiItemDescription.ChildSetActive(false);
+        UIDivItem.ChildSetActive(false);
+        UIItemDescription.ChildSetActive(false);
         base.ChildSetActive(value);
     }
 
@@ -87,18 +60,7 @@ public class UIInventory : PopupUI
     {
         for (int i = 0, count = _slots.Length; i < count; i++)
         {
-            _slots[i].UpdateUI(null);
-        }
-        for (int i = 0, count = _inventory.GetItemCount(); i < count; i++)
-        {
-            _slots[_inventory.GetItemByIndex(i).SlotIndex].UpdateUI(_inventory.GetItemByIndex(i));
+            _slots[i].UpdateUI(_inventory.InventoryItems[i]);
         }
     }
-
-
-    public void UpdateSlotUI(UIInventorySlot slot)
-    {
-        slot.UpdateUI(slot._item);
-    }
-
 }

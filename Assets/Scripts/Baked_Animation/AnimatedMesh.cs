@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AnimatedMeshScriptableObject;
 
 
 [RequireComponent(typeof(MeshFilter))]
@@ -17,8 +18,8 @@ public class AnimatedMesh : MonoBehaviour
     public int AnimationIndex => _animationIndex;
     [SerializeField] private string _animationName;
 
-    private List<AnimatedMeshScriptableObject.MeshData> _meshDataList;
-    private bool _isLoop;
+    private List<MeshData> _meshDataList;
+    private AnimatedMeshScriptableObject.Animation _animation;
 
     private float _lastTickTime;
 
@@ -33,17 +34,14 @@ public class AnimatedMesh : MonoBehaviour
 
     public void Play(string animationName)
     {
-        enabled = true;
         if (_animationName != animationName)
         {
             _animationName = animationName;
-            _tick = 1;
             _animationIndex = 0;
-            AnimatedMeshScriptableObject.Animation animation = _animationSO.Animations.Find((item) => item.Name.Equals(animationName));
-            _isLoop = animation.LoopTime;
-
-            _meshDataList = animation.MeshDataList;
-            if (string.IsNullOrEmpty(animation.Name))
+            _tick = 1;
+            _animation = _animationSO.Animations.Find((item) => item.Name.Equals(animationName));
+           _meshDataList = _animation.MeshDataList;
+            if (string.IsNullOrEmpty(_animation.Name))
                 Debug.LogError("애니메이션 이름이 비어있습니다.");
         }
     }
@@ -103,7 +101,7 @@ public class AnimatedMesh : MonoBehaviour
             {
                 OnAnimationEnd?.Invoke(_animationName);
 
-                if(_isLoop)
+                if (_animation.LoopTime)
                 {
                     _animationIndex = 0;
                     return;
@@ -112,7 +110,7 @@ public class AnimatedMesh : MonoBehaviour
                 else
                 {
                     _animationIndex = _meshDataList.Count - 1;
-                    enabled = false;
+                    return;
                 }
 
             }

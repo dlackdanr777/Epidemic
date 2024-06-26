@@ -1,4 +1,7 @@
 
+using System;
+
+[Serializable]
 public class Item
 {
     public int Amount;
@@ -9,8 +12,4 @@ public class Item
         Data = data;
         Amount = amount;
     }
-
-    public int SlotIndex = -1;
-
-
 }

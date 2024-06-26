@@ -28,7 +28,7 @@ public class GunController : MonoBehaviour, IAttack
     private float _currentFireRate; // 이값이 0이어야 총 발사 가능
     private float _nowRecoil; //현재 반동
     private float _recoilMul; //반동 배수
-    private int _getCarryBulletCount => GameManager.Instance.Player.Inventory.FindItemCountByID(20);
+    private int _getCarryBulletCount => Inventory.Instance.FindItemCountByID(20);
 
     public float Damage => _currentGun.Damage;
     public int MaxBulletCount => _currentGun.MaxBulletCount;
@@ -284,14 +284,14 @@ public class GunController : MonoBehaviour, IAttack
     /// <summary> 인벤토리 총알 감소 </summary>
     private void SubCarryBullets(int value)
     {
-        GameManager.Instance.Player.Inventory.SubItemByID(20, value);
+        Inventory.Instance.SubItemByID(20, value);
     }
 
 
     /// <summary> 인벤토리 총알 추가 </summary>
     private void AddCarryBullets(int value)
     {
-        GameManager.Instance.Player.Inventory.AddItemByID(20, value);
+        Inventory.Instance.AddItemByID(20, value);
     }
 
 }

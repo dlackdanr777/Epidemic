@@ -18,7 +18,7 @@ public class UIBuildSlot : MonoBehaviour
 
     public void OnEnable()
     {
-        int itemCount = GameManager.Instance.Player.Inventory.FindItemCountByID(_itemID);
+        int itemCount = Inventory.Instance.FindItemCountByID(_itemID);
         if (itemCount < 0)
             itemCount = 0;
 

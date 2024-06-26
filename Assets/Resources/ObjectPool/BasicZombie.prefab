@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5e62c4750898c94bb15d8229cbaadc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animationSO: {fileID: 11400000, guid: 0b8b2aa7665857842a8c257f7c7a0c4f, type: 2}
+  _animationSO: {fileID: 11400000, guid: 3da8b502c3f734242bc5ae940b6acbde, type: 2}
   _meshCollider: {fileID: 903189339389994635}
   _tick: 1
   _animationIndex: 0
@@ -342,9 +342,9 @@ GameObject:
   - component: {fileID: 9011814692573651132}
   - component: {fileID: 762593857777113001}
   - component: {fileID: 4535388523392123639}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Head
-  m_TagString: Untagged
+  m_TagString: HitPart
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -399,8 +399,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemy: {fileID: 5245538271590684623}
   _animatedMesh: {fileID: 5140226030621818218}
-  _partName: 
-  _multiple: 0
+  _partName: Head
+  _multiple: 5
 --- !u!1 &965911740575836610
 GameObject:
   m_ObjectHideFlags: 0

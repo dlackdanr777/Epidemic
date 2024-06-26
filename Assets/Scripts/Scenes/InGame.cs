@@ -139,8 +139,7 @@ public class InGame : MonoBehaviour
         for(int i = 0; i < _rounds[round - 1].SpawnZombies.Length; i++)
         {
             for(int j = 0; j < _rounds[round - 1].SpawnZombies[i].SpawnCount; j++)
-                ObjectPoolManager.Instance.SpawnZombie(_rounds[round - 1].SpawnZombies[i].Type, _spawnPos.position, Quaternion.Euler(0,180,0));
-
+                ObjectPoolManager.Instance.SpawnZombie(_spawnPos.position, Quaternion.Euler(0,180,0));
         }
     }
 

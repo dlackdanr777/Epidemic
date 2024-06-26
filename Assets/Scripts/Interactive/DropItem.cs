@@ -31,7 +31,7 @@ public class DropItem : MonoBehaviour, Iinteractive
 
     public void Interact()
     {
-        GameManager.Instance.Player.Inventory.AddItemByID(_itemId, _amount);
+        Inventory.Instance.AddItemByID(_itemId, _amount);
         UIManager.Instance.ShowCenterText(_itemName + "À»(¸¦) " + _amount + "°³ È¹µæÇÏ¿´½À´Ï´Ù.");
         Destroy(gameObject);
     }

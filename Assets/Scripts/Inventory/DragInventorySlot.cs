@@ -1,18 +1,34 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DragInventorySlot : SingletonHandler<DragInventorySlot>
+public class DragInventorySlot : MonoBehaviour
 {
-    public UIInventorySlot DragSlot;
+    [SerializeField] private Image _icon;
 
-    [SerializeField]
-    private Image _icon;
+    private Item _currentItem;
 
-    public void DragSetIcon(Sprite Icon)
+
+    public Item GetItem()
     {
-        _icon.sprite = Icon;
+        return _currentItem;
+    }
+
+
+    public void SetDragItem(Item item)
+    {
+        _currentItem = item;
+        _icon.sprite = item.Data.Icon;
         SetColor(1);
     }
+
+    public void ResetDragItem()
+    {
+        _currentItem = null;
+        _icon.sprite = null;
+        SetColor(0);
+        transform.position = new Vector3(1000, 1000, 1000);
+    }
+
 
     public void SetColor(float alpha)
     {

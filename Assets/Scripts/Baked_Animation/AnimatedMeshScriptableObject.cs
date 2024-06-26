@@ -10,7 +10,7 @@ public class AnimatedMeshScriptableObject : ScriptableObject
     public List<Animation> Animations = new List<Animation>();
 
     [Serializable]
-    public struct Animation
+    public class Animation
     {
         public string Name;
         public bool LoopTime;

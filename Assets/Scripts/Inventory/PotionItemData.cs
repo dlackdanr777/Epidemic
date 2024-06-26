@@ -11,20 +11,6 @@ public class PotionItemData : CountableItemData
 
     public override Item CreateItem()
     {
-        return new PotionItem(Clone());
+        return new PotionItem(this);
     }
-
-    private PotionItemData Clone()
-    {
-        PotionItemData data = new PotionItemData();
-        data._value = _value;
-        data._id = _id;
-        data._amount = _amount;
-        data._maxAmount = _maxAmount;
-        data._name = _name;
-        data._description = _description;
-        data._icon = _icon;
-        return data;
-    }
-
 }

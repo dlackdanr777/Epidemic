@@ -25,7 +25,6 @@ public class Player : MonoBehaviour, IHp
     public CinemachineCamera PlayerCamera;
     public Animator Animator;
     public GunController GunController;
-    public Inventory Inventory;
     public Rigging Rigging;
     public PlayerMovement PlayerMovement;
     public FlashLight FlashLight;
@@ -67,8 +66,8 @@ public class Player : MonoBehaviour, IHp
 
     private void Awake()
     {
-        GameManager.Instance.Player = this;
         Machine = new PlayerStateMachine(this);
+        GameManager.Instance.Player = this;
     }
 
 

@@ -115,7 +115,7 @@ public class BuildSystem : MonoBehaviour
             return;
         }
 
-        if (GameManager.Instance.Player.Inventory.UseItemByID(itemId, amount))
+        if (Inventory.Instance.UseItemByID(itemId, amount))
         {
             Instantiate(_craftItem[_craftItemIndex].CraftPrefab, _PreviewObj.transform.position, _PreviewObj.transform.rotation);
             SoundManager.Instance.PlayAudio(AudioType.Effect, _buildSuccessClip);
