@@ -155,7 +155,7 @@ public class UIInventorySlot : MonoBehaviour, IPointerClickHandler, IBeginDragHa
         if (Item == null)
             return;
 
-        _uiInventory.UIItemDescription.ChildSetActive(true);
+        _uiInventory.UIItemDescription.gameObject.SetActive(true);
 
         Vector3 slotHalfSize = _rectTransform.sizeDelta * 0.5f;
         Vector3 getUiSize = _uiInventory.UIItemDescription.GetUISize() * 0.5f;
@@ -168,6 +168,6 @@ public class UIInventorySlot : MonoBehaviour, IPointerClickHandler, IBeginDragHa
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        _uiInventory.UIItemDescription.ChildSetActive(false);
+        _uiInventory.UIItemDescription.gameObject.SetActive(false);
     }
 }

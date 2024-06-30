@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class PopupUIManager : MonoBehaviour
 {
-    public PopupUI UIInventory;
     public PopupUI UIBuild;
 
     static public bool PopupEnable;
@@ -35,7 +34,6 @@ public class PopupUIManager : MonoBehaviour
                 }
             }
 
-            TogglekeyDownAction(InventoryKey, UIInventory);
             TogglekeyDownAction(BuildKey, UIBuild);
         }
        
@@ -44,7 +42,7 @@ public class PopupUIManager : MonoBehaviour
     private void Init()
     {
         _allPopupList = new List<PopupUI>()
-        { UIInventory, UIBuild };
+        {UIBuild };
 
         foreach (var popup in _allPopupList)
         {

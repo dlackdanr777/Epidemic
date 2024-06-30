@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1125,7 +1125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1261,7 +1261,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1672,11 +1672,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39abb72101ad9e740910a2c2c308ba28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIEnable: 0
-  CloseButton: {fileID: 8347125488451026188}
   _AmountText: {fileID: 4474703696319324505}
   _itemNameTMP: {fileID: 4738836521920613304}
   _okButton: {fileID: 975606131891294865}
+  _cancelButton: {fileID: 8347125488451026188}
   _valueAddButton: {fileID: 8259091004985189938}
   _valueSubButton: {fileID: 783165190729920994}
 --- !u!1 &4303886713723444519
@@ -1826,7 +1825,7 @@ GameObject:
   - component: {fileID: 2337122193104057245}
   - component: {fileID: 1246386641154710964}
   - component: {fileID: 5354276667079913684}
-  - component: {fileID: 4860292584147067489}
+  - component: {fileID: 4478300017593310827}
   m_Layer: 5
   m_Name: UIHeader
   m_TagString: Untagged
@@ -1893,7 +1892,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4860292584147067489
+--- !u!114 &4478300017593310827
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1902,10 +1901,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4785342958354930432}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3a25e2bb15460646a557404f3869712, type: 3}
+  m_Script: {fileID: 11500000, guid: 12e0400b45089024794e5dd5d4fe6920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetTrUI: {fileID: 6698079412961868517}
+  _moveTarget: {fileID: 6698079412961868517}
 --- !u!1 &4806793785432461486
 GameObject:
   m_ObjectHideFlags: 0
@@ -2233,8 +2232,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1df6373f4fc3aa0429d3ea1035e1a866, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIEnable: 0
-  CloseButton: {fileID: 0}
   _itemNameText: {fileID: 1379080168346077956}
   _itemAmountText: {fileID: 9139351831995002945}
   _itemDescriptionText: {fileID: 2361319112909314946}
@@ -2633,7 +2630,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3182,6 +3179,7 @@ GameObject:
   - component: {fileID: 6698079412961868517}
   - component: {fileID: 183474786734663708}
   - component: {fileID: 6486186726762595668}
+  - component: {fileID: 1882102979572644221}
   m_Layer: 5
   m_Name: UIInventory
   m_TagString: Untagged
@@ -3207,10 +3205,10 @@ RectTransform:
   - {fileID: 6098835684565872701}
   - {fileID: 21890827132101077}
   - {fileID: 4636560944880997848}
-  - {fileID: 1976538766125954443}
   - {fileID: 7674309978069005779}
+  - {fileID: 1976538766125954443}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3229,8 +3227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d050acbe521274db8de79526234dd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIEnable: 0
-  CloseButton: {fileID: 2710562548846047508}
+  VisibleState: 0
   _gridLayout: {fileID: 21890827132101077}
   _sortButton: {fileID: 2802766054167117706}
   _slotPrefab: {fileID: 4763458353892245766, guid: 3394969c9db729348a356eb62087df27,
@@ -3238,6 +3235,12 @@ MonoBehaviour:
   _uiDivItem: {fileID: 7184081567663684016}
   _dragSlot: {fileID: 5242224674790615372}
   _uiItemDescription: {fileID: 3906825618470993923}
+  _animeUI: {fileID: 8092245936602185775}
+  _canvasGroup: {fileID: 1882102979572644221}
+  _showDuration: 0.1
+  _showTweenMode: 0
+  _hideDuration: 0.1
+  _hideTweenMode: 0
 --- !u!222 &6486186726762595668
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3246,6 +3249,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8092245936602185775}
   m_CullTransparentMesh: 1
+--- !u!225 &1882102979572644221
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8092245936602185775}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8101470809135396725
 GameObject:
   m_ObjectHideFlags: 0

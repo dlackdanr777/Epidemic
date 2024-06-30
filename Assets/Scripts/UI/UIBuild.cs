@@ -1,21 +1,70 @@
-using System.Collections;
-using System.Collections.Generic;
+using Muks.PcUI;
+using Muks.Tween;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class UIBuild : PopupUI
+public class UIBuild : PcUIView
 {
     [SerializeField] private Transform _gridLayout; //슬롯들을 자식으로 가지고있는 오브젝트
     [SerializeField] private BuildSystem _buildSystem;
     [SerializeField] private UIBuildSlot _slotPrefab;
     private UIBuildSlot[] _buildSlot;
 
+    [Header("Animation Options")]
+    [SerializeField] private GameObject _animeUI;
+    [SerializeField] private CanvasGroup _canvasGroup;
 
+    [Space]
+    [SerializeField] private float _showDuration;
+    [SerializeField] private TweenMode _showTweenMode;
 
-    private void Start()
+    [Space]
+    [SerializeField] private float _hideDuration;
+    [SerializeField] private TweenMode _hideTweenMode;
+
+    private Vector2 _tmpPos;
+
+    public override void Init()
     {
         SetSlots();
+        gameObject.SetActive(false);
     }
+
+    public override void Show()
+    {
+        VisibleState = VisibleState.Appearing;
+        gameObject.SetActive(true);
+        _canvasGroup.interactable = false;
+        _canvasGroup.alpha = 0;
+        _animeUI.transform.position = _tmpPos != Vector2.zero ? _tmpPos : _animeUI.transform.position;
+
+        TweenData tween = _canvasGroup.TweenAlpha(1, _showDuration, _showTweenMode);
+        tween.OnComplete(() =>
+        {
+            VisibleState = VisibleState.Appeared;
+            _canvasGroup.interactable = true;
+        });
+
+    }
+
+    public override void Hide()
+    {
+        VisibleState = VisibleState.Disappearing;
+        gameObject.SetActive(true);
+        _canvasGroup.interactable = false;
+        _canvasGroup.alpha = 1;
+
+        _tmpPos = _animeUI.transform.position;
+
+        TweenData tween = _canvasGroup.TweenAlpha(0, _hideDuration, _hideTweenMode);
+        tween.OnComplete(() =>
+        {
+            VisibleState = VisibleState.Disappeared;
+            _canvasGroup.interactable = true;
+            gameObject.SetActive(false);
+        });
+    }
+
+
 
     private void SetSlots()
     {
@@ -38,15 +87,8 @@ public class UIBuild : PopupUI
     private void OnButtonClicked(int index)
     {
         _buildSystem.SelectCraftItem(index);
-        CloseButton.onClick?.Invoke();
+        _uiNav.Pop("UIBuild");
     }
 
-    public override void ChildSetActive(bool value)
-    {
-        if (value)
-            _buildSystem.BuildDisable();
-
-        base.ChildSetActive(value);
-    }
 
 }

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIItemDescription : PopupUI
+public class UIItemDescription : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _itemNameText;
     [SerializeField] private TextMeshProUGUI _itemAmountText;
@@ -11,10 +11,12 @@ public class UIItemDescription : PopupUI
 
     private Vector3 _uiSize;
 
-    private void Start()
+    public void Init()
     {
         _uiSize = GetComponent<RectTransform>().sizeDelta;
+        gameObject.SetActive(false);
     }
+
     public void UpdateUI(Item item)
     {
         if(item != null)

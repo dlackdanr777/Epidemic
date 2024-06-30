@@ -5,11 +5,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UIDivItem : PopupUI
+public class UIDivItem : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _AmountText;
     [SerializeField] private TextMeshProUGUI _itemNameTMP;
     [SerializeField] private Button _okButton;
+    [SerializeField] private Button _cancelButton;
 
     [SerializeField] private Button _valueAddButton;
     [SerializeField] private Button _valueSubButton;
@@ -45,20 +46,14 @@ public class UIDivItem : PopupUI
         _valueSubButton.GetComponent<EventTrigger>().triggers.Add(subButtonDownEvent);
         _valueSubButton.GetComponent<EventTrigger>().triggers.Add(subButtonUpEvent);
 
-        CloseButton.onClick.AddListener(() => ChildSetActive(false));
-        ChildSetActive(false);
+        _cancelButton.onClick.AddListener(() => gameObject.SetActive(false));
+        gameObject.SetActive(false);
     }
 
     private void FixedUpdate()
     {
         onClickedAddButton();
         onClickedSubButton();
-    }
-
-    public override void ChildSetActive(bool value)
-    {
-        _uiInventory.DragInvenSlot.ResetDragItem();
-        base.ChildSetActive(value);
     }
 
 
@@ -68,7 +63,7 @@ public class UIDivItem : PopupUI
         {
             if (item.Amount > 1)
             {
-                ChildSetActive(true);
+                gameObject.SetActive(true);
                 if (_coroutine != null)
                 {
                     StopCoroutine(_coroutine);
@@ -80,7 +75,7 @@ public class UIDivItem : PopupUI
                 _coroutine = StartCoroutine(EnableInput());
                 _okButton.onClick.RemoveAllListeners();
                 _okButton.onClick.AddListener(() => DivItem(item));
-                _okButton.onClick.AddListener(() => ChildSetActive(false));
+                _okButton.onClick.AddListener(() => gameObject.SetActive(false));
                 _okButton.onClick.AddListener(() => { if (_coroutine != null) StopCoroutine(_coroutine); });
             }
             else
