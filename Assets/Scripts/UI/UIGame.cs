@@ -8,11 +8,6 @@ public class UIGame : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _gameTimerText;
     [SerializeField] private TextMeshProUGUI _zombieCountText;
 
-    [SerializeField] private GameObject _uiWin;
-    [SerializeField] private GameObject _uiLose;
-
-    [SerializeField] private GameObject _uiStop;
-
 
     private Player _player;
 
@@ -28,11 +23,6 @@ public class UIGame : MonoBehaviour
         _player.GunController.OnReloadHandler += ShowBulletCount;
         ShowBulletCount();
 
-        _uiWin.gameObject.SetActive(false);
-        _uiLose.gameObject.SetActive(false);
-        _uiStop.gameObject.SetActive(false);
-
-        GameManager.Instance.Player.OnHpMin += ShowUILose;
     }
 
     public void SetGameTimerText(string text)
@@ -43,28 +33,6 @@ public class UIGame : MonoBehaviour
     public void SetZombieCountText(string text)
     {
         _zombieCountText.text = text;
-    }
-
-    public void ShowUIWin()
-    {
-        _uiWin.gameObject.SetActive(true);
-    }
-
-    public void ShowUILose()
-    {
-        _uiLose.gameObject.SetActive(true);
-    }
-
-    public void ShowUIStop()
-    {
-        _uiStop.gameObject.SetActive(true);
-        GameManager.Instance.CursorVisible();
-    }
-
-    public void HiddenUIStop()
-    {
-        _uiStop.gameObject.SetActive(false);
-        GameManager.Instance.CursorHidden();
     }
 
     private void ShowBulletCount()

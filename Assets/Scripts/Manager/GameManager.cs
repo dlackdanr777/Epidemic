@@ -22,7 +22,12 @@ public class GameManager : MonoBehaviour
 
     private static GameManager _instance;
 
+    
     [HideInInspector] public Player Player;
+    private bool _cursorVisibled = false;
+    public bool CursorVisibled => _cursorVisibled;
+
+
     public bool IsGameEnd
     {
         get { return _isGameEnd; }
@@ -40,11 +45,13 @@ public class GameManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        _cursorVisibled = true;
     }
 
     public void CursorHidden()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        _cursorVisibled = false;
     }
 }

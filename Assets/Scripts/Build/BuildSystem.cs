@@ -24,7 +24,8 @@ public class BuildSystem : MonoBehaviour
     private LayerMask _layerMask;
     private Ray _ray;
 
-    [SerializeField] private bool _buildingEnable;
+    private bool _buildingEnable;
+    public bool BuildingEnable => _buildingEnable;
 
     public void Start()
     {
@@ -36,8 +37,9 @@ public class BuildSystem : MonoBehaviour
 
         if (_buildingEnable)
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1))
                 BuildDisable();
+
         }
 
         BuildEnable();
@@ -78,7 +80,7 @@ public class BuildSystem : MonoBehaviour
 
 
     /// <summary>건축물 설치 시작했을때 주기적으로 불러오는 함수</summary>
-    public void BuildEnable()
+    private void BuildEnable()
     {
         if (!_buildingEnable || _craftItemIndex == -1)
             return;

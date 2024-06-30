@@ -4,8 +4,6 @@ using UnityEngine;
 public class PopupUIManager : MonoBehaviour
 {
     public PopupUI UIBuild;
-
-    static public bool PopupEnable;
     //Å°ÀÔ·Â
     private KeyCode EscapeKey = KeyCode.Escape;
     private KeyCode InventoryKey = KeyCode.I;
@@ -99,16 +97,7 @@ public class PopupUIManager : MonoBehaviour
 
     private void CheckPopupEnabled()
     {
-        if (_activePopupList.Count == 0)
-        {
-            GameManager.Instance.CursorHidden();
-            PopupEnable = false;
-        }
-        else
-        {
-            GameManager.Instance.CursorVisible();
-            PopupEnable = true;
-        }
+
     }
 
 

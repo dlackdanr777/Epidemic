@@ -33,6 +33,7 @@ public class UIBuild : PcUIView
     {
         VisibleState = VisibleState.Appearing;
         gameObject.SetActive(true);
+        _buildSystem.BuildDisable();
         _canvasGroup.interactable = false;
         _canvasGroup.alpha = 0;
         _animeUI.transform.position = _tmpPos != Vector2.zero ? _tmpPos : _animeUI.transform.position;

@@ -7,6 +7,8 @@ using UnityEngine;
 [RequireComponent(typeof(PcUINavigation))]
 public class UIInGame : MonoBehaviour
 {
+    [SerializeField] private BuildSystem _buildSystem;
+
     private PcUINavigation _uiNav;
 
     private void Awake()
@@ -19,10 +21,37 @@ public class UIInGame : MonoBehaviour
 
         DataBind.SetUnityActionValue("ShowBuild", ShowBuild);
         DataBind.SetUnityActionValue("HideBuild", HideBuild);
+
+        DataBind.SetUnityActionValue("ShowStop", ShowStop);
+        DataBind.SetUnityActionValue("HideStop", HideStop);
+                                          
+        DataBind.SetUnityActionValue("ShowWin", ShowWin);
+        DataBind.SetUnityActionValue("HideWin", HideWin);
+                                          
+        DataBind.SetUnityActionValue("ShowLose", ShowLose);
+        DataBind.SetUnityActionValue("HideLose", HideLose);
     }
 
     private void Update()
     {
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(_buildSystem.BuildingEnable)
+            {
+                _buildSystem.BuildDisable();
+                return;
+            }
+
+            if(_uiNav.Count == 0)
+            {
+                ShowStop();
+                return;
+            }
+
+            _uiNav.Pop();
+        }
+
         if (Input.GetKeyDown(KeyCode.I))
         {
             if (_uiNav.CheckActiveView("UIInventory"))
@@ -64,6 +93,36 @@ public class UIInGame : MonoBehaviour
     private void HideBuild()
     {
         _uiNav.Pop("UIBuild");
+    }
+
+    private void ShowStop()
+    {
+        _uiNav.Push("UIStop");
+    }
+
+    private void HideStop()
+    {
+        _uiNav.Pop("UIStop");
+    }
+
+    private void ShowWin()
+    {
+        _uiNav.Push("UIWin");
+    }
+
+    private void HideWin()
+    {
+        _uiNav.Pop("UIWin");
+    }
+
+    private void ShowLose()
+    {
+        _uiNav.Push("UILose");
+    }
+
+    private void HideLose()
+    {
+        _uiNav.Pop("UILose");
     }
 
     private void OnViewChangeEvent()

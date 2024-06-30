@@ -36,8 +36,6 @@ public class InGame : MonoBehaviour
 
     private bool _roundClear;
 
-    private bool _isGameStoped;
-
 
     public void Start()
     {
@@ -66,21 +64,6 @@ public class InGame : MonoBehaviour
         else
         {
             RoundClear();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape) && !PopupUIManager.PopupEnable)
-        {
-            if (_isGameStoped)
-            {
-                Time.timeScale = 1;
-                _uiGame.HiddenUIStop();
-            }
-            else
-            {
-                Time.timeScale = 0;
-                _uiGame.ShowUIStop();
-            }
-            _isGameStoped = !_isGameStoped;
         }
     }
 
@@ -154,7 +137,7 @@ public class InGame : MonoBehaviour
         if(_enemyCount >= 0)
         {
             GameManager.Instance.GameEnd();
-            _uiGame.ShowUILose();
+            //_uiGame.ShowUILose();
             //게임오버
         }
     }
@@ -177,7 +160,7 @@ public class InGame : MonoBehaviour
             else
             {
                 GameManager.Instance.GameEnd();
-                _uiGame.ShowUIWin();
+                //_uiGame.ShowUIWin();
             }
 
         }
