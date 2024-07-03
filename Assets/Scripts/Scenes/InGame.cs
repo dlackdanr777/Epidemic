@@ -1,3 +1,4 @@
+using Muks.DataBind;
 using System;
 using UnityEngine;
 
@@ -43,6 +44,7 @@ public class InGame : MonoBehaviour
         _roundType = RoundType.Wait;
         SoundManager.Instance.PlayAudio(AudioType.Background, _bgMusic);
         GameManager.Instance.CursorHidden();
+        GameManager.Instance.Player.OnHpMin += () => DataBind.GetUnityActionValue("ShowLose")?.Invoke();
     }
 
 
@@ -137,7 +139,7 @@ public class InGame : MonoBehaviour
         if(_enemyCount >= 0)
         {
             GameManager.Instance.GameEnd();
-            //_uiGame.ShowUILose();
+            DataBind.GetUnityActionValue("ShowLose")?.Invoke();
             //게임오버
         }
     }
@@ -147,8 +149,7 @@ public class InGame : MonoBehaviour
     {
         _clearWaitTime += Time.deltaTime;
         if (_clearWaitTime > 5)
-        {
-            
+        {        
             if(_rounds.Length > _currentRound)
             {
                 _clearWaitTime = 0;
@@ -160,7 +161,8 @@ public class InGame : MonoBehaviour
             else
             {
                 GameManager.Instance.GameEnd();
-                //_uiGame.ShowUIWin();
+                DataBind.GetUnityActionValue("ShowWin")?.Invoke();
+                
             }
 
         }
