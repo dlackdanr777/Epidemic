@@ -1,11 +1,16 @@
 
-public class OtherItem : CountableItem
+public class OtherItem : Item
 {
-    public OtherItem(OtherItemData Data, int Amount = 1) : base(Data, Amount) { }
 
-    public override CountableItem Clone()
+    public OtherItemData OtherItemData { get; private set; }
+
+    public OtherItem(OtherItemData Data) : base(Data)
     {
-        return new OtherItem(CountableData as OtherItemData);
+        OtherItemData = Data;
     }
 
+    public OtherItem Clone()
+    {
+        return new OtherItem(OtherItemData);
+    }
 }

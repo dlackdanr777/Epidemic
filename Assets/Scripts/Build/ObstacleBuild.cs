@@ -8,11 +8,10 @@ public class ObstacleBuild : MonoBehaviour, Iinteractive
     [SerializeField] private GameObject _obstaclePrefab;
     [SerializeField] private GameObject[] _obstacleBluePrint;
     [SerializeField] private TextMeshProUGUI _text;
-    [SerializeField] private int _necessaryItemId;
+    [SerializeField] private string _necessaryItemId;
     [SerializeField] private int _necessaryitemAmount;
 
     private GameObject[] _obstacle;
-    private Inventory _inventory => Inventory.Instance;
 
     private bool _buildEnable;
 
@@ -37,7 +36,7 @@ public class ObstacleBuild : MonoBehaviour, Iinteractive
 
     public bool CheckBuildEnable()
     {
-        int inventoryItemCount = _inventory.FindItemCountByID(_necessaryItemId);
+        int inventoryItemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_necessaryItemId);
 
         if (inventoryItemCount > 0 && inventoryItemCount >= _necessaryitemAmount)
         {
@@ -57,7 +56,7 @@ public class ObstacleBuild : MonoBehaviour, Iinteractive
         {
             if (!_obstacle[i].activeSelf)
             {
-                if (_inventory.UseItemByID(_necessaryItemId, _necessaryitemAmount))
+                if (GameManager.Instance.Player.Inventory.UseItemByID(_necessaryItemId, _necessaryitemAmount))
                 {
                     _obstacle[i].SetActive(true);
                     _obstacleBluePrint[i].SetActive(false);

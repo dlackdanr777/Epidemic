@@ -6,7 +6,7 @@ public struct Craft
 {
     public Sprite Sprite;
     public string Name;
-    public int NecessaryItemId;
+    public string NecessaryItemId;
     public int NecessaryItemAmount;
     public GameObject CraftPrefab;
     public PreviewObject PreviewPrefab;
@@ -15,9 +15,11 @@ public struct Craft
 
 public class BuildSystem : MonoBehaviour
 {
+    [SerializeField] private Player _player;
     [SerializeField] private Craft[] _craftItem;
     [SerializeField] private Camera _camera;
     [SerializeField] private AudioClip _buildSuccessClip;
+    
     private int _craftItemIndex = -1;
     private PreviewObject _PreviewObj;
     private RaycastHit _hit;
@@ -95,7 +97,7 @@ public class BuildSystem : MonoBehaviour
         location.Set(Mathf.Round(location.x * 10f) * 0.1f, location.y, Mathf.Round(location.z * 10f) * 0.1f);
         _PreviewObj.transform.position = location;
 
-        int itemId = _craftItem[_craftItemIndex].NecessaryItemId;
+        string itemId = _craftItem[_craftItemIndex].NecessaryItemId;
         int amount = _craftItem[_craftItemIndex].NecessaryItemAmount;
         _PreviewObj.SetItem(itemId, amount);
 
@@ -117,7 +119,7 @@ public class BuildSystem : MonoBehaviour
             return;
         }
 
-        if (Inventory.Instance.UseItemByID(itemId, amount))
+        if (_player.Inventory.UseItemByID(itemId, amount))
         {
             Instantiate(_craftItem[_craftItemIndex].CraftPrefab, _PreviewObj.transform.position, _PreviewObj.transform.rotation);
             SoundManager.Instance.PlayAudio(AudioType.Effect, _buildSuccessClip);

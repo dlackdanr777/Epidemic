@@ -12,19 +12,21 @@ public class UIBuildSlot : MonoBehaviour
     private string _craftName;
     private string _itemName;
     private int _itemAmount;
-    private int _itemID;
+    private string _itemID;
 
     public Button Button;
 
     public void OnEnable()
     {
-        int itemCount = Inventory.Instance.FindItemCountByID(_itemID);
-        if (itemCount < 0)
-            itemCount = 0;
+        int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_itemID);
+
+        itemCount = itemCount <= 0 ? 0 : itemCount;
 
         _ingredientText.text = _itemName;
         _ingredientText.text += "  " + itemCount + "/" + _itemAmount;
     }
+
+
 
     public void UpdateUI(Craft craft)
     {

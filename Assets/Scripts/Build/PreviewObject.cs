@@ -9,7 +9,7 @@ public class PreviewObject : MonoBehaviour
     private List<Collider> _colliders = new List<Collider>();
     private const int IGNORE_RAYCAST_LAYER = 2;
 
-    private int _itemID;
+    private string _itemID;
     private int _itemAmount;
 
     private List<Renderer> _renderers = new List<Renderer>();
@@ -26,7 +26,7 @@ public class PreviewObject : MonoBehaviour
         ChangeColor();
     }
 
-    public void SetItem(int id, int Amount)
+    public void SetItem(string id, int Amount)
     {
         _itemID = id;
         _itemAmount = Amount;
@@ -35,7 +35,7 @@ public class PreviewObject : MonoBehaviour
     /// <summary> 겹치는 오브젝트가 있는지, 재료 아이템 보유 여부를 판단해 색을 변경하는 함수 </summary>
     private void ChangeColor()
     {
-        int itemCount = Inventory.Instance.FindItemCountByID(_itemID);
+        int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_itemID);
 
         if (_colliders.Count > 0 || itemCount < _itemAmount)
             SetColor(_redMaterial);

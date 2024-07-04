@@ -5,26 +5,24 @@ public class GridInventory : MonoBehaviour
 {
     public event Action OnUpdateHandler;
 
-    private static readonly int _gridWidth = 10;
-    private static readonly int _gridHight = 10;
+    [SerializeField] private int _gridWidth = 8;
+    [SerializeField] private int _gridHight = 10;
+
+    [SerializeField] private string _invenName;
+
     public int GridWidth =>  _gridWidth;
     public int GridHight => _gridHight;
 
-    private GridSlot[,] _inventoryGrid = new GridSlot[_gridWidth, _gridHight];
-    public GridSlot[,] InventoryGrid => _inventoryGrid;
+    private InvenData _invenData;
+    public GridSlot[,] GridSlots => _invenData.Slots;
 
     [SerializeField] private ItemData _item;
     [SerializeField] private ItemData _item2;
 
     private void Awake()
     {
-        for(int y = 0; y < _gridHight; y++)
-        {
-            for(int x = 0; x < _gridWidth; x++)
-            {
-                _inventoryGrid[y, x] = new GridSlot();
-            }
-        }
+        UserInfo.AddInven(_invenName, _gridWidth, _gridHight);
+        _invenData = UserInfo.GetInvenData(_invenName);
 
         AddItem(_item);
         AddItem(_item);
@@ -35,133 +33,92 @@ public class GridInventory : MonoBehaviour
     }
 
 
-    public bool AddItem(ItemData itemData)
+    public bool AddItem(ItemData data)
     {
-        Vector2Int slotIndex = GetNullSlotIndex(itemData);
+        bool enabled = _invenData.AddItem(data);
 
-        if (slotIndex.x == -1 || slotIndex.y == -1)
-        {
-            Debug.LogError("인벤토리가 꽉 찼습니다.");
-            return false;
-        }
+        if(enabled)
+            OnUpdateHandler?.Invoke();
 
-        Item item = itemData.CreateItem();
-        int itemWidth = itemData.Width;
-        int itemHeight = itemData.Height;
-
-        for (int y = slotIndex.y; y < slotIndex.y + itemHeight; y++)
-        {
-            for (int x = slotIndex.x; x < slotIndex.x + itemWidth; x++)
-            {
-                _inventoryGrid[y, x].Item = item;
-                _inventoryGrid[y, x].IsMainSlot = (x == slotIndex.x && y == slotIndex.y);
-            }
-        }
-
-        OnUpdateHandler?.Invoke();
-        return true;
+        return enabled;
     }
 
-    public bool AddItem(ItemData itemData, int x, int y)
+
+    public bool AddItem(string id)
     {
-        if (!IsSlotAvailable(x, y, itemData.Width, itemData.Height))
-        {
-            Debug.LogError("추가 할 수 없는 슬롯입니다.");
-            return false;
-        }
+        Item item = ItemManager.Instance.GetItemByID(id);
 
-        Item item = itemData.CreateItem();
-        int xx = x;
-        int yy = y;
-        int itemWidth = itemData.Width;
-        int itemHeight = itemData.Height;
+        bool enabled = _invenData.AddItem(item.Data);
 
-        for (int i = y, cntY = y + itemHeight; i < cntY; i++)
-        {
-            for (int j = x, cntX = x + itemWidth; j < cntX; j++)
-            {
-                _inventoryGrid[i, j].Item = item;
-                _inventoryGrid[i, j].IsMainSlot = (xx == j && yy == i);
-            }
-        }
+        if (enabled)
+            OnUpdateHandler?.Invoke();
 
-        OnUpdateHandler?.Invoke();
-        return true;
+        return enabled;
+    }
+
+    public bool AddItem(ItemData data, int indexX, int indexY)
+    {
+        bool enabled = _invenData.AddItem(data, indexX, indexY);
+
+        if (enabled)
+            OnUpdateHandler?.Invoke();
+
+        return enabled;
     }
 
 
     public void RemoveItem(Item item)
     {
-        for(int y = 0; y < _gridHight; y++)
-        {
-            for(int x = 0; x < _gridWidth; x++)
-            {
-                if (_inventoryGrid[y,x].Item == item)
-                {
-                    _inventoryGrid[y, x].Item = null;
-                    _inventoryGrid[y, x].IsMainSlot = false;
-                }
-            }
-        }
-
+        _invenData.RemoveItem(item);
         OnUpdateHandler?.Invoke();
     }
 
 
-    public void RemoveItem(int startX, int startY, int width, int height)
+    public void RemoveItem(ItemData item, int startX, int startY)
     {
-        if (_gridHight < startY + height || _gridWidth < startX + width)
-        {
-            Debug.LogError("범위를 넘어섰습니다.");
-            return;
-        }
-
-        for (int y = startY; y < startY + height; y++)
-        {
-            for (int x = startX; x < startX + width; x++)
-            {
-                _inventoryGrid[y, x].Item = null;
-                _inventoryGrid[y, x].IsMainSlot = false;
-            }
-        }
-
+        _invenData.RemoveItem(item, startX, startY);
         OnUpdateHandler?.Invoke();
     }
 
-
-
-    public Vector2Int GetNullSlotIndex(ItemData item)
+    public bool UseItemByID(string id, int amount)
     {
-        for (int y = 0, cntY = _gridHight - item.Height + 1; y < cntY; y++)
+        if (amount <= 0)
         {
-            for (int x = 0, cntX = _gridWidth - item.Width + 1; x < cntX; x++)
-            {
-                if (IsSlotAvailable(x, y, item.Width, item.Height))
-                {
-                    return new Vector2Int(x, y);
-                }
-            }
-        }
-
-        return new Vector2Int(-1, -1);
-    }
-
-    private bool IsSlotAvailable(int startX, int startY, int width, int height)
-    {
-        if(_gridHight < startY + height || _gridWidth < startX + width)
+            DebugLog.LogError("수량이 음수 입니다." + amount);
             return false;
-
-        for (int y = startY; y < startY + height; y++)
-        {
-            for (int x = startX; x < startX + width; x++)
-            {
-                if (_inventoryGrid[y, x].Item != null)
-                    return false;
-            }
         }
 
+        ItemData data = ItemManager.Instance.GetItemDataByID(id);
+
+        if(data == null)
+        {
+            DebugLog.LogError("존재하지 않는 아이템 id 입니다." + id);
+            return false;
+        }
+
+        int cnt = _invenData.GetItemCount(data);
+        if (cnt < amount)
+        {
+            DebugLog.LogError("아이템의 갯수가 적습니다.[" + id + "]  보유 수량: " + cnt + "  필요 수량" + amount);
+            return false;
+        }
+
+        _invenData.RemoveItems(data, amount);
+        OnUpdateHandler?.Invoke();
         return true;
     }
 
 
+    public int GetItemCountByID(string id)
+    {
+        ItemData data = ItemManager.Instance.GetItemDataByID(id);
+
+        if (data == null)
+        {
+            DebugLog.LogError("존재하지 않는 아이템 id 입니다." + id);
+            return -1;
+        }
+
+        return _invenData.GetItemCount(data);
+    }
 }

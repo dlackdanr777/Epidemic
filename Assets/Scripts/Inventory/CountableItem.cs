@@ -1,13 +1,12 @@
 
-public abstract class CountableItem : Item
+public class CountableItem : Item
 {
+    public int Amonut;
 
-    public CountableItemData CountableData { get; private set; }
+    public CountableItemData CountableItemData { get; private set; }
 
-    public CountableItem(CountableItemData Data, int Amount = 1) : base(Data, Amount)
+    public CountableItem(CountableItemData Data) : base(Data)
     {
-        CountableData = Data;
+        CountableItemData = Data;
     }
-
-    public abstract CountableItem Clone();
 }

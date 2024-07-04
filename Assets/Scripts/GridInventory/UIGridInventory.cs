@@ -8,8 +8,10 @@ public class UIGridInventory : MonoBehaviour
     public static Action StartDragHandler;
     public static Action EndDragHandler;
 
+    [Header("Components")]
     [SerializeField] private GridInventory _inven;
     public GridInventory Inven => _inven;
+    [SerializeField] private UIItemDescription _itemDescription;
     [SerializeField] private UIDragSlot _dragSlot;
 
     [Header("SlotOptions")]
@@ -17,27 +19,24 @@ public class UIGridInventory : MonoBehaviour
     [SerializeField] private int _gridHeight;
     [Space]
     [SerializeField] private Transform _slotParent;
-    [SerializeField] private Transform _dragSlotParent;
-    [SerializeField] private UIInventorySlot _slotPrefab;
-    [SerializeField] private UIGridItemSlot _gridItemSlotPrefab;
-
-
+    [SerializeField] private Transform _showItemSlotParent;
+    [SerializeField] private UIGridInventorySlot _slotPrefab;
+    [SerializeField] private UIShowItemSlot _showItemSlotPrefab;
 
     private float _slotSizeX;
     private float _slotSizeY;
     private Vector2 _slotTmpPos;
 
-
-    private UIInventorySlot[,] _slots;
-    private List<UIGridItemSlot> _gridItemSlotList = new List<UIGridItemSlot>();
-    private Queue<UIGridItemSlot> _gridItemSlotQueue = new Queue<UIGridItemSlot>();
+    private UIGridInventorySlot[,] _slots;
+    private List<UIShowItemSlot> _showItemSlotList = new List<UIShowItemSlot>();
+    private Queue<UIShowItemSlot> _showItemSlotQueue = new Queue<UIShowItemSlot>();
 
 
 
     private void Start()
     {    
         Init();
-        InitGridItemSlot();
+        InitShowItemSlot();
 
         UpdateUI();
 
@@ -62,7 +61,6 @@ public class UIGridInventory : MonoBehaviour
         _inven = inventory;
         _inven.OnUpdateHandler += UpdateUI;
         UpdateUI();
-
     }
 
     public void Init()
@@ -70,7 +68,7 @@ public class UIGridInventory : MonoBehaviour
         _slotSizeX = _slotPrefab.GetComponent<RectTransform>().sizeDelta.x;
         _slotSizeY = _slotPrefab.GetComponent<RectTransform>().sizeDelta.y;
 
-        _slots = new UIInventorySlot[_gridHeight, _gridWidth];
+        _slots = new UIGridInventorySlot[_gridHeight, _gridWidth];
 
         for (int y = 0; y < _gridHeight; y++)
         {
@@ -78,28 +76,30 @@ public class UIGridInventory : MonoBehaviour
             {
                 _slots[y, x] = Instantiate(_slotPrefab, _slotParent);
                 _slots[y, x].Init(this, _dragSlot, x, y);
+
+                Vector2 pos = new Vector2(_slotSizeX * 0.5f, -_slotSizeY * 0.5f);
+                pos += new Vector2(x * _slotSizeX, -y * _slotSizeY);
+                _slots[y, x].SetAnchoredPosition(pos);
             }
         }
-
-        _slotTmpPos = _slots[0, 0].transform.position; 
     }
 
 
     public void ChangeSlotEffect(int x, int y, Item item)
     {
-        int width = item.ItemData.Width;
-        int height = item.ItemData.Height;
+        int width = item.Data.Width;
+        int height = item.Data.Height;
         for (int i = y, cntY = Mathf.Clamp(y + height, y, _gridHeight); i < cntY; ++i)
         {
             for (int j = x, cntX = Mathf.Clamp(x + width, x, _gridWidth); j < cntX; ++j)
             {
-                if(_inven.InventoryGrid[i, j].Item == null)
+                if(_inven.GridSlots[i, j].Item == null)
                 {
                     _slots[i, j].SetColor(true);
                     continue;
                 }
 
-                if (_inven.InventoryGrid[i,j].Item == item)
+                if (_inven.GridSlots[i,j].Item == item)
                 {
                     _slots[i, j].SetColor(true);
                     continue;
@@ -125,8 +125,8 @@ public class UIGridInventory : MonoBehaviour
 
     public bool ItemMoveEnabled(int x, int y, Item item)
     {
-        int width = item.ItemData.Width;
-        int height = item.ItemData.Height;
+        int width = item.Data.Width;
+        int height = item.Data.Height;
 
         if (_gridHeight < y + height || _gridWidth < x + width)
             return false;
@@ -135,10 +135,10 @@ public class UIGridInventory : MonoBehaviour
         {
             for (int j = x, cntX = Mathf.Clamp(x + width, x, _gridWidth); j < cntX; ++j)
             {
-                if (_inven.InventoryGrid[i, j].Item == null)
+                if (_inven.GridSlots[i, j].Item == null)
                     continue;
 
-                if (_inven.InventoryGrid[i, j].Item == item)
+                if (_inven.GridSlots[i, j].Item == item)
                     continue;
 
                 return false;
@@ -154,9 +154,9 @@ public class UIGridInventory : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
-        for (int i = 0, cnt = _gridItemSlotList.Count; i < cnt; ++i)
+        for (int i = 0, cnt = _showItemSlotList.Count; i < cnt; ++i)
         {
-            _gridItemSlotList[i].StartDrag();
+            _showItemSlotList[i].StartDrag();
         }
     }
 
@@ -166,9 +166,26 @@ public class UIGridInventory : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
-        for (int i = 0, cnt = _gridItemSlotList.Count; i < cnt; ++i)
+        for (int i = 0, cnt = _showItemSlotList.Count; i < cnt; ++i)
         {
-            _gridItemSlotList[i].EndDrag();
+            _showItemSlotList[i].EndDrag();
+        }
+    }
+
+
+    public void SlotRightClicked(Item item)
+    {
+        if(item == null)
+        {
+            DebugLog.Log("사용할 아이템이 없습니다.");
+            return;
+        }
+
+        if(item is IUsableItem)
+        {
+            IUsableItem usableItem = (IUsableItem)item;
+            usableItem.Use();
+            DebugLog.Log("사용 실행");
         }
     }
 
@@ -178,25 +195,23 @@ public class UIGridInventory : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
-        _gridItemSlotQueue.Clear();
-        for (int i = 0, cnt = _gridItemSlotList.Count; i < cnt; i++)
+        _showItemSlotQueue.Clear();
+        for (int i = 0, cnt = _showItemSlotList.Count; i < cnt; i++)
         {
-            _gridItemSlotList[i].gameObject.SetActive(false);
-            _gridItemSlotQueue.Enqueue(_gridItemSlotList[i]);
+            _showItemSlotList[i].gameObject.SetActive(false);
+            _showItemSlotQueue.Enqueue(_showItemSlotList[i]);
         }
 
         for (int y = 0; y < _gridHeight; y++)
         {
             for (int x = 0; x < _gridWidth; x++)
             {
-                GridSlot item = _inven.InventoryGrid[y, x];
+                GridSlot item = _inven.GridSlots[y, x];
 
                 if (item.Item != null && item.IsMainSlot)
                 {
-                    UIGridItemSlot dragSlot = DequeueGridItemSlot();
-                    Vector2 pos = _slotTmpPos + new Vector2(x * _slotSizeX, -y * _slotSizeY);
-                    pos += new Vector2((item.Item.ItemData.Width - 1) * (_slotSizeX * 0.5f), -(item.Item.ItemData.Height - 1) * (_slotSizeY * 0.5f));
-
+                    UIShowItemSlot dragSlot = DequeueGridItemSlot();
+                    Vector2 pos = _slots[y, x].GetAnchoredPosition() + new Vector2((item.Item.Data.Width - 1) * _slotSizeX * 0.5f, (item.Item.Data.Height - 1) * -_slotSizeY * 0.5f);
                     dragSlot.SetPos(pos);
                     dragSlot.SetItem(item, x, y , _slotSizeX, _slotSizeY);
                 }
@@ -204,38 +219,40 @@ public class UIGridInventory : MonoBehaviour
         }
     }
 
-    private void InitGridItemSlot()
+    private void InitShowItemSlot()
     {
-        if (0 < _gridItemSlotList.Count && _gridItemSlotList[0] != null)
+        if (0 < _showItemSlotList.Count && _showItemSlotList[0] != null)
             return;
 
-        _gridItemSlotList.Clear();
+        _showItemSlotList.Clear();
 
         for (int i = 0; i < 10; ++i)
         {
-            UIGridItemSlot slot = Instantiate(_gridItemSlotPrefab, _dragSlotParent);
+            UIShowItemSlot slot = Instantiate(_showItemSlotPrefab, _showItemSlotParent);
 
             slot.gameObject.SetActive(false);
-            slot.Init(this, _dragSlot, _slotSizeX, _slotSizeY);
-            _gridItemSlotList.Add(slot);
-            _gridItemSlotQueue.Enqueue(slot);
+            slot.Init(this, _dragSlot, _itemDescription, _slotSizeX, _slotSizeY);
+            _showItemSlotList.Add(slot);
+            _showItemSlotQueue.Enqueue(slot);
         }
     }
 
-    private UIGridItemSlot DequeueGridItemSlot()
+
+
+    private UIShowItemSlot DequeueGridItemSlot()
     {
-        UIGridItemSlot slot;
-        if (_gridItemSlotQueue.Count <= 0)
+        UIShowItemSlot slot;
+        if (_showItemSlotQueue.Count <= 0)
         {
-            slot = Instantiate(_gridItemSlotPrefab, _dragSlotParent);
+            slot = Instantiate(_showItemSlotPrefab, _showItemSlotParent);
 
             slot.gameObject.SetActive(false);
-            slot.Init(this, _dragSlot, _slotSizeX, _slotSizeY);
-            _gridItemSlotList.Add(slot);
-            _gridItemSlotQueue.Enqueue(slot);
+            slot.Init(this, _dragSlot, _itemDescription, _slotSizeX, _slotSizeY);
+            _showItemSlotList.Add(slot);
+            _showItemSlotQueue.Enqueue(slot);
         }
         
-        slot = _gridItemSlotQueue.Dequeue();
+        slot = _showItemSlotQueue.Dequeue();
         slot.gameObject.SetActive(true);
         return slot;
     }

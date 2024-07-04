@@ -22,11 +22,24 @@ public class ItemManager : MonoBehaviour
     private static ItemManager _instance;
     private ItemDatabase _itemDatabase;
 
-    public Item GetItemByID(int ID) 
+    public Item GetItemByID(string ID) 
     { 
         if(Array.Find(_itemDatabase.Items, x => x.ID == ID) != null) //만약 받은 ID와 같은 ID가 있으면
         {
             return Array.Find(_itemDatabase.Items, x => x.ID == ID).CreateItem();
+        }
+        else
+        {
+            Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다.");
+            return null;
+        }
+    }
+
+    public ItemData GetItemDataByID(string ID)
+    {
+        if (Array.Find(_itemDatabase.Items, x => x.ID == ID) != null) //만약 받은 ID와 같은 ID가 있으면
+        {
+            return Array.Find(_itemDatabase.Items, x => x.ID == ID);
         }
         else
         {

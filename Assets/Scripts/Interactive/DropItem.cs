@@ -5,8 +5,7 @@ using UnityEngine;
 public class DropItem : MonoBehaviour, Iinteractive
 {
     [Header("Option")]
-    [SerializeField] private int _itemId;
-    [SerializeField] private int _amount;
+    [SerializeField] private string _itemId;
 
     private string _itemName;
     public KeyCode InputKey => KeyCode.E;
@@ -25,14 +24,14 @@ public class DropItem : MonoBehaviour, Iinteractive
 
     public void EnableInteraction()
     {
-        UIManager.Instance.ShowRightText("[E] "+ _itemName + "x"+ _amount);
+        UIManager.Instance.ShowRightText("[E] "+ _itemName);
     }
 
 
     public void Interact()
     {
-        Inventory.Instance.AddItemByID(_itemId, _amount);
-        UIManager.Instance.ShowCenterText(_itemName + "À»(¸¦) " + _amount + "°³ È¹µæÇÏ¿´½À´Ï´Ù.");
+        GameManager.Instance.Player.Inventory.AddItem(_itemId);
+        UIManager.Instance.ShowCenterText(_itemName + "À»(¸¦) È¹µæÇÏ¿´½À´Ï´Ù.");
         Destroy(gameObject);
     }
 }

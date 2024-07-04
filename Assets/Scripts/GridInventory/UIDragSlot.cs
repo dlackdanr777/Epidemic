@@ -6,7 +6,7 @@ public class UIDragSlot : MonoBehaviour
     [SerializeField] private Image _image;
     [SerializeField] private RectTransform _rectTransform;
 
-    private UIGridItemSlot _currentSlot;
+    private UIShowItemSlot _currentSlot;
 
     public GridSlot CurrentItem => _currentSlot != null ? _currentSlot.Item : null;
     public UIGridInventory CurrentUIInven => _currentSlot != null ? _currentSlot.UIInven : null;
@@ -21,11 +21,11 @@ public class UIDragSlot : MonoBehaviour
     }
 
 
-    public void Enabled(UIGridItemSlot slot)
+    public void Enabled(UIShowItemSlot slot)
     {
         _currentSlot = slot;
         _rectTransform.sizeDelta = slot.RectTransform.sizeDelta;
-        _image.sprite = slot.Item.Item.ItemData.Sprite;
+        _image.sprite = slot.Item.Item.Data.Sprite;
 
         gameObject.SetActive(true);
     }

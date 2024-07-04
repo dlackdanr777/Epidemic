@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Potion Item Data", menuName = "Inventory/Items/Countable Item/Usable Item/Potion Item Data")]
-public class PotionItemData : CountableItemData
+[CreateAssetMenu(fileName = "Potion Item Data", menuName = "Items/Usable Item/Potion Item Data")]
+public class PotionItemData : ItemData
 {
     public int Value => _value;
 

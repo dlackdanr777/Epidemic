@@ -21,6 +21,7 @@ public class Player : MonoBehaviour, IHp
 
 
     [Header("Components")]
+    public GridInventory Inventory;
     public Camera MainCamera;
     public CinemachineCamera PlayerCamera;
     public Animator Animator;
