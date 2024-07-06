@@ -30,7 +30,7 @@ public class ItemManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다.");
+            Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다." + ID);
             return null;
         }
     }
@@ -43,7 +43,7 @@ public class ItemManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다.");
+            Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다." + ID);
             return null;
         }
     }
