@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ItemManager : MonoBehaviour
@@ -20,32 +22,28 @@ public class ItemManager : MonoBehaviour
 
 
     private static ItemManager _instance;
-    private ItemDatabase _itemDatabase;
+    private static ItemData[] _items;
+    private static Dictionary<string, ItemData> _itemDic = new Dictionary<string, ItemData>();
 
     public Item GetItemByID(string ID) 
     { 
-        if(Array.Find(_itemDatabase.Items, x => x.ID == ID) != null) //만약 받은 ID와 같은 ID가 있으면
+        if(_itemDic.TryGetValue(ID, out ItemData data))
         {
-            return Array.Find(_itemDatabase.Items, x => x.ID == ID).CreateItem();
+            return data.CreateItem();
         }
-        else
-        {
-            Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다." + ID);
-            return null;
-        }
+        Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다." + ID);
+        return null;
     }
 
     public ItemData GetItemDataByID(string ID)
     {
-        if (Array.Find(_itemDatabase.Items, x => x.ID == ID) != null) //만약 받은 ID와 같은 ID가 있으면
+        if (_itemDic.TryGetValue(ID, out ItemData data))
         {
-            return Array.Find(_itemDatabase.Items, x => x.ID == ID);
+            return data;
         }
-        else
-        {
-            Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다." + ID);
-            return null;
-        }
+
+        Debug.Log("[Item Database] 상에 일치하는 ID가 없습니다." + ID);
+        return null;
     }
 
     private void Awake()
@@ -55,6 +53,11 @@ public class ItemManager : MonoBehaviour
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
-        _itemDatabase = Resources.Load<ItemDatabase>("Item/ItemDatabase");
+        _items = Resources.LoadAll<ItemData>("Item");
+
+        for(int i = 0, cnt = _items.Length; i < cnt; i++)
+        {
+            _itemDic.Add(_items[i].ID, _items[i]);
+        }
     }
 }

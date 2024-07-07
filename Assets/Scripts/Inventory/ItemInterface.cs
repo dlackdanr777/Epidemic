@@ -6,5 +6,6 @@ interface IUsableItem
 
 interface IEquipmentItem
 {
-    public bool Equip();
+    public void Equip();
+    public void Dequip();
 }

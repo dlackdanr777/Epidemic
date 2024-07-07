@@ -12,6 +12,7 @@ public class DropItem : MonoBehaviour, Iinteractive
 
     public void Start()
     {
+        DebugLog.Log(ItemManager.Instance.GetItemByID(_itemId));
         _itemName = ItemManager.Instance.GetItemByID(_itemId).Data.Name;
     }
 

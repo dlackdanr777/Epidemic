@@ -25,6 +25,8 @@ public class UIGridInventory : MonoBehaviour
 
     private float _slotSizeX;
     private float _slotSizeY;
+    private int _invenWidth;
+    private int _invenHeight;
     private Vector2 _slotTmpPos;
 
     private UIGridInventorySlot[,] _slots;
@@ -37,12 +39,14 @@ public class UIGridInventory : MonoBehaviour
     {    
         Init();
         InitShowItemSlot();
-
         UpdateUI();
+
+
 
         _inven.OnUpdateHandler += UpdateUI;
         StartDragHandler += StartDrag;
         EndDragHandler += EndDrag;
+        EndDragHandler += ResetSlotEffect;
 
         SceneManager.activeSceneChanged += (scene1, scene2) =>
         {
@@ -59,6 +63,8 @@ public class UIGridInventory : MonoBehaviour
             _inven.OnUpdateHandler -= UpdateUI;
 
         _inven = inventory;
+        _invenWidth = _inven.GridWidth;
+        _invenHeight = _inven.GridHight;
         _inven.OnUpdateHandler += UpdateUI;
         UpdateUI();
     }
@@ -81,6 +87,12 @@ public class UIGridInventory : MonoBehaviour
                 pos += new Vector2(x * _slotSizeX, -y * _slotSizeY);
                 _slots[y, x].SetAnchoredPosition(pos);
             }
+        }
+
+        if(_inven != null )
+        {
+            _invenWidth = _inven.GridWidth;
+            _invenHeight = _inven.GridHight;
         }
     }
 
@@ -116,6 +128,17 @@ public class UIGridInventory : MonoBehaviour
         for (int i = y, cntY = Mathf.Clamp(y + height, y, _gridHeight); i < cntY; ++i)
         {
             for (int j = x, cntX = Mathf.Clamp(x + width, x, _gridWidth); j < cntX; ++j)
+            {
+                _slots[i, j].ResetColor();
+            }
+        }
+    }
+
+    public void ResetSlotEffect()
+    {
+        for (int i = 0; i < _gridHeight; ++i)
+        {
+            for (int j = 0; j < _gridWidth; ++j)
             {
                 _slots[i, j].ResetColor();
             }
