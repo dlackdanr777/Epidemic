@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public enum EquipItemType
 {
@@ -91,6 +92,15 @@ public static class UserInfo
         item.EquipmentItemData.Equip();
         _equipItems[(int)item.EquipmentItemData.Type] = item;
         OnChangeEquipItemHandler?.Invoke(item.EquipmentItemData.Type);
+    }
+
+    public static void NullEquipItem(EquipItemType type)
+    {
+        if (_equipItems[(int)type] != null)
+            _equipItems[(int)type].EquipmentItemData.Dequip();
+
+        _equipItems[(int)type] = null;
+        OnChangeEquipItemHandler?.Invoke(type);
     }
 
     public static EquipmentItem GetEquipItem(EquipItemType type)

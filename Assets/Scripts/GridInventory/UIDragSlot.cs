@@ -41,4 +41,14 @@ public class UIDragSlot : MonoBehaviour
         _currentSlot = null;
         gameObject.SetActive(false);
     }
+
+    public void RemoveItem()
+    {
+        CurrentUIInven.Inven.RemoveItem(CurrentItem.Item);
+    }
+
+    public bool AddItem(ItemData data)
+    {
+        return CurrentUIInven.Inven.AddItem(data);
+    }
 }

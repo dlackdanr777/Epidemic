@@ -6,11 +6,14 @@ using UnityEngine.UI;
 public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private EquipItemType _equipType;
-    [SerializeField] private Image _itemImage;
+    public EquipItemType Type => _equipType;
+
     [SerializeField] private Image _slotImage;
     [SerializeField] private TextMeshProUGUI _text;
-    
-    
+
+    [SerializeField] private RectTransform _rectTransform;
+    public RectTransform RectTransfrom => _rectTransform;
+
     private UIDragSlot _dragSlot;
     private EquipmentItem _currentItem;
 
@@ -32,18 +35,15 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
 
     public void UpdateUI()
     {
-        EquipmentItem item = UserInfo.GetEquipItem(_equipType);
+        _currentItem = UserInfo.GetEquipItem(_equipType);
 
-        if (item == null)
+        if (_currentItem == null)
         {
-            _itemImage.gameObject.SetActive(false);
             _text.text = string.Empty;
             return;
         }
 
-        _itemImage.gameObject.SetActive(true);
-        _itemImage.sprite = item.Data.Sprite;
-        _text.text = item.Data.Name;
+        _text.text = _currentItem.Data.Name;
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -51,14 +51,24 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
         if (_dragSlot.CurrentItem == null)
             return;
 
-        DebugLog.Log("드랍");
         if (_dragSlot.CurrentItem.Item is EquipmentItem)
         {
             EquipmentItem item = (EquipmentItem)_dragSlot.CurrentItem.Item;
 
             if(item.EquipmentItemData.Type == _equipType)
             {
-                UserInfo.ChangeEquipItem(item);
+                EquipmentItem _equipItem = UserInfo.GetEquipItem(_equipType);
+                if(_equipItem != null)
+                {
+                    UserInfo.ChangeEquipItem(item);
+                    _dragSlot.RemoveItem();
+                    _dragSlot.AddItem(_equipItem.Data);
+                }
+                else
+                {
+                    UserInfo.ChangeEquipItem(item);
+                    _dragSlot.RemoveItem();
+                }
             }
         }
 
@@ -71,8 +81,6 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
         if (_dragSlot.CurrentItem == null)
             return;
 
-        DebugLog.Log("엔터");
-
         if(!(_dragSlot.CurrentItem.Item is EquipmentItem))
         {
             _slotImage.color = _redColor;
@@ -80,7 +88,6 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
         }
 
         EquipmentItem equipItem = (EquipmentItem)_dragSlot.CurrentItem.Item;
-
         _slotImage.color = equipItem.EquipmentItemData.Type == _equipType ? _greenColor : _redColor;
     }
 
@@ -89,7 +96,6 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
         if (_dragSlot.CurrentItem == null)
             return;
 
-        DebugLog.Log("나가기");
         _slotImage.color = _tmpColor;
     }
 

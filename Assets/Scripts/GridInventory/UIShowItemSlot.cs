@@ -52,6 +52,7 @@ public class UIShowItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
         _rectTransform.sizeDelta = new Vector2(sizeX * item.Item.Data.Width, sizeY * item.Item.Data.Height);
         _image.sprite = item.Item.Data.Sprite;
+        EndDrag();
     }
 
     public void StartDrag()
