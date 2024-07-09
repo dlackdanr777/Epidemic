@@ -29,7 +29,7 @@ public class GunController : MonoBehaviour, IAttack
     private float _currentFireRate; // 이값이 0이어야 총 발사 가능
     private float _nowRecoil; //현재 반동
     private float _recoilMul; //반동 배수
-    private int _getCarryBulletCount => _inven.GetItemCountByID("20");
+    private int _getCarryBulletCount => UserInfo.BulletCount;
 
     public float Damage => _currentGun.Damage;
     public int MaxBulletCount => _currentGun.MaxBulletCount;

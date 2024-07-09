@@ -210,6 +210,19 @@ public class UIGridInventory : MonoBehaviour
             usableItem.Use();
             DebugLog.Log("사용 실행");
         }
+
+        if(item is EquipmentItem)
+        {
+            DebugLog.Log("장착 아이템");
+            EquipmentItem equipmentItem = (EquipmentItem)item;
+            EquipmentItem changeItem = UserInfo.GetEquipItem(equipmentItem.EquipmentItemData.Type);
+
+            UserInfo.ChangeEquipItem(equipmentItem);
+            _inven.RemoveItem(equipmentItem);
+
+            if(changeItem != null)
+                _inven.AddItem(changeItem.Data);
+        }
     }
 
 

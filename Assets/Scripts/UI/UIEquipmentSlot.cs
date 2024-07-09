@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,14 +16,13 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
     public RectTransform RectTransfrom => _rectTransform;
 
     private UIDragSlot _dragSlot;
-    private EquipmentItem _currentItem;
 
     private Color _tmpColor;
     private Color _redColor;
     private Color _greenColor;
 
 
-    public void Init(UIDragSlot dragSlot)
+    public void Init(UIDragSlot dragSlot, Action<EquipItemType, UIEquipmentSlot> initEvent = null)
     {
         _dragSlot = dragSlot;
 
@@ -31,29 +31,19 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
         _greenColor = Color.green;
         _redColor.a = _tmpColor.a;
         _greenColor.a = _tmpColor.a;
+
+        initEvent?.Invoke(_equipType, this);
     }
 
-    public void UpdateUI()
-    {
-        _currentItem = UserInfo.GetEquipItem(_equipType);
-
-        if (_currentItem == null)
-        {
-            _text.text = string.Empty;
-            return;
-        }
-
-        _text.text = _currentItem.Data.Name;
-    }
 
     public void OnDrop(PointerEventData eventData)
     {
         if (_dragSlot.CurrentItem == null)
             return;
 
-        if (_dragSlot.CurrentItem.Item is EquipmentItem)
+        if (_dragSlot.CurrentItem is EquipmentItem)
         {
-            EquipmentItem item = (EquipmentItem)_dragSlot.CurrentItem.Item;
+            EquipmentItem item = (EquipmentItem)_dragSlot.CurrentItem;
 
             if(item.EquipmentItemData.Type == _equipType)
             {
@@ -61,13 +51,13 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
                 if(_equipItem != null)
                 {
                     UserInfo.ChangeEquipItem(item);
-                    _dragSlot.RemoveItem();
+                    _dragSlot.RemoveItemByInven();
                     _dragSlot.AddItem(_equipItem.Data);
                 }
                 else
                 {
                     UserInfo.ChangeEquipItem(item);
-                    _dragSlot.RemoveItem();
+                    _dragSlot.RemoveItemByInven();
                 }
             }
         }
@@ -81,13 +71,13 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
         if (_dragSlot.CurrentItem == null)
             return;
 
-        if(!(_dragSlot.CurrentItem.Item is EquipmentItem))
+        if(!(_dragSlot.CurrentItem is EquipmentItem))
         {
             _slotImage.color = _redColor;
             return;
         }
 
-        EquipmentItem equipItem = (EquipmentItem)_dragSlot.CurrentItem.Item;
+        EquipmentItem equipItem = (EquipmentItem)_dragSlot.CurrentItem;
         _slotImage.color = equipItem.EquipmentItemData.Type == _equipType ? _greenColor : _redColor;
     }
 

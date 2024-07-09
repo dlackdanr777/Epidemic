@@ -30,7 +30,6 @@ public class UIItemDescription : MonoBehaviour
         gameObject.SetActive(true);
 
         _rectTransform.position = pos + new Vector2(_uiSize.x * 0.5f, -_uiSize.y * 0.5f);
-
         _itemNameText.text = item.Data.Name;
         _itemDescriptionText.text = item.Data.Description;
         _image.sprite = item.Data.Sprite;

@@ -72,7 +72,7 @@ public class UIShowItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         _canvasGroup.interactable = false;
         _canvasGroup.alpha = 0;
        _dragOffset = (new Vector2(_rectTransform.sizeDelta.x, -_rectTransform.sizeDelta.y) * 0.5f) + new Vector2(-_slotSizeX * 0.5f, _slotSizeY * 0.5f);
-        _dragSlot.Enabled(this);
+        _dragSlot.Enabled(_item.Item, _uiInven);
         UIGridInventory.StartDragHandler?.Invoke();
     }
 
@@ -94,12 +94,12 @@ public class UIShowItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void OnPointerClick(PointerEventData eventData)
     {
-
-
         if (eventData.button != PointerEventData.InputButton.Right)
             return;
 
-            _uiInven.SlotRightClicked(_item.Item);
+        _uiInven.SlotRightClicked(_item.Item);
+
+
     }
 
     public void OnPointerEnter(PointerEventData eventData)

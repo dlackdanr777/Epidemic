@@ -10,8 +10,9 @@ public class UIEquipment : MonoBehaviour
     [SerializeField] private UIEquipShowItemSlot _showItemSlotPrefab;
     [SerializeField] private Transform _showItemSlotParent;
 
-    private List<UIEquipmentSlot> _slotList = new List<UIEquipmentSlot>();
     private List<UIEquipShowItemSlot> _showItemSlotList = new List<UIEquipShowItemSlot>();
+    private Dictionary<EquipItemType, UIEquipmentSlot> _slotDic = new Dictionary<EquipItemType, UIEquipmentSlot>();
+
 
     private void Awake()
     {
@@ -21,21 +22,22 @@ public class UIEquipment : MonoBehaviour
 
         for (int i = 0, cnt = _slots.Length; i < cnt; i++)
         {
-            _slots[i].Init(_dragSlot);
+            _slots[i].Init(_dragSlot, SetSlotDic);
         }
 
-        for(int i = 0, cntI = (int)EquipItemType.Length; i < cntI; i++)
-        {
-            for (int j = 0, cntJ = _slots.Length; j < cntJ; j++)
-            {
-                if (_slots[j].Type != (EquipItemType)i)
-                    continue;
-
-                _slotList.Add(_slots[j]);
-                break;
-            }
-        }
     }
+
+    private void SetSlotDic(EquipItemType type, UIEquipmentSlot slot)
+    {
+        if(_slotDic.ContainsKey(type))
+        {
+            DebugLog.LogError("해당 타입이 이미 등록되어 있습니다: " + type);
+            return;
+        }
+
+        _slotDic.Add(type, slot);
+    }
+
 
     private void InitShowItemSlot()
     {
@@ -49,7 +51,7 @@ public class UIEquipment : MonoBehaviour
             UIEquipShowItemSlot slot = Instantiate(_showItemSlotPrefab, _showItemSlotParent);
 
             slot.gameObject.SetActive(false);
-            slot.Init(_itemDescription);
+            slot.Init(_itemDescription, _dragSlot);
             _showItemSlotList.Add(slot);
         }
     }
@@ -64,18 +66,15 @@ public class UIEquipment : MonoBehaviour
         for (int i = 0, cnt = (int)EquipItemType.Length; i < cnt; i++)
         {
             item = UserInfo.GetEquipItem((EquipItemType)i);
-
             UIEquipShowItemSlot dragSlot = _showItemSlotList[i];
-
-            if (item == null)
+            if (!_slotDic.TryGetValue((EquipItemType)i, out UIEquipmentSlot slot) || item == null)
             {
                 dragSlot.gameObject.SetActive(false);
                 continue;
             }
 
             dragSlot.gameObject.SetActive(true);
-            dragSlot.SetItem(item, _slotList[i].RectTransfrom.anchoredPosition, 100, 100);
-            _slotList[i].UpdateUI();
+            dragSlot.SetItem(item, slot.RectTransfrom.anchoredPosition, 100, 100);
         }
     }
 

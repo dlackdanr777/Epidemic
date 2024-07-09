@@ -92,6 +92,9 @@ public static class UserInfo
         item.EquipmentItemData.Equip();
         _equipItems[(int)item.EquipmentItemData.Type] = item;
         OnChangeEquipItemHandler?.Invoke(item.EquipmentItemData.Type);
+
+        DebugLog.Log(_speed);
+        DebugLog.Log(_armor);
     }
 
     public static void NullEquipItem(EquipItemType type)
@@ -101,6 +104,8 @@ public static class UserInfo
 
         _equipItems[(int)type] = null;
         OnChangeEquipItemHandler?.Invoke(type);
+        DebugLog.Log(_speed);
+        DebugLog.Log(_armor);
     }
 
     public static EquipmentItem GetEquipItem(EquipItemType type)

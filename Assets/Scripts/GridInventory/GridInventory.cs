@@ -36,7 +36,7 @@ public class GridInventory : MonoBehaviour
     public bool AddItem(ItemData data)
     {
         bool enabled = _invenData.AddItem(data);
-        DebugLog.Log(enabled);
+
         if(enabled)
             OnUpdateHandler?.Invoke();
 

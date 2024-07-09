@@ -1,8 +1,6 @@
-using Muks.Tween;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Muks.PcUI;
+using Muks.Tween;
+using UnityEngine;
 
 public class UIMainInventory : PcUIView
 {

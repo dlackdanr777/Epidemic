@@ -6,13 +6,16 @@ public class UIDragSlot : MonoBehaviour
     [SerializeField] private Image _image;
     [SerializeField] private RectTransform _rectTransform;
 
-    private UIShowItemSlot _currentSlot;
+    private Item _currentItem;
+    public Item CurrentItem => _currentItem;
 
-    public GridSlot CurrentItem => _currentSlot != null ? _currentSlot.Item : null;
-    public UIGridInventory CurrentUIInven => _currentSlot != null ? _currentSlot.UIInven : null;
+    private UIGridInventory _currentUIInven;
+    public UIGridInventory CurrentUIInven => _currentUIInven;
 
-    public int IndexX => _currentSlot != null ? _currentSlot.IndexX: -1;   
-    public int IndexY => _currentSlot != null ? _currentSlot.IndexY : -1;
+
+    private bool _isUseInven;
+    public bool IsUseInven => _isUseInven;
+    private EquipItemType _type;
 
 
     public void Start()
@@ -21,14 +24,36 @@ public class UIDragSlot : MonoBehaviour
     }
 
 
-    public void Enabled(UIShowItemSlot slot)
+    public void Enabled(Item item, UIGridInventory _uiInven)
     {
-        _currentSlot = slot;
-        _rectTransform.sizeDelta = slot.RectTransform.sizeDelta;
-        _image.sprite = slot.Item.Item.Data.Sprite;
+        _currentItem = item;
+        _currentUIInven = _uiInven;
+
+        _isUseInven = true;
+        _rectTransform.sizeDelta = new Vector2(100 * item.Data.Width, 100 * item.Data.Height);
+        _image.sprite = item.Data.Sprite;
+
 
         gameObject.SetActive(true);
     }
+
+
+    public void Enabled(EquipItemType type)
+    {
+
+        _currentItem = UserInfo.GetEquipItem(type);
+        if (_currentItem == null)
+            return;
+
+        _type = type;
+        _isUseInven = false;
+        _rectTransform.sizeDelta = new Vector2(100 * _currentItem.Data.Width, 100 * _currentItem.Data.Height);
+        _image.sprite = _currentItem.Data.Sprite;
+
+        gameObject.SetActive(true);
+    }
+
+
 
     public void SetPos(Vector2 pos)
     {
@@ -38,14 +63,17 @@ public class UIDragSlot : MonoBehaviour
 
     public void Disabled()
     {
-        _currentSlot = null;
+        _currentItem = null;
+        _currentUIInven = null;
+        _isUseInven = false;
         gameObject.SetActive(false);
     }
 
-    public void RemoveItem()
+    public void RemoveItemByInven()
     {
-        CurrentUIInven.Inven.RemoveItem(CurrentItem.Item);
+        _currentUIInven.Inven.RemoveItem(_currentItem);
     }
+
 
     public bool AddItem(ItemData data)
     {

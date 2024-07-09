@@ -60,14 +60,26 @@ public class UIGridInventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHan
         if (_dragSlot.CurrentItem == null)
             return;
 
-        _uiInven.ResetSlotEffect(_indexX, _indexY, _dragSlot.CurrentItem.Item.Data.Width, _dragSlot.CurrentItem.Item.Data.Height);
+        _uiInven.ResetSlotEffect(_indexX, _indexY, _dragSlot.CurrentItem.Data.Width, _dragSlot.CurrentItem.Data.Height);
 
-
-        if(_uiInven.ItemMoveEnabled(_indexX, _indexY, _dragSlot.CurrentItem.Item))
+        if(_uiInven.ItemMoveEnabled(_indexX, _indexY, _dragSlot.CurrentItem))
         {
-            ItemData data = _dragSlot.CurrentItem.Item.Data;
-            _dragSlot.CurrentUIInven.Inven.RemoveItem(data, _dragSlot.IndexX, _dragSlot.IndexY);
-            _uiInven.Inven.AddItem(data, _indexX, _indexY);
+            Item item = _dragSlot.CurrentItem;
+
+            if (_dragSlot.IsUseInven)
+                _dragSlot.CurrentUIInven.Inven.RemoveItem(item);
+
+            else
+            {
+                if ((item is EquipmentItem))
+                {
+                    EquipmentItem equipItem = (EquipmentItem)item;
+                    UserInfo.NullEquipItem(equipItem.EquipmentItemData.Type);
+                }
+            }
+
+            _uiInven.Inven.AddItem(item.Data, _indexX, _indexY);
+
         }
 
         _dragSlot.Disabled();
@@ -79,7 +91,7 @@ public class UIGridInventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHan
         if (_dragSlot.CurrentItem == null)
             return;
 
-        _uiInven.ChangeSlotEffect(_indexX, _indexY, _dragSlot.CurrentItem.Item);
+        _uiInven.ChangeSlotEffect(_indexX, _indexY, _dragSlot.CurrentItem);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -87,6 +99,6 @@ public class UIGridInventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHan
         if (_dragSlot.CurrentItem == null)
             return;
 
-        _uiInven.ResetSlotEffect(_indexX, _indexY, _dragSlot.CurrentItem.Item.Data.Width, _dragSlot.CurrentItem.Item.Data.Height);
+        _uiInven.ResetSlotEffect(_indexX, _indexY, _dragSlot.CurrentItem.Data.Width, _dragSlot.CurrentItem.Data.Height);
     }
 }
