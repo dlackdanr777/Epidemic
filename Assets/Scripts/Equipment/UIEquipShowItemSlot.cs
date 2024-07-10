@@ -28,11 +28,11 @@ public class UIEquipShowItemSlot : MonoBehaviour, IPointerClickHandler, IPointer
     }
 
 
-    public void SetItem(EquipmentItem item, Vector2 pos, float sizeX, float sizeY)
+    public void SetItem(EquipmentItem item, Vector2 pos, Vector2 sizeDelta)
     {
         _item = item;
         _nameText.text = item.Data.Name;
-        _rectTransform.sizeDelta = new Vector2(sizeX * Item.Data.Width, sizeY * Item.Data.Height);
+        _rectTransform.sizeDelta = sizeDelta;
         _rectTransform.anchoredPosition = pos;
         _image.sprite = Item.Data.Sprite;
         _canvasGroup.alpha = 1;

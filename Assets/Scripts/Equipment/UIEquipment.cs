@@ -74,7 +74,7 @@ public class UIEquipment : MonoBehaviour
             }
 
             dragSlot.gameObject.SetActive(true);
-            dragSlot.SetItem(item, slot.RectTransfrom.anchoredPosition, 100, 100);
+            dragSlot.SetItem(item, slot.RectTransfrom.anchoredPosition, _slotDic[(EquipItemType)i].RectTransfrom.sizeDelta);
         }
     }
 

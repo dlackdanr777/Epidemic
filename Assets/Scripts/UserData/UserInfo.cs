@@ -104,8 +104,6 @@ public static class UserInfo
 
         _equipItems[(int)type] = null;
         OnChangeEquipItemHandler?.Invoke(type);
-        DebugLog.Log(_speed);
-        DebugLog.Log(_armor);
     }
 
     public static EquipmentItem GetEquipItem(EquipItemType type)

@@ -41,7 +41,7 @@ public class UIGridInventory : MonoBehaviour
         InitShowItemSlot();
         UpdateUI();
 
-
+        SetInven(_inven);
 
         _inven.OnUpdateHandler += UpdateUI;
         StartDragHandler += StartDrag;
@@ -59,13 +59,24 @@ public class UIGridInventory : MonoBehaviour
 
     public void SetInven(GridInventory inventory)
     {
-        if(_inven != null)
-            _inven.OnUpdateHandler -= UpdateUI;
-
         _inven = inventory;
-        _invenWidth = _inven.GridWidth;
+
+        for (int i = 0; i < _gridHeight; ++i)
+        {
+            for(int j = 0; j < _gridWidth; ++j)
+            {
+                if(_inven.GridHight <= i || _inven.GridWidth <= j)
+                {
+                    _slots[i, j].gameObject.SetActive(false);
+                    continue;
+                }
+                _slots[i, j].gameObject.SetActive(true);
+            }
+        }
+
+         _invenWidth = _inven.GridWidth;
         _invenHeight = _inven.GridHight;
-        _inven.OnUpdateHandler += UpdateUI;
+
         UpdateUI();
     }
 
@@ -101,9 +112,9 @@ public class UIGridInventory : MonoBehaviour
     {
         int width = item.Data.Width;
         int height = item.Data.Height;
-        for (int i = y, cntY = Mathf.Clamp(y + height, y, _gridHeight); i < cntY; ++i)
+        for (int i = y, cntY = Mathf.Clamp(y + height, y, _invenHeight); i < cntY; ++i)
         {
-            for (int j = x, cntX = Mathf.Clamp(x + width, x, _gridWidth); j < cntX; ++j)
+            for (int j = x, cntX = Mathf.Clamp(x + width, x, _invenWidth); j < cntX; ++j)
             {
                 if(_inven.GridSlots[i, j].Item == null)
                 {
@@ -125,9 +136,9 @@ public class UIGridInventory : MonoBehaviour
 
     public void ResetSlotEffect(int x, int y, int width, int height)
     {
-        for (int i = y, cntY = Mathf.Clamp(y + height, y, _gridHeight); i < cntY; ++i)
+        for (int i = y, cntY = Mathf.Clamp(y + height, y, _invenHeight); i < cntY; ++i)
         {
-            for (int j = x, cntX = Mathf.Clamp(x + width, x, _gridWidth); j < cntX; ++j)
+            for (int j = x, cntX = Mathf.Clamp(x + width, x, _invenWidth); j < cntX; ++j)
             {
                 _slots[i, j].ResetColor();
             }
@@ -136,9 +147,9 @@ public class UIGridInventory : MonoBehaviour
 
     public void ResetSlotEffect()
     {
-        for (int i = 0; i < _gridHeight; ++i)
+        for (int i = 0; i < _invenHeight; ++i)
         {
-            for (int j = 0; j < _gridWidth; ++j)
+            for (int j = 0; j < _invenWidth; ++j)
             {
                 _slots[i, j].ResetColor();
             }
@@ -151,12 +162,12 @@ public class UIGridInventory : MonoBehaviour
         int width = item.Data.Width;
         int height = item.Data.Height;
 
-        if (_gridHeight < y + height || _gridWidth < x + width)
+        if (_invenHeight < y + height || _invenWidth < x + width)
             return false;
 
-        for (int i = y, cntY = Mathf.Clamp(y + height, y, _gridHeight); i < cntY; ++i)
+        for (int i = y, cntY = Mathf.Clamp(y + height, y, _invenHeight); i < cntY; ++i)
         {
-            for (int j = x, cntX = Mathf.Clamp(x + width, x, _gridWidth); j < cntX; ++j)
+            for (int j = x, cntX = Mathf.Clamp(x + width, x, _invenWidth); j < cntX; ++j)
             {
                 if (_inven.GridSlots[i, j].Item == null)
                     continue;
@@ -238,9 +249,9 @@ public class UIGridInventory : MonoBehaviour
             _showItemSlotQueue.Enqueue(_showItemSlotList[i]);
         }
 
-        for (int y = 0; y < _gridHeight; y++)
+        for (int y = 0; y < _invenHeight; y++)
         {
-            for (int x = 0; x < _gridWidth; x++)
+            for (int x = 0; x < _invenWidth; x++)
             {
                 GridSlot item = _inven.GridSlots[y, x];
 
