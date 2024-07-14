@@ -32,12 +32,12 @@ public class GunEditor : Editor
         EditorGUILayout.Space();
         _gun.MaxBulletCount = EditorGUILayout.IntField("탄창 최대 총알 수량", _gun.MaxBulletCount);
         _gun.ReloadBulletCount = EditorGUILayout.IntField("재장전 총알 수량" , _gun.ReloadBulletCount);
-        _gun.CarryBulletCount = EditorGUILayout.IntField("인벤토리 총알 수량", _gun.CarryBulletCount);
 
         EditorGUILayout.Space();
         _gun.MuzzleFlash = (VisualEffect)EditorGUILayout.ObjectField("총구 화염 이펙트", _gun.MuzzleFlash, typeof(VisualEffect), true);
         _gun.FireSound = (AudioClip)EditorGUILayout.ObjectField("발사 사운드", _gun.FireSound, typeof(AudioClip), true);
         _gun.ReloadSound = (AudioClip)EditorGUILayout.ObjectField("재장전 사운드", _gun.ReloadSound, typeof(AudioClip), true);
+        _gun.HandGrabTartget = (Transform)EditorGUILayout.ObjectField("왼손 위치", _gun.HandGrabTartget, typeof(Transform), true);
 
         EditorGUILayout.LabelField("탄약수: " + _gun.CurrentBulletCount);
 

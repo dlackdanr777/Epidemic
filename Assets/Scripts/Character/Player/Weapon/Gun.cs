@@ -18,12 +18,12 @@ public class Gun : MonoBehaviour
     public int MaxBulletCount; //총알의 최대 갯수
     public int ReloadBulletCount; //총알의 재장전 갯수
     public int CurrentBulletCount; //탄창에 남아있는 총알의 갯수 
-    public int CarryBulletCount; //인벤토리의 총알 갯수
 
     public Animator Anim;
     public VisualEffect MuzzleFlash; //총구 화염 이펙트
     public AudioClip FireSound; //총 발사 소리
     public AudioClip ReloadSound;
+    public Transform HandGrabTartget;
 
     public float FireRate; //총알 발사 간격
     public float Damage; //총의 데미지

@@ -84,6 +84,7 @@ public class PlayerStateMachine
         RunEnable = Input.GetKey(KeyCode.LeftShift) && VerticalInput > 0.1f && UpperCurrentState != ReloadState
             && LowerCurrentState != CrouchIdleState && LowerCurrentState != CrouchWalkState;
         AimModeEnable = Input.GetMouseButton(1) && LowerCurrentState != RunState && UpperCurrentState != ReloadState && !GameManager.Instance.CursorVisibled;
+        //AimModeEnable = true;
     }
 
 

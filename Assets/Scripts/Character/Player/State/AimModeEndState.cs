@@ -21,7 +21,7 @@ public class AimModeEndState : PlayerUpperState
     public override void OnFixedUpdate()
     {
         _player.OnRotateHandler?.Invoke();
-        _player.Rigging.SetUpperRigWeight(-0.1f);
+        
     }
 
 
@@ -32,7 +32,7 @@ public class AimModeEndState : PlayerUpperState
 
     public override void OnStateUpdate()
     {
-        if (!_player.PlayerCamera.ZoomOut())
+        if (!_player.PlayerCamera.ZoomOut() && !_player.Rigging.EndUpperRigWeight())
             return;
 
         if (_player.GunController.IsReload) _machine.ChangeState(_machine.ReloadState);

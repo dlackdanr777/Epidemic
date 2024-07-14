@@ -17,8 +17,7 @@ public class AimModeStartState : PlayerUpperState
     public override void OnFixedUpdate()
     {
         _player.OnRotateHandler?.Invoke();
-        _player.OnEnableAimHandler?.Invoke();
-        _player.Rigging.SetUpperRigWeight(1.1f);
+        _player.OnEnableAimHandler?.Invoke();   
     }
 
 
@@ -27,10 +26,12 @@ public class AimModeStartState : PlayerUpperState
 
     public override void OnStateUpdate()
     {
-        if (_player.PlayerCamera.ZoomIn())
-        {
-            _machine.ChangeState(_machine.AimModeLoopState);
-        }
+        bool check1 = _player.Rigging.StartUpperRigWeight();
+        bool check2 = _player.PlayerCamera.ZoomIn();
 
+        if (!check1 || check2)
+            return;
+
+        _machine.ChangeState(_machine.AimModeLoopState);
     }
 }

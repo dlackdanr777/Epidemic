@@ -12,7 +12,12 @@ public class DropItem : MonoBehaviour, Iinteractive
 
     public void Start()
     {
-        DebugLog.Log(ItemManager.Instance.GetItemByID(_itemId));
+        if (_itemId.StartsWith("BULLET"))
+        {
+            _itemName = "ÃÑ¾Ë(" + _itemId.Substring(6) + ")";
+            return;
+        }
+
         _itemName = ItemManager.Instance.GetItemByID(_itemId).Data.Name;
     }
 
@@ -31,7 +36,16 @@ public class DropItem : MonoBehaviour, Iinteractive
 
     public void Interact()
     {
-        GameManager.Instance.Player.Inventory.AddItem(_itemId);
+        if (_itemId.StartsWith("BULLET"))
+        {
+            int bulletCnt = int.Parse(_itemId.Substring(6));
+            UserInfo.AddBulletCount(bulletCnt);
+        }
+        else
+        {
+            GameManager.Instance.Player.Inventory.AddItem(_itemId);
+        }
+
         UIManager.Instance.ShowCenterText(_itemName + "À»(¸¦) È¹µæÇÏ¿´½À´Ï´Ù.");
         Destroy(gameObject);
     }
