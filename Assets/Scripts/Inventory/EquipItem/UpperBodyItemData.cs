@@ -23,6 +23,4 @@ public class UpperBodyItemData : EquipmentItemData
         UserInfo.AddArmor(-_addArmor);
         UserInfo.AddSpeedMul(-_addSpeedMul);
     }
-
-
 }

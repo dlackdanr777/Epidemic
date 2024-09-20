@@ -21,7 +21,9 @@ public class GridInventory : MonoBehaviour
 
     private void Awake()
     {
-        UserInfo.AddInven(_invenName, _gridWidth, _gridHight);
+        if(!UserInfo.IsAddInven(_invenName))
+            UserInfo.AddInven(_invenName, _gridWidth, _gridHight);
+
         _invenData = UserInfo.GetInvenData(_invenName);
 
         AddItem(_item);

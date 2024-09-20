@@ -10,8 +10,6 @@ public class UIEquipmentSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler
     public EquipItemType Type => _equipType;
 
     [SerializeField] private Image _slotImage;
-    [SerializeField] private TextMeshProUGUI _text;
-
     [SerializeField] private RectTransform _rectTransform;
     public RectTransform RectTransfrom => _rectTransform;
 

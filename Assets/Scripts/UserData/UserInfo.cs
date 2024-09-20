@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public enum EquipItemType
 {
@@ -10,7 +9,7 @@ public enum EquipItemType
     LowerBody,
     Shoes,
     Weapon,
-    Backpack,
+    BodyArmor,
     Length,
 }
 
@@ -43,6 +42,14 @@ public static class UserInfo
     public static void AddBulletCount(int value)
     {
         _bulletCount = Mathf.Clamp(_bulletCount + value, 0, MAX_BULLET_COUNT);
+    }
+
+    public static bool IsAddInven(string name)
+    {
+        if (_invenDataDic.ContainsKey(name))
+            return true;
+
+        return false;
     }
 
 
@@ -91,6 +98,7 @@ public static class UserInfo
 
         item.EquipmentItemData.Equip();
         _equipItems[(int)item.EquipmentItemData.Type] = item;
+
         OnChangeEquipItemHandler?.Invoke(item.EquipmentItemData.Type);
 
         DebugLog.Log(_speed);

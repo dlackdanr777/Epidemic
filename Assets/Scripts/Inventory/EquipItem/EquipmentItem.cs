@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class EquipmentItem : Item
 {
-
-
     public EquipmentItemData EquipmentItemData { get; private set; }
     
 
@@ -11,7 +9,7 @@ public class EquipmentItem : Item
     {
         EquipmentItemData = data;
     }
-    public EquipmentItem Clone()
+    public virtual EquipmentItem Clone()
     {
         return new EquipmentItem(EquipmentItemData);
     }
