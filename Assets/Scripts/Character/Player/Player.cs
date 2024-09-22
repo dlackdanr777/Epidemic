@@ -149,6 +149,7 @@ public class Player : MonoBehaviour, IHp
 
     public void DepleteHp(object subject, float value)
     {
+        value -= value * UserInfo.Armor * 0.01f;
         Hp -= value;
         int randIndex = Random.Range(0, _hitSoundClips.Length);
         AudioSource.PlayOneShot(_hitSoundClips[randIndex]);

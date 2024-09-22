@@ -9,6 +9,7 @@ public class UIEquipment : MonoBehaviour
     [SerializeField] private UIItemDescription _itemDescription;
     [SerializeField] private UIEquipShowItemSlot _showItemSlotPrefab;
     [SerializeField] private Transform _showItemSlotParent;
+    [SerializeField] private AudioClip _equipSound;
 
     private List<UIEquipShowItemSlot> _showItemSlotList = new List<UIEquipShowItemSlot>();
     private Dictionary<EquipItemType, UIEquipmentSlot> _slotDic = new Dictionary<EquipItemType, UIEquipmentSlot>();
@@ -19,6 +20,7 @@ public class UIEquipment : MonoBehaviour
         InitShowItemSlot();
         UpdateUI();
         UserInfo.OnChangeEquipItemHandler += (type) => UpdateUI();
+        UserInfo.OnChangeEquipItemHandler += (type) => OnEquipItemEvent();
 
         for (int i = 0, cnt = _slots.Length; i < cnt; i++)
         {
@@ -76,6 +78,14 @@ public class UIEquipment : MonoBehaviour
             dragSlot.gameObject.SetActive(true);
             dragSlot.SetItem(item, slot.RectTransfrom.anchoredPosition, _slotDic[(EquipItemType)i].RectTransfrom.sizeDelta);
         }
+    }
+
+    private void OnEquipItemEvent()
+    {
+        if (this == null)
+            return;
+
+        SoundManager.Instance.PlayAudio(AudioType.Effect, _equipSound);
     }
 
 }

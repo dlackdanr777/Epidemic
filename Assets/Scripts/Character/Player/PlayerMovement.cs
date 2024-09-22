@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour, IMovement
     public void Movement(float horizontalInput, float verticalInput, float moveSpeedMul)
     {
         Vector3 moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
-        moveDir = transform.TransformDirection(moveDir) * _moveSpeed * moveSpeedMul;
+        moveDir = transform.TransformDirection(moveDir) * _moveSpeed * moveSpeedMul * UserInfo.Speed;
         _controller.Move(moveDir * Time.deltaTime);
     }
 

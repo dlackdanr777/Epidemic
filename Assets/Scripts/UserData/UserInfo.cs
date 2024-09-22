@@ -26,11 +26,10 @@ public static class UserInfo
     public static int BulletCount => _bulletCount;
 
     private static float _speed = 1;
-    public static float Speed => _speed;
+    public static float Speed => Mathf.Clamp(_speed, 0.5f, 2f);
 
     private static int _armor;
-    public static int  Armor => _armor;
-
+    public static int Armor => Mathf.Clamp(_armor, 0, 100);
 
 
     private static List<InvenData> _invenDataList = new List<InvenData>();
