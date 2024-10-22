@@ -12,9 +12,12 @@ public class InvenData
     public GridSlot[,] Slots => _slots;
 
     private Dictionary<string, int> _itemCountDic = new Dictionary<string, int>();
+    public Dictionary<string, int> ItemCountDic => _itemCountDic;
 
     private int _width;
+    public int Width => _width;
     private int _height;
+    public int Height => _height;
 
     public InvenData(string name, int slotWidth, int slotHeight)
     {
@@ -37,7 +40,7 @@ public class InvenData
     {
         if (!IsSlotAvailable(indexX, indexY, data.Width, data.Height))
         {
-            Debug.LogError("추가 할 수 없는 슬롯입니다.");
+            Debug.LogError("추가 할 수 없는 슬롯입니다: " + indexY + ", " + indexX);
             return false;
         }
 

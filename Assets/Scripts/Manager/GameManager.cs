@@ -54,4 +54,18 @@ public class GameManager : MonoBehaviour
         Cursor.visible = false;
         _cursorVisibled = false;
     }
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            UserInfo.SaveGame(Player);
+        }
+
+        if(Input.GetKeyDown(KeyCode.J))
+        {
+            UserInfo.LoadGame();
+        }
+    }
 }

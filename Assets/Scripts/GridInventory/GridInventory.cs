@@ -16,22 +16,12 @@ public class GridInventory : MonoBehaviour
     private InvenData _invenData;
     public GridSlot[,] GridSlots => _invenData.Slots;
 
-    [SerializeField] private ItemData _item;
-    [SerializeField] private ItemData _item2;
-
     private void Awake()
     {
         if(!UserInfo.IsAddInven(_invenName))
             UserInfo.AddInven(_invenName, _gridWidth, _gridHight);
 
         _invenData = UserInfo.GetInvenData(_invenName);
-
-        AddItem(_item);
-        AddItem(_item);
-        AddItem(_item);
-        AddItem(_item);
-        AddItem(_item2);
-        AddItem(_item);
     }
 
 
