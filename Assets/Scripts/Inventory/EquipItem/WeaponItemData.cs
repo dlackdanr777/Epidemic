@@ -9,16 +9,4 @@ public class WeaponItemData : EquipmentItemData
     {
         return new EquipmentItem(this);
     }
-
-    public override void Equip()
-    {
-
-    }
-
-    public override void Dequip()
-    {
-
-    }
-
-
 }

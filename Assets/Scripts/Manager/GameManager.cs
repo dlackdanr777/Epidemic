@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     public bool CursorVisibled => _cursorVisibled;
 
 
+
     public bool IsGameEnd
     {
         get { return _isGameEnd; }

@@ -18,10 +18,7 @@ public enum EquipItemType
 public static class UserInfo
 {
     public static event Action OnChangeSpeedHandler;
-    public static event Action<EquipItemType> OnChangeEquipItemHandler;
-
-    private static Vector3 _playerPosition;
-    public static Vector3 PlayerPosition => _playerPosition;
+    public static event Action OnChangeEquipItemHandler;
 
     private static readonly int MAX_BULLET_COUNT = 1000;
 
@@ -30,30 +27,31 @@ public static class UserInfo
 
     private static int _loadBulletCount;
     public static int LoadBulletCount => _loadBulletCount;
-    private static int _currentHp;
-    public static int CurrentHp => _currentHp;
-
-    private static float _speed = 1;
-    public static float Speed => Mathf.Clamp(_speed, 0.5f, 2f);
-
-    private static int _armor;
-    public static int Armor => Mathf.Clamp(_armor, 0, 100);
+    private static float _currentHp;
+    public static float CurrentHp => _currentHp;
 
     private static List<InvenData> _invenDataList = new List<InvenData>();
     private static Dictionary<string, InvenData> _invenDataDic = new Dictionary<string, InvenData>();
     
     private static EquipmentItem[] _equipItems = new EquipmentItem[(int)EquipItemType.Length];
 
+    private static Vector3 _playerPosition;
+    public static Vector3 PlayerPosition => _playerPosition;
 
+    private static Quaternion _playerRotation;
+    public static Quaternion PlayerRotation => _playerRotation;
+
+    private static Vector2 _mouseInput;
+    public static Vector2 MouseInput => _mouseInput;
 
     public static void ClearData()
     {
         _playerPosition = Vector3.zero;
+        _playerRotation = Quaternion.identity;
+        _mouseInput = Vector2.zero;
         _bulletCount = 0;
-        _speed = 1;
-        _currentHp = 100;
-        _loadBulletCount = 0;
-        _armor = 0;
+        _currentHp = int.MaxValue;
+        _loadBulletCount = -1;
         _loadBulletCount = 0;
         _invenDataList.Clear();
         _invenDataDic.Clear();
@@ -102,18 +100,6 @@ public static class UserInfo
     }
 
 
-    public static void AddSpeedMul(float value)
-    {
-        _speed = Mathf.Clamp(_speed + value, 0.5f, 2);
-        OnChangeSpeedHandler?.Invoke();
-    }
-
-    public static void AddArmor(int value)
-    {
-        _armor = Mathf.Clamp(_armor + value, 0, 100);
-    }
-
-
     public static void ChangeEquipItem(EquipmentItem item)
     {
         if (_equipItems[(int)item.EquipmentItemData.Type] != null)
@@ -124,11 +110,7 @@ public static class UserInfo
 
         item.EquipmentItemData.Equip();
         _equipItems[(int)item.EquipmentItemData.Type] = item;
-
-        OnChangeEquipItemHandler?.Invoke(item.EquipmentItemData.Type);
-
-        DebugLog.Log(_speed);
-        DebugLog.Log(_armor);
+        OnChangeEquipItemHandler?.Invoke();
     }
 
     public static void NullEquipItem(EquipItemType type)
@@ -137,7 +119,7 @@ public static class UserInfo
             _equipItems[(int)type].EquipmentItemData.Dequip();
 
         _equipItems[(int)type] = null;
-        OnChangeEquipItemHandler?.Invoke(type);
+        OnChangeEquipItemHandler?.Invoke();
     }
 
     public static EquipmentItem GetEquipItem(EquipItemType type)
@@ -148,7 +130,8 @@ public static class UserInfo
 
     public static void SaveGame(Player player)
     {
-        SaveData saveData = new SaveData(player.transform.position, _bulletCount, _loadBulletCount, _currentHp,  _invenDataList);
+        _loadBulletCount = player.GunController.CurrentBulletCount;
+        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems);
 
         string json = JsonUtility.ToJson(saveData, true);
         string path = Application.persistentDataPath + "/GameSave.json";
@@ -168,6 +151,8 @@ public static class UserInfo
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
 
             _playerPosition = new Vector3(saveData.PlayerPositionX, saveData.PlayerPositionY, saveData.PlayerPositionZ);
+            _playerRotation = new Quaternion(saveData.PlayerRotationX, saveData.PlayerRotationY, saveData.PlayerRotationZ, saveData.PlayerRotationW);
+            _mouseInput = new Vector2(saveData.CameraMouseInputX, saveData.CameraMouseInputY);
             _bulletCount = saveData.BulletCount;
             _loadBulletCount = saveData.LoadBulletCount;
             _currentHp = saveData.CurrentHp;
@@ -181,6 +166,25 @@ public static class UserInfo
                 _invenDataDic.Add(data.Name, data);
             }
 
+            for(int i = 0, cnt = _equipItems.Length; i < cnt; ++i)
+            {
+                _equipItems[i] = null;
+            }
+
+            for(int i = 0, cnt = saveData.EquipItemDataList.Count; i < cnt; ++i)
+            {
+                Item item = ItemManager.Instance.GetItemByID(saveData.EquipItemDataList[i]);
+
+                if(item == null)
+                {
+                    DebugLog.LogError("해당하는 아이템이 존재하지 않습니다: " + saveData.EquipItemDataList[i]);
+                    continue;
+                }
+
+                if(item is EquipmentItem equipItem)
+                    ChangeEquipItem(equipItem);
+
+            }
             DebugLog.Log("게임 데이터 불러오기 완료");
         }
         else

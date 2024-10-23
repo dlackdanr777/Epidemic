@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class UIEquipment : MonoBehaviour
 {
@@ -18,16 +17,29 @@ public class UIEquipment : MonoBehaviour
     private void Awake()
     {
         InitShowItemSlot();
-        UpdateUI();
-        UserInfo.OnChangeEquipItemHandler += (type) => UpdateUI();
-        UserInfo.OnChangeEquipItemHandler += (type) => OnEquipItemEvent();
+        UserInfo.OnChangeEquipItemHandler += UpdateUI;
+        UserInfo.OnChangeEquipItemHandler += OnEquipItemEvent;
 
         for (int i = 0, cnt = _slots.Length; i < cnt; i++)
         {
             _slots[i].Init(_dragSlot, SetSlotDic);
         }
+        UpdateUI();
 
+
+        LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
     }
+
+
+
+    private void OnChangeSceneEvent()
+    {
+        DebugLog.Log("이벤트 실행");
+        UserInfo.OnChangeEquipItemHandler -= UpdateUI;
+        UserInfo.OnChangeEquipItemHandler -= OnEquipItemEvent;
+        LoadingSceneManager.OnChangeSceneHandler -= OnChangeSceneEvent;
+    }
+
 
     private void SetSlotDic(EquipItemType type, UIEquipmentSlot slot)
     {
@@ -69,6 +81,7 @@ public class UIEquipment : MonoBehaviour
         {
             item = UserInfo.GetEquipItem((EquipItemType)i);
             UIEquipShowItemSlot dragSlot = _showItemSlotList[i];
+
             if (!_slotDic.TryGetValue((EquipItemType)i, out UIEquipmentSlot slot) || item == null)
             {
                 dragSlot.gameObject.SetActive(false);

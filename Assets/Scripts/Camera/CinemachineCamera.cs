@@ -7,7 +7,7 @@ public class CinemachineCamera : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] private GameObject _target;
-    [SerializeField] private Camera _brainCamera;
+    [SerializeField] private CinemachineBrain _brainCamera;
     [SerializeField] private CinemachineVirtualCamera _mainVitualCamera;
     [SerializeField] private CinemachineVirtualCamera _zoomVitualCamera;
 
@@ -28,11 +28,17 @@ public class CinemachineCamera : MonoBehaviour
     private float _mouseX;
     private float _mouseY;
 
+    public Vector2 GetMouseInput => new Vector2(_mouseX, _mouseY);
 
     private void Start()
     {
         if (_virtualCameraNoise == null)
             _virtualCameraNoise = _zoomVitualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        _brainCamera.enabled = false;
+        _mouseX = UserInfo.MouseInput == Vector2.zero ? 0 : UserInfo.MouseInput.x;
+        _mouseY = UserInfo.MouseInput == Vector2.zero ? 0 : UserInfo.MouseInput.y;
+        _brainCamera.enabled = true;
     }
 
 

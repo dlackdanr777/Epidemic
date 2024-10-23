@@ -33,11 +33,10 @@ public class Player : MonoBehaviour, IHp
     public CharacterController CharacterController;
     public AudioSource AudioSource;
     [SerializeField] private AudioClip[] _hitSoundClips;
-    [SerializeField] private float _maxHp;
-    public float MaxHp => _maxHp;
+
+    public float MaxHp => 100;
     [SerializeField] private float _minHp = 0;
     public float MinHp => _minHp;
-
 
     private float _hp;
     public float Hp
@@ -48,15 +47,15 @@ public class Player : MonoBehaviour, IHp
             if (_hp == value)
                 return;
 
-            if(value > _maxHp)
-                value = _maxHp;
+            if(value > MaxHp)
+                value = MaxHp;
 
             else if(value < _minHp)
                 value = _minHp;
 
             _hp = value;
             OnHpChanged?.Invoke(value);
-            if (_hp == _maxHp)
+            if (_hp == MaxHp)
                 OnHpMax?.Invoke();
 
             else if(_hp == _minHp)
@@ -69,12 +68,17 @@ public class Player : MonoBehaviour, IHp
     {
         Machine = new PlayerStateMachine(this);
         GameManager.Instance.Player = this;
+
     }
 
 
     private void Start()
-    {  
-        Init();
+    {
+        _hp = MaxHp < UserInfo.CurrentHp || UserInfo.CurrentHp < MinHp ? MaxHp : UserInfo.CurrentHp;
+        CharacterController.enabled = false;
+        transform.position = UserInfo.PlayerPosition == Vector3.zero ? transform.position : UserInfo.PlayerPosition;
+        transform.rotation = UserInfo.PlayerRotation == Quaternion.identity ? transform.rotation : UserInfo.PlayerRotation;
+        CharacterController.enabled = true;
         ActionInit();
         GunController.DisableCrossHair();
     }
@@ -98,13 +102,6 @@ public class Player : MonoBehaviour, IHp
 
         Machine.OnFixedUpdate();
     }
-
-
-    private void Init()
-    {
-        _hp = _maxHp;
-    }
-
 
     private void ActionInit()
     {
@@ -149,7 +146,8 @@ public class Player : MonoBehaviour, IHp
 
     public void DepleteHp(object subject, float value)
     {
-        value -= value * UserInfo.Armor * 0.01f;
+        value -= value * EquipmentManager.Instance.Armor * 0.01f;
+        value = Mathf.Clamp(value, 1, 100);
         Hp -= value;
         int randIndex = Random.Range(0, _hitSoundClips.Length);
         AudioSource.PlayOneShot(_hitSoundClips[randIndex]);

@@ -70,8 +70,17 @@ public class GunController : MonoBehaviour, IAttack
         _nowRecoil = _currentGun.MinRecoil;
         _crossHair.Init(this);
 
-        OnChangeGunEvent(EquipItemType.Weapon);
+        OnChangeGunEvent();
         UserInfo.OnChangeEquipItemHandler += OnChangeGunEvent;
+        LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
+        _currentGun.CurrentBulletCount =  UserInfo.LoadBulletCount < 0 ? 0 : UserInfo.LoadBulletCount;
+    }
+
+
+    private void OnChangeSceneEvent()
+    {
+        UserInfo.OnChangeEquipItemHandler += OnChangeGunEvent;
+        LoadingSceneManager.OnChangeSceneHandler -= OnChangeSceneEvent;
     }
 
 
@@ -328,32 +337,45 @@ public class GunController : MonoBehaviour, IAttack
     }
 
 
-    private void OnChangeGunEvent(EquipItemType type)
+    private void OnChangeGunEvent()
     {
-        if (type != EquipItemType.Weapon)
-            return;
-
         EquipmentItem item = UserInfo.GetEquipItem(EquipItemType.Weapon);
 
         if (item == null)
         {
+            if (_currentGun == _defalutGun)
+                return;
+
             foreach (Gun gun in _gunDic.Values)
             {
                 gun.gameObject.SetActive(false);
             }
 
             _defalutGun.gameObject.SetActive(true);
+
+            AddCarryBullets(_currentGun.CurrentBulletCount);
+            _currentGun.CurrentBulletCount = 0;
             _currentGun = _defalutGun;
             _nowRecoil = _currentGun.MinRecoil;
             _handGrab.ChangeTarget(_currentGun.HandGrabTartget);
             return;
         }
 
-        if (!_gunDic.TryGetValue(item.Data.ID, out Gun selectGun))
+
+        if (_gunDic.TryGetValue(item.Data.ID, out Gun selectGun))
+        {
+            if(selectGun == _currentGun)
+            {
+                DebugLog.Log("현재 총과 같은 것을 끼고 있습니다.");
+                return;
+            }
+        }
+        else
         {
             DebugLog.LogError("해당 이름을 가진 gun id가 딕셔너리에 등록되지 않았습니다: " + item.Data.ID);
             return;
         }
+     
 
         selectGun.gameObject.SetActive(true);
         _currentGun.gameObject.SetActive(false);

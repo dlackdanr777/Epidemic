@@ -8,7 +8,7 @@ public abstract class EquipmentItemData : ItemData, IEquipmentItem
     public EquipItemType Type => _type;
 
 
-    public abstract void Equip();
+    public virtual void Equip() { }
 
-    public abstract void Dequip();
+    public virtual void Dequip() { }
 }

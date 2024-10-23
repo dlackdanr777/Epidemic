@@ -57,7 +57,6 @@ public class EnemyStateMachine
         CurrentState.OnExit(); //현재 상태의 OnExit를 호출
         nextState.OnStart(); //다음 상태의 OnStart를 호출
         CurrentState = nextState; //현재 상태를 다음 상태로 변환
-        Debug.Log(nextState);
     }
 
 

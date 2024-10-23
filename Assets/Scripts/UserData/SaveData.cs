@@ -9,21 +9,47 @@ public class SaveData
     public float PlayerPositionX;
     public float PlayerPositionY;
     public float PlayerPositionZ;
+    public float PlayerRotationW;
+    public float PlayerRotationX;
+    public float PlayerRotationY;
+    public float PlayerRotationZ;
+
+    public float CameraMouseInputX;
+    public float CameraMouseInputY;
+
     public int BulletCount;
     public int LoadBulletCount;
-    public int CurrentHp;
+    public float CurrentHp;
     public List<SaveInvenData> InvenDataList = new List<SaveInvenData>();
+    public List<string> EquipItemDataList = new List<string>();
 
-    public SaveData(Vector3 playerPosition, int bulletCount, int loadBulletCount, int currentHp, List<InvenData> invenDataList)
+    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems)
     {
-        PlayerPositionX = playerPosition.x;
-        PlayerPositionY = playerPosition.y;
-        PlayerPositionZ = playerPosition.z;
+        PlayerPositionX = player.transform.position.x;
+        PlayerPositionY = player.transform.position.y;
+        PlayerPositionZ = player.transform.position.z;
+        PlayerRotationW = player.transform.rotation.w;
+        PlayerRotationX = player.transform.rotation.x;
+        PlayerRotationY = player.transform.rotation.y;
+        PlayerRotationZ = player.transform.rotation.z;
+
+        Vector2 mouseInput = player.PlayerCamera.GetMouseInput;
+        CameraMouseInputX = mouseInput.x;
+        CameraMouseInputY = mouseInput.y;
+
         BulletCount = bulletCount;
         LoadBulletCount = loadBulletCount;
-        CurrentHp = currentHp;
-        InvenDataList.Clear();
+        CurrentHp = player.Hp;
         
+        for(int i = 0, cnt = equipItems.Length; i < cnt; ++i)
+        {
+            if (equipItems[i] == null)
+                continue;
+
+            EquipItemDataList.Add(equipItems[i].Data.ID);
+        }
+
+        InvenDataList.Clear();
         for(int i = 0, cnt =  invenDataList.Count; i < cnt; ++i)
         {
             InvenDataList.Add(new SaveInvenData(invenDataList[i]));

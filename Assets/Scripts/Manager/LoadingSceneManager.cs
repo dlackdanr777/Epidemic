@@ -2,9 +2,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 public class LoadingSceneManager : MonoBehaviour
 {
+
+    public static event Action OnChangeSceneHandler;
     public static string nextScene;
     [SerializeField] Image progressBar;
 
@@ -22,6 +25,7 @@ public class LoadingSceneManager : MonoBehaviour
 
     IEnumerator LoadScene()
     {
+        OnChangeSceneHandler?.Invoke();
         yield return null;
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene);
         op.allowSceneActivation = false;
