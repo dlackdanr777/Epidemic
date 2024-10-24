@@ -20,12 +20,12 @@ public class LoadingSceneManager : MonoBehaviour
     public static void LoadScene(string sceneName)
     {
         nextScene = sceneName;
+        OnChangeSceneHandler?.Invoke();
         SceneManager.LoadScene("LoadingScene");
     }
 
     IEnumerator LoadScene()
     {
-        OnChangeSceneHandler?.Invoke();
         yield return null;
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene);
         op.allowSceneActivation = false;

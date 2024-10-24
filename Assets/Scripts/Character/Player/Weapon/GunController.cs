@@ -343,9 +343,6 @@ public class GunController : MonoBehaviour, IAttack
 
         if (item == null)
         {
-            if (_currentGun == _defalutGun)
-                return;
-
             foreach (Gun gun in _gunDic.Values)
             {
                 gun.gameObject.SetActive(false);

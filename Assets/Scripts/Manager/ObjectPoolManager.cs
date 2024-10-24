@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 
 public class ObjectPoolManager : MonoBehaviour
@@ -26,10 +25,12 @@ public class ObjectPoolManager : MonoBehaviour
 
     private GameObject _bulletHoleParent;
     private Queue<GameObject> _bulletHolePool = new Queue<GameObject>();
+    private HashSet<GameObject> _useBulletHoleSet = new HashSet<GameObject>();
 
     private GameObject _zombiePrefab;
     private GameObject _zombieParent;
     private Queue<GameObject> _zombiePool = new Queue<GameObject>();
+    private HashSet<GameObject> _useZombieSet = new HashSet<GameObject>();
 
     private Player _player;
 
@@ -43,6 +44,23 @@ public class ObjectPoolManager : MonoBehaviour
 
         BulletHoleObjectPooling();
         ZombieObjectPooling();
+
+        LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
+    }
+
+    private void OnChangeSceneEvent()
+    {
+        foreach(GameObject obj in _useBulletHoleSet)
+            gameObject.SetActive(false);
+
+        foreach(GameObject obj in _useZombieSet)
+        {
+            _zombiePool.Enqueue(obj);
+            obj.gameObject.SetActive(false);
+        }
+
+        _useBulletHoleSet.Clear();
+        _useZombieSet.Clear();
     }
 
 
@@ -89,16 +107,23 @@ public class ObjectPoolManager : MonoBehaviour
         bulletHole.transform.position = pos;
         bulletHole.transform.rotation = rot;
         _bulletHolePool.Enqueue(bulletHole);
+        _useBulletHoleSet.Add(bulletHole);
         return bulletHole;
+    }
+
+    public void DespawnBulletHole(GameObject bulletHole)
+    {
+        if(!_useBulletHoleSet.Contains(bulletHole))
+            throw new Exception("해당 몬스터는 사용중인 셋에 들어있지 않아 오류가 발생합니다." + bulletHole.name);
+
+        _useBulletHoleSet.Remove(bulletHole);
+        gameObject.SetActive(false);
     }
 
 
 
-    public void SpawnZombie(Vector3 pos, Quaternion rot)
+    public Enemy SpawnZombie(Vector3 pos, Quaternion rot)
     {
-        if(_player == null)
-            _player = FindAnyObjectByType<Player>();
-
         GameObject zombie;
         if(_zombiePool.Count == 0)
         {
@@ -108,6 +133,7 @@ public class ObjectPoolManager : MonoBehaviour
         }
 
         zombie = _zombiePool.Dequeue();
+        _useZombieSet.Add(zombie);
         zombie.gameObject.SetActive(true);
 
         Enemy enemy = zombie.GetComponent<Enemy>();
@@ -115,13 +141,42 @@ public class ObjectPoolManager : MonoBehaviour
         zombie.transform.position = pos;
         zombie.transform.rotation = rot;
         enemy.Navmesh.NaveMeshEnabled(true);
-        enemy.Target = _player.transform;
+        return enemy;
     }
 
 
-    public IEnumerator DisableZombie(Enemy enemy) 
+    public Enemy SpawnZombie(Vector3 pos, Quaternion rot, GameObject target)
     {
-        yield return YieldCache.WaitForSeconds(40);
+        GameObject zombie;
+        if (_zombiePool.Count == 0)
+        {
+            zombie = Instantiate(_zombiePrefab, _zombieParent.transform);
+            _zombiePool.Enqueue(zombie);
+            zombie.gameObject.SetActive(false);
+        }
+
+        zombie = _zombiePool.Dequeue();
+        _useZombieSet.Add(zombie);
+        zombie.gameObject.SetActive(true);
+
+        Enemy enemy = zombie.GetComponent<Enemy>();
+        enemy.Navmesh.NaveMeshEnabled(false);
+        zombie.transform.position = pos;
+        zombie.transform.rotation = rot;
+        enemy.Navmesh.NaveMeshEnabled(true);
+        enemy.Target = target.transform;
+        return enemy;
+    }
+
+
+    public IEnumerator DespawnZombie(Enemy enemy) 
+    {
+        yield return YieldCache.WaitForSeconds(10);
+
+        if (!_useZombieSet.Contains(enemy.gameObject))
+            throw new Exception("해당 몬스터는 사용중인 셋에 들어있지 않아 오류가 발생합니다." + enemy.name);
+
+        _useZombieSet.Remove(enemy.gameObject);
         _zombiePool.Enqueue(enemy.gameObject);
         enemy.gameObject.SetActive(false);
     }

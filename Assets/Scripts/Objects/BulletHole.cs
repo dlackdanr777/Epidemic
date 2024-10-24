@@ -36,7 +36,7 @@ public class BulletHole : MonoBehaviour
     private IEnumerator BulletHoleDisable(float time)
     {
         yield return YieldCache.WaitForSeconds(time);
-        gameObject.SetActive(false);
+        ObjectPoolManager.Instance.DespawnBulletHole(gameObject);
     }
 
     private IEnumerator TargetHit()

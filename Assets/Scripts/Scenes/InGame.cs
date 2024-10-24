@@ -1,6 +1,8 @@
 using Muks.DataBind;
 using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
 
 public class InGame : MonoBehaviour
 {
@@ -25,8 +27,9 @@ public class InGame : MonoBehaviour
     [SerializeField] private UIGame _uiGame;
     [SerializeField] private Transform _spawnPos;
     [SerializeField] private Rounds[] _rounds;
-
     [SerializeField] private AudioClip _bgMusic;
+    [SerializeField] private List<Enemy> _defalutEnemyList;
+
 
     
     private RoundType _roundType;
@@ -35,6 +38,8 @@ public class InGame : MonoBehaviour
     
     private float _currentTime;
 
+    private bool _isEndTime;
+    private bool _isGameStart;
     private bool _roundClear;
 
 
@@ -42,22 +47,51 @@ public class InGame : MonoBehaviour
     {
         _currentRound = 1;
         _roundType = RoundType.Wait;
-        SoundManager.Instance.PlayAudio(AudioType.Background, _bgMusic);
-        GameManager.Instance.CursorHidden();
-        GameManager.Instance.Player.OnHpMin += () => DataBind.GetUnityActionValue("ShowLose")?.Invoke();
-    }
-
-
-    private void OnDisable()
-    {
         _uiGame.SetZombieCountText("학교를 수색하십시오");
+        _isGameStart = false;
         GameManager.Instance.IsGameEnd = false;
         SoundManager.Instance.PlayAudio(AudioType.Background, _bgMusic);
+        GameManager.Instance.CursorHidden();
+        GameManager.Instance.Player.OnHpMin += EndGame;
+
+        if(UserInfo.IsSaveFileExists())
+        {
+            DebugLog.Log("저장 파일 존재");
+            for(int i = 0, cnt =  _defalutEnemyList.Count; i < cnt; ++i)
+            {
+                Destroy(_defalutEnemyList[i].gameObject);
+            }
+            _defalutEnemyList.Clear();
+
+            List<SaveEnemyData> enemyDataList = UserInfo.EnemyDataList;
+            for(int i = 0, cnt = enemyDataList.Count; i < cnt; ++i)
+            {
+                Vector3 pos = enemyDataList[i].EnemyPosition;
+                Quaternion rot = enemyDataList[i].EnemyRotation;
+                Enemy enemy = ObjectPoolManager.Instance.SpawnZombie(pos, rot);
+                float depleteHpValue = enemy.MaxHp - enemyDataList[i].Hp;
+                enemy.DepleteHp(null, depleteHpValue);
+            }
+        }
     }
 
+    public void StartGame()
+    {
+        _isGameStart = true;
+    }
+
+
+    private void EndGame()
+    {
+        StartCoroutine(EndGameRoutine());
+        GameManager.Instance.Player.OnHpMin -= EndGame;
+    }
 
     private void Update()
     {
+        if (!_isGameStart)
+            return;
+
         if (!_roundClear)
         {
             RoundTimer();
@@ -93,7 +127,6 @@ public class InGame : MonoBehaviour
             _isEndTime = true;
     }
 
-    private bool _isEndTime;
     private void RoundUpdate()
     {
         if (_isEndTime)
@@ -124,7 +157,7 @@ public class InGame : MonoBehaviour
         for(int i = 0; i < _rounds[round - 1].SpawnZombies.Length; i++)
         {
             for(int j = 0; j < _rounds[round - 1].SpawnZombies[i].SpawnCount; j++)
-                ObjectPoolManager.Instance.SpawnZombie(_spawnPos.position, Quaternion.Euler(0,180,0));
+                ObjectPoolManager.Instance.SpawnZombie(_spawnPos.position, Quaternion.Euler(0,180,0), GameManager.Instance.Player.gameObject);
         }
     }
 
@@ -166,5 +199,13 @@ public class InGame : MonoBehaviour
             }
 
         }
+    }
+
+
+    private IEnumerator EndGameRoutine()
+    {
+        yield return YieldCache.WaitForSeconds(3);
+        _isGameStart = false;
+        DataBind.GetUnityActionValue("ShowLose")?.Invoke();
     }
 }

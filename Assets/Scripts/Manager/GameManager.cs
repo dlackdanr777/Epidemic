@@ -1,6 +1,7 @@
 
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -61,7 +62,19 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            UserInfo.SaveGame(Player);
+            List<Enemy> enemyList = new List<Enemy>();
+            enemyList = FindObjectsOfType<Enemy>().ToList();
+            for (int i = 0; i < enemyList.Count; ++i)
+            {
+                if (!enemyList[i].gameObject.activeSelf || enemyList[i].Hp <= enemyList[i].MinHp)
+                {
+                    enemyList.RemoveAt(i);
+                    --i;
+                    continue;
+                }
+            }
+
+            UserInfo.SaveGame(Player, enemyList);
         }
 
         if(Input.GetKeyDown(KeyCode.J))

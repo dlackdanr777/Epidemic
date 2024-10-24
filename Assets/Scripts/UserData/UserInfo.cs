@@ -35,6 +35,9 @@ public static class UserInfo
     
     private static EquipmentItem[] _equipItems = new EquipmentItem[(int)EquipItemType.Length];
 
+    private static List<SaveEnemyData> _enemyDataList = new List<SaveEnemyData>();
+    public static List<SaveEnemyData> EnemyDataList => _enemyDataList;
+
     private static Vector3 _playerPosition;
     public static Vector3 PlayerPosition => _playerPosition;
 
@@ -55,8 +58,9 @@ public static class UserInfo
         _loadBulletCount = 0;
         _invenDataList.Clear();
         _invenDataDic.Clear();
+        _enemyDataList.Clear();
 
-        for(int i = 0, cnt = _equipItems.Length; i < cnt; i++)
+        for (int i = 0, cnt = _equipItems.Length; i < cnt; i++)
         {
             _equipItems[i] = null;
         }
@@ -128,10 +132,10 @@ public static class UserInfo
     }
 
 
-    public static void SaveGame(Player player)
+    public static void SaveGame(Player player, List<Enemy> enemyList)
     {
         _loadBulletCount = player.GunController.CurrentBulletCount;
-        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems);
+        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList);
 
         string json = JsonUtility.ToJson(saveData, true);
         string path = Application.persistentDataPath + "/GameSave.json";
@@ -156,6 +160,9 @@ public static class UserInfo
             _bulletCount = saveData.BulletCount;
             _loadBulletCount = saveData.LoadBulletCount;
             _currentHp = saveData.CurrentHp;
+
+            _enemyDataList.Clear();
+            _enemyDataList = saveData.EnemyDataList;
 
             _invenDataList.Clear();
             _invenDataDic.Clear();

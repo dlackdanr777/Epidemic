@@ -11,5 +11,5 @@ public class EnemyData : ScriptableObject
     public float MaxHp => _maxHp;
 
     [SerializeField] private float _minHp;
-    public float MinHp => _maxHp;
+    public float MinHp => _minHp;
 }
