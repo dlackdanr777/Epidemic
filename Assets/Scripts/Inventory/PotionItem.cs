@@ -14,7 +14,7 @@ public class PotionItem : UsableItem
     public override bool Use() //이 아이템을 사용하면 실행될 함수
     {
         GameManager.Instance.Player.Inventory.RemoveItem(this);
-        GameManager.Instance.Player.RecoverHp(Data.Name, PotionData.Value);
+        GameManager.Instance.Player.RecoverHp(Data.Name, PotionData.RecoveryValue);
         UIManager.Instance.ShowCenterText(Data.Name + "를(을) 사용했습니다.");
         return true;
     }

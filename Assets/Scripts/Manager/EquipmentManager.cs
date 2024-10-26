@@ -1,3 +1,5 @@
+using Muks.DataBind;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,13 +23,19 @@ public class EquipmentManager : MonoBehaviour
 
     private static EquipmentManager _instance;
 
-
-    public float Speed => Mathf.Clamp(_equipAddSpeed, -100, 100f);
+    public float Speed => Mathf.Clamp(_playerDefalutSpeed + _equipAddSpeed, 0.1f, 10f);
     public int Armor => Mathf.Clamp( _equipAddArmor, -100, 100);
 
 
     private float _equipAddSpeed;
     private int _equipAddArmor;
+    private float _playerDefalutSpeed;
+
+    public void SetPlayerSpeed(float speed)
+    {
+        _playerDefalutSpeed = speed;
+        DataBind.SetTextValue("PlayerSpeed", Speed.ToString());
+    }
 
 
     private void Awake()
@@ -60,6 +68,9 @@ public class EquipmentManager : MonoBehaviour
             if(item.Data is IPlayerChangeSpeed changeSpeed)
                 _equipAddSpeed += changeSpeed.Speed;
         }
+
+        DataBind.SetTextValue("PlayerArmor", Armor.ToString());
+        DataBind.SetTextValue("PlayerSpeed", Speed.ToString());
     }
 
 }

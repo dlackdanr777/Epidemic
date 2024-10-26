@@ -51,7 +51,7 @@ public class ObjectPoolManager : MonoBehaviour
     private void OnChangeSceneEvent()
     {
         foreach(GameObject obj in _useBulletHoleSet)
-            gameObject.SetActive(false);
+            obj.SetActive(false);
 
         foreach(GameObject obj in _useZombieSet)
         {
@@ -117,7 +117,7 @@ public class ObjectPoolManager : MonoBehaviour
             throw new Exception("해당 몬스터는 사용중인 셋에 들어있지 않아 오류가 발생합니다." + bulletHole.name);
 
         _useBulletHoleSet.Remove(bulletHole);
-        gameObject.SetActive(false);
+        bulletHole.SetActive(false);
     }
 
 

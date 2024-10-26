@@ -8,6 +8,7 @@ public class UIItemDescription : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _itemNameText;
     [SerializeField] private TextMeshProUGUI _itemTypeText;
     [SerializeField] private TextMeshProUGUI _itemDescriptionText;
+    [SerializeField] private TextMeshProUGUI _itemEffectText;
     [SerializeField] private Image _image;
 
     private Vector3 _uiSize;
@@ -28,20 +29,19 @@ public class UIItemDescription : MonoBehaviour
             
 
         gameObject.SetActive(true);
-
         _rectTransform.position = pos + new Vector2(_uiSize.x * 0.5f, -_uiSize.y * 0.5f);
         _itemNameText.text = item.Data.Name;
         _itemDescriptionText.text = item.Data.Description;
         _image.sprite = item.Data.Sprite;
-
-        if (item is OtherItem)
-            _itemTypeText.text = "기타 아이템";
-
-        else if (item is PotionItem)
-            _itemTypeText.text = "회복 아이템";
-
-        else if (item is EquipmentItem)
-            _itemTypeText.text = "장착 아이템";
+        _itemEffectText.text = ItemManager.Instance.GetItemEffectText(item.Data);
+        _itemEffectText.gameObject.SetActive(!string.IsNullOrEmpty(_itemNameText.text));
+        _itemTypeText.text = item switch
+        {
+            OtherItem => "기타 아이템",
+            PotionItem => "회복 아이템",
+            EquipmentItem => "장착 아이템",
+            _ => string.Empty
+        };
     }
 
     public void End()

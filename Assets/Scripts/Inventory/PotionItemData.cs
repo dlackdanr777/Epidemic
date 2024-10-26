@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Potion Item Data", menuName = "Items/Usable Item/Potion Item Data")]
-public class PotionItemData : ItemData
+public class PotionItemData : ItemData, IPlayerRecoveryHealth
 {
-    public int Value => _value;
+    public int RecoveryValue => _value;
 
     [SerializeField] protected int _value;
 

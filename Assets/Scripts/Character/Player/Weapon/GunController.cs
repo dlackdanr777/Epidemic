@@ -1,3 +1,4 @@
+using Muks.DataBind;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ public class GunController : MonoBehaviour, IAttack
 
     private void OnChangeSceneEvent()
     {
-        UserInfo.OnChangeEquipItemHandler += OnChangeGunEvent;
+        UserInfo.OnChangeEquipItemHandler -= OnChangeGunEvent;
         LoadingSceneManager.OnChangeSceneHandler -= OnChangeSceneEvent;
     }
 
@@ -355,6 +356,10 @@ public class GunController : MonoBehaviour, IAttack
             _currentGun = _defalutGun;
             _nowRecoil = _currentGun.MinRecoil;
             _handGrab.ChangeTarget(_currentGun.HandGrabTartget);
+
+            DataBind.SetTextValue("CurrentGunPower", _currentGun.Damage.ToString());
+            DataBind.SetTextValue("CurrentGunRPM", _currentGun.RPM.ToString());
+            DataBind.SetTextValue("CurrentGunRange", _currentGun.Range + "M");
             return;
         }
 
@@ -379,6 +384,9 @@ public class GunController : MonoBehaviour, IAttack
         _currentGun = selectGun;
         _nowRecoil = _currentGun.MinRecoil;
         _handGrab.ChangeTarget(_currentGun.HandGrabTartget);
+        DataBind.SetTextValue("CurrentGunPower", _currentGun.Damage.ToString());
+        DataBind.SetTextValue("CurrentGunRPM", _currentGun.RPM.ToString());
+        DataBind.SetTextValue("CurrentGunRange",_currentGun.Range + "M");
     }
 
 }

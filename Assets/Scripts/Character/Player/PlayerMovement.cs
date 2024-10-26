@@ -17,10 +17,16 @@ public class PlayerMovement : MonoBehaviour, IMovement
     [SerializeField] private float _rotateSpeed;
 
 
+    private void Start()
+    {
+        EquipmentManager.Instance.SetPlayerSpeed(_moveSpeed);
+    }
+
+
     public void Movement(float horizontalInput, float verticalInput, float moveSpeedMul)
     {
         Vector3 moveDir = new Vector3(horizontalInput, 0, verticalInput).normalized;
-        moveDir = transform.TransformDirection(moveDir) * Mathf.Clamp(_moveSpeed + EquipmentManager.Instance.Speed, 0.1f, 10f) * moveSpeedMul;
+        moveDir = transform.TransformDirection(moveDir) * EquipmentManager.Instance.Speed * moveSpeedMul;
         _controller.Move(moveDir * Time.deltaTime);
     }
 

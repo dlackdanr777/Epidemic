@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Muks.DataBind;
 using Random = UnityEngine.Random;
 
 
@@ -54,6 +55,8 @@ public class Player : MonoBehaviour, IHp
                 value = _minHp;
 
             _hp = value;
+            DataBind.SetTextValue("PlayerMaxHp", Mathf.FloorToInt(MaxHp).ToString());
+            DataBind.SetTextValue("PlayerCurrentHp", Mathf.FloorToInt(_hp).ToString());
             OnHpChanged?.Invoke(value);
             if (_hp == MaxHp)
                 OnHpMax?.Invoke();
@@ -74,13 +77,16 @@ public class Player : MonoBehaviour, IHp
 
     private void Start()
     {
-        _hp = MaxHp < UserInfo.CurrentHp || UserInfo.CurrentHp < MinHp ? MaxHp : UserInfo.CurrentHp;
+        _hp = MaxHp < UserInfo.CurrentHp || UserInfo.CurrentHp <= MinHp ? MaxHp : UserInfo.CurrentHp;
         CharacterController.enabled = false;
         transform.position = UserInfo.PlayerPosition == Vector3.zero ? transform.position : UserInfo.PlayerPosition;
         transform.rotation = UserInfo.PlayerRotation == Quaternion.identity ? transform.rotation : UserInfo.PlayerRotation;
         CharacterController.enabled = true;
         ActionInit();
         GunController.DisableCrossHair();
+
+        DataBind.SetTextValue("PlayerMaxHp", Mathf.FloorToInt(MaxHp).ToString());
+        DataBind.SetTextValue("PlayerCurrentHp", Mathf.FloorToInt(_hp).ToString());
     }
 
 
@@ -153,6 +159,5 @@ public class Player : MonoBehaviour, IHp
         AudioSource.PlayOneShot(_hitSoundClips[randIndex]);
         OnHpDepleted?.Invoke(subject, value);
     }
-
 }
 
