@@ -74,7 +74,10 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            UserInfo.SaveGame(Player, enemyList);
+            List<DropItem> dropItemList = new List<DropItem>();
+            dropItemList = FindObjectsOfType<DropItem>().ToList();
+
+            UserInfo.SaveGame(Player, enemyList, dropItemList);
         }
 
         if(Input.GetKeyDown(KeyCode.J))

@@ -6,6 +6,7 @@ public class DropItem : MonoBehaviour, Iinteractive
 {
     [Header("Option")]
     [SerializeField] private string _itemId;
+    public string ItemId => _itemId;
 
     private string _itemName;
     public KeyCode InputKey => KeyCode.E;
@@ -39,7 +40,15 @@ public class DropItem : MonoBehaviour, Iinteractive
         if (_itemId.StartsWith("BULLET"))
         {
             int bulletCnt = int.Parse(_itemId.Substring(6));
-            UserInfo.AddBulletCount(bulletCnt);
+            if (UserInfo.AddBulletCount(bulletCnt))
+            {
+                UIManager.Instance.ShowCenterText(_itemName + "을(를) 획득하였습니다.");
+            }
+            else
+            {
+                UIManager.Instance.ShowCenterText("소지 가능한 탄환의 수량을 초과했습니다.");
+                return;
+            }
         }
         else
         {

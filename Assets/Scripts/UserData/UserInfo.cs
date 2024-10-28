@@ -19,8 +19,7 @@ public static class UserInfo
 {
     public static event Action OnChangeSpeedHandler;
     public static event Action OnChangeEquipItemHandler;
-
-    private static readonly int MAX_BULLET_COUNT = 1000;
+    public static event Action OnAddBulletHandler;
 
     private static int _bulletCount;
     public static int BulletCount => _bulletCount;
@@ -37,6 +36,10 @@ public static class UserInfo
 
     private static List<SaveEnemyData> _enemyDataList = new List<SaveEnemyData>();
     public static List<SaveEnemyData> EnemyDataList => _enemyDataList;
+
+    private static List<SaveDropItemData> _dropItemDataList = new List<SaveDropItemData>();
+    public static List<SaveDropItemData> DropItemDataList => _dropItemDataList;
+
 
     private static Vector3 _playerPosition;
     public static Vector3 PlayerPosition => _playerPosition;
@@ -67,10 +70,22 @@ public static class UserInfo
     }
 
 
-    public static void AddBulletCount(int value)
+    public static bool AddBulletCount(int value)
     {
-        _bulletCount = Mathf.Clamp(_bulletCount + value, 0, MAX_BULLET_COUNT);
+        if (ConstValue.MAX_BULLET_COUNT < _bulletCount + value)
+            return false;
+
+        _bulletCount = _bulletCount + value;
+        OnAddBulletHandler?.Invoke();
+        return true;
     }
+
+    public static void AddBulletCountNoLimit(int value)
+    {
+        _bulletCount = Mathf.Max(0, _bulletCount + value);
+        OnAddBulletHandler?.Invoke();
+    }
+
 
     public static bool IsAddInven(string name)
     {
@@ -132,10 +147,10 @@ public static class UserInfo
     }
 
 
-    public static void SaveGame(Player player, List<Enemy> enemyList)
+    public static void SaveGame(Player player, List<Enemy> enemyList, List<DropItem> dropItemList)
     {
         _loadBulletCount = player.GunController.CurrentBulletCount;
-        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList);
+        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList);
 
         string json = JsonUtility.ToJson(saveData, true);
         string path = Application.persistentDataPath + "/GameSave.json";
@@ -163,6 +178,9 @@ public static class UserInfo
 
             _enemyDataList.Clear();
             _enemyDataList = saveData.EnemyDataList;
+
+            _dropItemDataList.Clear();
+            _dropItemDataList = saveData.DropItemDataList;
 
             _invenDataList.Clear();
             _invenDataDic.Clear();
@@ -192,6 +210,7 @@ public static class UserInfo
                     ChangeEquipItem(equipItem);
 
             }
+
             DebugLog.Log("게임 데이터 불러오기 완료");
         }
         else

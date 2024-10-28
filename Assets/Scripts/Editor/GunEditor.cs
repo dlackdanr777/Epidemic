@@ -1,4 +1,4 @@
-using UnityEditor;
+/*using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -43,4 +43,4 @@ public class GunEditor : Editor
 
         EditorUtility.SetDirty(_gun);
     }
-}
+}*/

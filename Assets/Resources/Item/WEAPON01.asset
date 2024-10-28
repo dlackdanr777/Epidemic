@@ -19,3 +19,12 @@ MonoBehaviour:
   _width: 4
   _height: 2
   _type: 4
+  _damage: 20
+  _range: 60
+  _maxRecoil: 1.5
+  _minRecoil: 0.2
+  _recoil: 0.25
+  _recoilRecoveryAmount: 0.5
+  _rpm: 500
+  _reloadTime: 2.1
+  _reloadBulletCount: 30

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15b5e0dd0dd8a0044840e1cc5a69a2ff, type: 3}
+  m_Name: WEAPON00
+  m_EditorClassIdentifier: 
+  _id: WEAPON00
+  _name: M16
+  _description: "\uAE30\uBCF8 \uCD1D"
+  _sprite: {fileID: 21300000, guid: f23c6f625ecc547479e7e307569e3e3c, type: 3}
+  _width: 4
+  _height: 2
+  _type: 4
+  _damage: 10
+  _range: 40
+  _maxRecoil: 1
+  _minRecoil: 0.05
+  _recoil: 0.07
+  _recoilRecoveryAmount: 0.4
+  _rpm: 800
+  _reloadTime: 2.1
+  _reloadBulletCount: 30

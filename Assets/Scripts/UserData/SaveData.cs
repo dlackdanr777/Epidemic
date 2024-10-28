@@ -23,8 +23,9 @@ public class SaveData
     public List<SaveInvenData> InvenDataList = new List<SaveInvenData>();
     public List<string> EquipItemDataList = new List<string>();
     public List<SaveEnemyData> EnemyDataList = new List<SaveEnemyData>();
+    public List<SaveDropItemData> DropItemDataList = new List<SaveDropItemData>();
 
-    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList)
+    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList, List<DropItem> dropItemList)
     {
         PlayerPositionX = player.transform.position.x;
         PlayerPositionY = player.transform.position.y;
@@ -60,6 +61,12 @@ public class SaveData
         for(int i = 0, cnt = enemyList.Count; i < cnt; ++i)
         {
             EnemyDataList.Add(new SaveEnemyData(enemyList[i]));
+        }
+
+        DropItemDataList.Clear();
+        for(int i = 0, cnt = dropItemList.Count; i < cnt; ++i)
+        {
+            DropItemDataList.Add(new SaveDropItemData(dropItemList[i]));
         }
     }
 
@@ -183,6 +190,39 @@ public class SaveEnemyData
         EnemyRotationY = rot.y;
         EnemyRotationZ = rot.z;
         EnemyRotationW = rot.w;
+    }
+}
+
+
+[Serializable]
+public class SaveDropItemData
+{
+    public string ItemId;
+    public float PositionX;
+    public float PositionY;
+    public float PositionZ;
+    public float RotationX;
+    public float RotationY;
+    public float RotationZ;
+    public float RotationW;
+
+    public Vector3 Position => new Vector3(PositionX, PositionY, PositionZ);
+    public Quaternion Rotation => new Quaternion(RotationX, RotationY, RotationZ, RotationW);
+
+    public SaveDropItemData(DropItem dropItem)
+    {
+        ItemId = dropItem.ItemId;
+        Vector3 pos = dropItem.transform.position;
+        Quaternion rot = dropItem.transform.rotation;
+
+        PositionX = pos.x;
+        PositionY = pos.y;
+        PositionZ = pos.z;
+
+        RotationX = rot.x;
+        RotationY = rot.y;
+        RotationZ = rot.z;
+        RotationW = rot.w;
     }
 
 }

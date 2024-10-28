@@ -5,15 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[Serializable]
-public struct GunData
-{
-    [SerializeField] private string _itemId;
-    public string ItemId => _itemId;
-
-    [SerializeField] private Gun _gun;
-    public Gun Gun => _gun;
-}
 
 /// <summary> Gun class를 관리, 총기 관련 기능을 가지고 있는 클래스 </summary>
 public class GunController : MonoBehaviour, IAttack
@@ -37,7 +28,7 @@ public class GunController : MonoBehaviour, IAttack
 
     [Header("Option")]
     [SerializeField] private LayerMask _hitLayerMask;
-    [SerializeField] private GunData[] _gunDatas;
+    [SerializeField] private Gun[] _gunDatas;
 
 
 
@@ -53,15 +44,35 @@ public class GunController : MonoBehaviour, IAttack
     private int _getCarryBulletCount => UserInfo.BulletCount;
 
     public float Damage => _currentGun.Damage;
-    public int MaxBulletCount => _currentGun.MaxBulletCount;
-    public int CurrentBulletCount => _currentGun.CurrentBulletCount;
+
+    private int _currentBulletCount;
+    public int CurrentBulletCount => _currentBulletCount;
+
+    private Coroutine _reloadRoutine;
 
     private void Awake()
     {
         _gunDic.Clear();
+        ItemData data = ItemManager.Instance.GetItemDataByID(_defalutGun.Id);
+        if(data is WeaponItemData defalutData)
+            _defalutGun.SetWeaponData(defalutData);
+        else
+            throw new Exception("해당하는 Id값을 가진 무기 데이터가 존재하지 않습니다: " + _defalutGun.Id);
+
+
         for (int i = 0, cnt = _gunDatas.Length; i < cnt; i++)
         {
-            _gunDic.Add(_gunDatas[i].ItemId, _gunDatas[i].Gun);
+            data = ItemManager.Instance.GetItemDataByID(_gunDatas[i].Id);
+
+            if(data is WeaponItemData weaponItemData)
+            {
+                _gunDic.Add(_gunDatas[i].Id, _gunDatas[i]);
+                _gunDatas[i].SetWeaponData(weaponItemData);
+            }
+            else
+            {
+                throw new Exception("해당하는 Id값을 가진 무기 데이터가 존재하지 않습니다: " + _gunDatas[i].Id);
+            }
         }
 
     }
@@ -74,7 +85,7 @@ public class GunController : MonoBehaviour, IAttack
         OnChangeGunEvent();
         UserInfo.OnChangeEquipItemHandler += OnChangeGunEvent;
         LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
-        _currentGun.CurrentBulletCount =  UserInfo.LoadBulletCount < 0 ? 0 : UserInfo.LoadBulletCount;
+        _currentBulletCount =  UserInfo.LoadBulletCount < 0 ? 0 : UserInfo.LoadBulletCount;
     }
 
 
@@ -127,13 +138,16 @@ public class GunController : MonoBehaviour, IAttack
         if (_isReload)
             return;
 
-        if (_currentGun.CurrentBulletCount > 0)
+        if (0 < _currentBulletCount)
         {
             Shoot();
         }
         else
         {
-            StartCoroutine(ReloadRoutine());
+            if (_reloadRoutine != null)
+                StopCoroutine(_reloadRoutine);
+
+            _reloadRoutine = StartCoroutine(ReloadRoutine());
         }
     }
 
@@ -142,7 +156,7 @@ public class GunController : MonoBehaviour, IAttack
     public void Shoot()
     {
         _currentFireRate = _currentGun.FireRate; //발사간의 딜레이를 현재 사용하는 총기의 딜레이로 설정한다
-        _currentGun.CurrentBulletCount--; //총알을 감소시킨다
+        _currentBulletCount--; //총알을 감소시킨다
         PlaySound(_currentGun.FireSound); //발사 사운드 재생
         _currentGun.MuzzleFlash.Play(); //이펙트 재생
         _playerAnimator.SetTrigger("Fire"); //애니메이터의 트리거를 설정한다.
@@ -194,9 +208,12 @@ public class GunController : MonoBehaviour, IAttack
     /// <summary> 재장전을 시도하는 함수 </summary>
     public void TryReload()
     {
-        if (Input.GetKeyDown(KeyCode.R) && !_isReload &&_currentGun.CurrentBulletCount < _currentGun.ReloadBulletCount)
+        if (Input.GetKeyDown(KeyCode.R) && !_isReload && _currentBulletCount < _currentGun.ReloadBulletCount)
         {
-            StartCoroutine(ReloadRoutine());
+            if (_reloadRoutine != null)
+                StopCoroutine(_reloadRoutine);
+
+            _reloadRoutine = StartCoroutine(ReloadRoutine());
         }
     }
 
@@ -238,20 +255,21 @@ public class GunController : MonoBehaviour, IAttack
         {
             _playerAnimator.SetTrigger("Reload");
             _isReload = true;
-            AddCarryBullets(_currentGun.CurrentBulletCount);
-            _currentGun.CurrentBulletCount = 0;
+            int currentBulletCount = _currentBulletCount;
+            _currentBulletCount = 0;
+            AddCarryBullets(currentBulletCount);
             _audioSource.PlayOneShot(_currentGun.ReloadSound);
 
             yield return new WaitForSeconds(_currentGun.ReloadTime);
 
             if(_getCarryBulletCount >= _currentGun.ReloadBulletCount)
             {
-                _currentGun.CurrentBulletCount = _currentGun.ReloadBulletCount;
+                _currentBulletCount = _currentGun.ReloadBulletCount;
                 SubCarryBullets(_currentGun.ReloadBulletCount);
             }
             else
             {
-                _currentGun.CurrentBulletCount = _getCarryBulletCount;
+                _currentBulletCount = _getCarryBulletCount;
                 SubCarryBullets(_getCarryBulletCount);
             }
             _isReload = false;
@@ -334,14 +352,14 @@ public class GunController : MonoBehaviour, IAttack
     /// <summary> 인벤토리 총알 추가 </summary>
     private void AddCarryBullets(int value)
     {
-        UserInfo.AddBulletCount(value);
+        UserInfo.AddBulletCountNoLimit(value);
     }
 
 
     private void OnChangeGunEvent()
     {
         EquipmentItem item = UserInfo.GetEquipItem(EquipItemType.Weapon);
-
+        int currentBulletCount;
         if (item == null)
         {
             foreach (Gun gun in _gunDic.Values)
@@ -351,8 +369,12 @@ public class GunController : MonoBehaviour, IAttack
 
             _defalutGun.gameObject.SetActive(true);
 
-            AddCarryBullets(_currentGun.CurrentBulletCount);
-            _currentGun.CurrentBulletCount = 0;
+            if (_reloadRoutine != null)
+                StopCoroutine(_reloadRoutine);
+
+            currentBulletCount = _currentBulletCount;
+            _currentBulletCount = 0;
+            AddCarryBullets(currentBulletCount);
             _currentGun = _defalutGun;
             _nowRecoil = _currentGun.MinRecoil;
             _handGrab.ChangeTarget(_currentGun.HandGrabTartget);
@@ -377,10 +399,17 @@ public class GunController : MonoBehaviour, IAttack
             DebugLog.LogError("해당 이름을 가진 gun id가 딕셔너리에 등록되지 않았습니다: " + item.Data.ID);
             return;
         }
-     
 
         selectGun.gameObject.SetActive(true);
         _currentGun.gameObject.SetActive(false);
+
+        if (_reloadRoutine != null)
+            StopCoroutine(_reloadRoutine);
+
+        currentBulletCount = _currentBulletCount;
+        _currentBulletCount = 0;
+        AddCarryBullets(currentBulletCount);
+
         _currentGun = selectGun;
         _nowRecoil = _currentGun.MinRecoil;
         _handGrab.ChangeTarget(_currentGun.HandGrabTartget);

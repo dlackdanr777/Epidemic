@@ -29,6 +29,7 @@ public class InGame : MonoBehaviour
     [SerializeField] private Rounds[] _rounds;
     [SerializeField] private AudioClip _bgMusic;
     [SerializeField] private List<Enemy> _defalutEnemyList;
+    [SerializeField] private List<DropItem> _dropItemList;
 
 
     
@@ -72,6 +73,23 @@ public class InGame : MonoBehaviour
                 float depleteHpValue = enemy.MaxHp - enemyDataList[i].Hp;
                 enemy.DepleteHp(null, depleteHpValue);
             }
+
+
+            for(int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
+            {
+                Destroy(_dropItemList[i].gameObject);  
+            }
+            _dropItemList.Clear();
+
+            List<SaveDropItemData> dropItemDataList = UserInfo.DropItemDataList;
+            DebugLog.Log(dropItemDataList.Count);
+            for(int i = 0, cnt = dropItemDataList.Count; i < cnt; ++i)
+            {
+                Vector3 pos = dropItemDataList[i].Position;
+                Quaternion rot = dropItemDataList[i].Rotation;
+                DropItem dropItem = ObjectPoolManager.Instance.SpawnDropItem(dropItemDataList[i].ItemId, pos, rot);
+            }
+
         }
     }
 

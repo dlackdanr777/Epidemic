@@ -49,6 +49,18 @@ public class ItemManager : MonoBehaviour
     public string GetItemEffectText(ItemData data)
     {
         string effectDescription = string.Empty;
+
+        if(data is WeaponItemData weaponItemData)
+        {
+            int damage = weaponItemData.Damage;
+            float rpm = weaponItemData.RPM;
+            float range = weaponItemData.Range;
+
+            effectDescription += "공격력: " + damage + "\n";
+            effectDescription += "RPM: " + rpm + "\n";
+            effectDescription += "사거리: " + range + "M" + "\n";
+        }
+
         if (data is IPlayerRecoveryHealth healthData)
         {
             int recoveryValue = healthData.RecoveryValue;
