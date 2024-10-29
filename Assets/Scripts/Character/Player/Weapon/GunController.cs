@@ -82,10 +82,11 @@ public class GunController : MonoBehaviour, IAttack
         _nowRecoil = _currentGun.MinRecoil;
         _crossHair.Init(this);
 
-        OnChangeGunEvent();
+        SetCurrentGun();
+        _currentBulletCount =  Mathf.Clamp(UserInfo.LoadBulletCount, 0, _currentGun.ReloadBulletCount);
         UserInfo.OnChangeEquipItemHandler += OnChangeGunEvent;
         LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
-        _currentBulletCount =  UserInfo.LoadBulletCount < 0 ? 0 : UserInfo.LoadBulletCount;
+        UserInfo.ChangeLoadBulletCount(_currentBulletCount);
     }
 
 
@@ -156,7 +157,7 @@ public class GunController : MonoBehaviour, IAttack
     public void Shoot()
     {
         _currentFireRate = _currentGun.FireRate; //발사간의 딜레이를 현재 사용하는 총기의 딜레이로 설정한다
-        _currentBulletCount--; //총알을 감소시킨다
+        UserInfo.ChangeLoadBulletCount(--_currentBulletCount);
         PlaySound(_currentGun.FireSound); //발사 사운드 재생
         _currentGun.MuzzleFlash.Play(); //이펙트 재생
         _playerAnimator.SetTrigger("Fire"); //애니메이터의 트리거를 설정한다.
@@ -257,6 +258,7 @@ public class GunController : MonoBehaviour, IAttack
             _isReload = true;
             int currentBulletCount = _currentBulletCount;
             _currentBulletCount = 0;
+            UserInfo.ChangeLoadBulletCount(_currentBulletCount);
             AddCarryBullets(currentBulletCount);
             _audioSource.PlayOneShot(_currentGun.ReloadSound);
 
@@ -265,11 +267,13 @@ public class GunController : MonoBehaviour, IAttack
             if(_getCarryBulletCount >= _currentGun.ReloadBulletCount)
             {
                 _currentBulletCount = _currentGun.ReloadBulletCount;
+                UserInfo.ChangeLoadBulletCount(_currentBulletCount);
                 SubCarryBullets(_currentGun.ReloadBulletCount);
             }
             else
             {
                 _currentBulletCount = _getCarryBulletCount;
+                UserInfo.ChangeLoadBulletCount(_currentBulletCount);
                 SubCarryBullets(_getCarryBulletCount);
             }
             _isReload = false;
@@ -356,6 +360,60 @@ public class GunController : MonoBehaviour, IAttack
     }
 
 
+    private void SetCurrentGun()
+    {
+        EquipmentItem item = UserInfo.GetEquipItem(EquipItemType.Weapon);
+        if (item == null)
+        {
+            foreach (Gun gun in _gunDic.Values)
+            {
+                gun.gameObject.SetActive(false);
+            }
+
+            _defalutGun.gameObject.SetActive(true);
+
+            if (_reloadRoutine != null)
+                StopCoroutine(_reloadRoutine);
+
+            _currentGun = _defalutGun;
+            _nowRecoil = _currentGun.MinRecoil;
+            _handGrab.ChangeTarget(_currentGun.HandGrabTartget);
+
+            DataBind.SetTextValue("CurrentGunPower", _currentGun.Damage.ToString());
+            DataBind.SetTextValue("CurrentGunRPM", _currentGun.RPM.ToString());
+            DataBind.SetTextValue("CurrentGunRange", _currentGun.Range + "M");
+            return;
+        }
+
+        if (_gunDic.TryGetValue(item.Data.ID, out Gun selectGun))
+        {
+            if (selectGun == _currentGun)
+            {
+                DebugLog.Log("현재 총과 같은 것을 끼고 있습니다.");
+                return;
+            }
+        }
+        else
+        {
+            DebugLog.LogError("해당 이름을 가진 gun id가 딕셔너리에 등록되지 않았습니다: " + item.Data.ID);
+            return;
+        }
+
+        selectGun.gameObject.SetActive(true);
+        _currentGun.gameObject.SetActive(false);
+
+        if (_reloadRoutine != null)
+            StopCoroutine(_reloadRoutine);
+
+        _currentGun = selectGun;
+        _nowRecoil = _currentGun.MinRecoil;
+        _handGrab.ChangeTarget(_currentGun.HandGrabTartget);
+        DataBind.SetTextValue("CurrentGunPower", _currentGun.Damage.ToString());
+        DataBind.SetTextValue("CurrentGunRPM", _currentGun.RPM.ToString());
+        DataBind.SetTextValue("CurrentGunRange", _currentGun.Range + "M");
+    }
+
+
     private void OnChangeGunEvent()
     {
         EquipmentItem item = UserInfo.GetEquipItem(EquipItemType.Weapon);
@@ -374,6 +432,7 @@ public class GunController : MonoBehaviour, IAttack
 
             currentBulletCount = _currentBulletCount;
             _currentBulletCount = 0;
+            UserInfo.ChangeLoadBulletCount(_currentBulletCount);
             AddCarryBullets(currentBulletCount);
             _currentGun = _defalutGun;
             _nowRecoil = _currentGun.MinRecoil;
@@ -408,6 +467,7 @@ public class GunController : MonoBehaviour, IAttack
 
         currentBulletCount = _currentBulletCount;
         _currentBulletCount = 0;
+        UserInfo.ChangeLoadBulletCount(_currentBulletCount);
         AddCarryBullets(currentBulletCount);
 
         _currentGun = selectGun;

@@ -60,26 +60,6 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            List<Enemy> enemyList = new List<Enemy>();
-            enemyList = FindObjectsOfType<Enemy>().ToList();
-            for (int i = 0; i < enemyList.Count; ++i)
-            {
-                if (!enemyList[i].gameObject.activeSelf || enemyList[i].Hp <= enemyList[i].MinHp)
-                {
-                    enemyList.RemoveAt(i);
-                    --i;
-                    continue;
-                }
-            }
-
-            List<DropItem> dropItemList = new List<DropItem>();
-            dropItemList = FindObjectsOfType<DropItem>().ToList();
-
-            UserInfo.SaveGame(Player, enemyList, dropItemList);
-        }
-
         if(Input.GetKeyDown(KeyCode.J))
         {
             UserInfo.LoadGame();

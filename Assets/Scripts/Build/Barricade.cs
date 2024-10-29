@@ -38,36 +38,40 @@ public class Barricade : MonoBehaviour, IHp
     public event Action OnHpMin;
 
     private float _hp;
+    [SerializeField] private GameObject _targetObject;
     [SerializeField] private float _maxHp;
     [SerializeField] private float _minHp = 0;
-    [SerializeField] private GameObject _debrisPrefub;
 
-    private bool _isBroken;
-    public void Start()
+
+    public void Awake()
     {
+        Hp = _maxHp;
         OnHpMin += DestroyObject;
     }
 
-    public void OnEnable()
-    {
-        Hp = _maxHp;
-        _isBroken = false;
-    }
 
     private void DestroyObject()
     {
-        if (_isBroken)
-            return;
-
-        _isBroken = true;
-        Destroy(gameObject);
+        Destroy(_targetObject);
+        OnHpMin = null;
     }
 
+
+    public void SetHp(float value)
+    {
+        if (value == 0)
+        {
+            DestroyObject();
+            return;
+        }
+
+        _hp = value;
+    }
 
     public void DepleteHp(object subject, float value)
     {
         Hp -= value;
-        Debug.Log("맞음" + Hp);
+        DebugLog.Log("맞음" + Hp);
         OnHpDepleted?.Invoke(subject, value);
     }
 

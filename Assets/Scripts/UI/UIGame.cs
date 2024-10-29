@@ -8,20 +8,16 @@ public class UIGame : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _gameTimerText;
     [SerializeField] private TextMeshProUGUI _zombieCountText;
 
-
     private Player _player;
 
-    private int _maxbulletCount;
-    private int _currentBulletCount;
     public void Start()
     {
         _player = GameManager.Instance.Player;
         _player.OnHpChanged += _hpBar.AmountChanged;
         _hpBar.Init(_player.MaxHp);
 
-        _player.GunController.OnFireHandler += ShowBulletCount;
-        _player.GunController.OnReloadHandler += ShowBulletCount;
-        UserInfo.OnAddBulletHandler += ShowBulletCount;
+        UserInfo.OnChangeBulletHandler += ShowBulletCount;
+        UserInfo.OnChangeLoadBulletHandler += ShowBulletCount;
         ShowBulletCount();
 
     }
@@ -38,10 +34,7 @@ public class UIGame : MonoBehaviour
 
     private void ShowBulletCount()
     {
-        _maxbulletCount = 360;
-        _currentBulletCount = _player.GunController.CurrentBulletCount;
-
-        _bulletCountText.text = _currentBulletCount + " / " + UserInfo.BulletCount;
+        _bulletCountText.text = UserInfo.LoadBulletCount + " / " + UserInfo.BulletCount;
     }
 
 

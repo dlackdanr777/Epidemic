@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 
@@ -38,6 +39,16 @@ public class ObjectPoolManager : MonoBehaviour
     private Dictionary<string, HashSet<DropItem>> _useDropItemDic = new Dictionary<string, HashSet<DropItem>>();
 
 
+    private GameObject _buildObjectParent;
+    private Dictionary<string, BuildObject> _buildObjectPrefabDic = new Dictionary<string, BuildObject>();
+    private Dictionary<string, Queue<BuildObject>> _buildObjectPool = new Dictionary<string, Queue<BuildObject>>();
+    private Dictionary<string, HashSet<BuildObject>> _useBuildObjectDic = new Dictionary<string, HashSet<BuildObject>>();
+
+    private GameObject _buildPreviewParent;
+    private Dictionary<string, PreviewObject> _buildPreviewPrefabDic = new Dictionary<string, PreviewObject>();
+    private Dictionary<string, Queue<PreviewObject>> _buildPreviewPool = new Dictionary<string, Queue<PreviewObject>>();
+    private Dictionary<string, HashSet<PreviewObject>> _useBuildPreviewDic = new Dictionary<string, HashSet<PreviewObject>>();
+
     private void Awake()
     {
         if (_instance != null)
@@ -49,14 +60,21 @@ public class ObjectPoolManager : MonoBehaviour
         BulletHoleObjectPooling();
         ZombieObjectPooling();
         DropItemPooling();
-
+        BuildObjectPooling();
+        BuildPreviewObjectPooling();
         LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
     }
 
     private void OnChangeSceneEvent()
     {
         foreach(GameObject obj in _useBulletHoleSet)
+        {
+            if (obj == null)
+                continue;
+
             obj.SetActive(false);
+        }
+
 
         foreach(GameObject obj in _useZombieSet)
         {
@@ -80,6 +98,38 @@ public class ObjectPoolManager : MonoBehaviour
             }
 
             dropItemSet.Clear();
+        }
+
+        foreach (HashSet<BuildObject> hashSet in _useBuildObjectDic.Values)
+        {
+            if (hashSet.Count <= 0)
+                continue;
+
+            foreach (BuildObject buildObject in hashSet)
+            {
+                if (buildObject.gameObject == null)
+                    continue;
+
+                _buildObjectPool[buildObject.BuildData.Id].Enqueue(buildObject);
+                buildObject.gameObject.SetActive(false);
+            }
+            hashSet.Clear();
+        }
+
+        foreach (HashSet<PreviewObject> hashSet in _useBuildPreviewDic.Values)
+        {
+            if (hashSet.Count <= 0)
+                continue;
+
+            foreach (PreviewObject buildPreview in hashSet)
+            {
+                if (buildPreview.gameObject == null)
+                    continue;
+
+                _buildPreviewPool[buildPreview.BuildData.Id].Enqueue(buildPreview);
+                buildPreview.gameObject.SetActive(false);
+            }
+            hashSet.Clear();
         }
 
         _useBulletHoleSet.Clear();
@@ -131,7 +181,6 @@ public class ObjectPoolManager : MonoBehaviour
         item.transform.rotation = rot;
         _useDropItemDic[id].Add(item);
         item.gameObject.SetActive(true);
-        DebugLog.Log(item.ItemId);
         return item;
     }
 
@@ -145,7 +194,126 @@ public class ObjectPoolManager : MonoBehaviour
         dropItem.gameObject.SetActive(false);
     }
 
-    
+
+    private void BuildObjectPooling()
+    {
+        _buildObjectParent = new GameObject("BuildParent");
+        _buildObjectParent.transform.parent = transform;
+        BuildData[] items = Resources.LoadAll<BuildData>("BuildDatas/");
+
+        for (int i = 0, cnt = items.Length; i < cnt; ++i)
+        {
+            BuildData buildData = items[i];
+            if (_buildObjectPrefabDic.ContainsKey(buildData.Id))
+                continue;
+
+            _buildObjectPrefabDic.Add(buildData.Id, buildData.BuildObjectPrefab);
+            _buildObjectPool.Add(buildData.Id, new Queue<BuildObject>());
+            _useBuildObjectDic.Add(buildData.Id, new HashSet<BuildObject>());
+            for (int j = 0; j < 10; ++j)
+            {
+                BuildObject build = Instantiate(buildData.BuildObjectPrefab, _buildObjectParent.transform);
+                build.SetData(buildData);
+                _buildObjectPool[buildData.Id].Enqueue(build);
+                build.gameObject.SetActive(false);
+            }
+        }
+    }
+
+
+    public BuildObject SpawnBuildObject(string id, Vector3 pos, Quaternion rot)
+    {
+        if (!_buildObjectPrefabDic.TryGetValue(id, out BuildObject buildPrefab))
+            throw new Exception("해당 Id를 가진 Build 오브젝트가 존재하지 않습니다: " + id);
+
+        BuildObject buildObject;
+        if (_buildObjectPool[id].Count <= 0)
+        {
+            buildObject = Instantiate(buildPrefab, _buildObjectParent.transform);
+            _buildObjectPool[id].Enqueue(buildObject);
+            buildObject.gameObject.SetActive(false);
+        }
+
+        buildObject = _buildObjectPool[id].Dequeue();
+        buildObject.transform.position = pos;
+        buildObject.transform.rotation = rot;
+        _useBuildObjectDic[id].Add(buildObject);
+        buildObject.gameObject.SetActive(true);
+        return buildObject;
+    }
+
+
+    public void DespawnBuildObject(BuildObject buildObject)
+    {
+        string id = buildObject.BuildData.Id;
+        if (!_useBuildObjectDic[id].Contains(buildObject))
+            throw new Exception("해당 건축물은 사용중인 셋에 들어있지 않아 오류가 발생합니다." + id);
+
+        _useBuildObjectDic[id].Remove(buildObject);
+        _buildObjectPool[id].Enqueue(buildObject);
+        buildObject.gameObject.SetActive(false);
+    }
+
+
+
+    private void BuildPreviewObjectPooling()
+    {
+        _buildPreviewParent = new GameObject("BuildPreviewParent");
+        _buildPreviewParent.transform.parent = transform;
+        BuildData[] items = Resources.LoadAll<BuildData>("BuildDatas/");
+
+        for (int i = 0, cnt = items.Length; i < cnt; ++i)
+        {
+            BuildData buildData = items[i];
+            if (_buildPreviewPrefabDic.ContainsKey(buildData.Id))
+                continue;
+
+            _buildPreviewPrefabDic.Add(buildData.Id, buildData.PreviewPrefab);
+            _buildPreviewPool.Add(buildData.Id, new Queue<PreviewObject>());
+            _useBuildPreviewDic.Add(buildData.Id, new HashSet<PreviewObject>());
+            for (int j = 0; j < 1; ++j)
+            {
+                PreviewObject build = Instantiate(buildData.PreviewPrefab, _buildPreviewParent.transform);
+                build.SetBuildData(buildData);
+                _buildPreviewPool[buildData.Id].Enqueue(build);
+                build.gameObject.SetActive(false);
+            }
+        }
+    }
+
+
+    public PreviewObject SpawnBuildPreviewObject(string id, Vector3 pos, Quaternion rot)
+    {
+        if (!_buildPreviewPrefabDic.TryGetValue(id, out PreviewObject buildPrefab))
+            throw new Exception("해당 Id를 가진 Build 오브젝트가 존재하지 않습니다: " + id);
+
+        PreviewObject buildObject;
+        if (_buildObjectPool[id].Count <= 0)
+        {
+            buildObject = Instantiate(buildPrefab, _buildPreviewParent.transform);
+            _buildPreviewPool[id].Enqueue(buildObject);
+            buildObject.gameObject.SetActive(false);
+        }
+
+        buildObject = _buildPreviewPool[id].Dequeue();
+        buildObject.transform.position = pos;
+        buildObject.transform.rotation = rot;
+        _useBuildPreviewDic[id].Add(buildObject);
+        buildObject.gameObject.SetActive(true);
+        return buildObject;
+    }
+
+    public void DespawnBuildPreviewObject(PreviewObject previewObject)
+    {
+        string id = previewObject.BuildData.Id;
+        if (!_useBuildPreviewDic[id].Contains(previewObject))
+            throw new Exception("해당 건축물은 사용중인 셋에 들어있지 않아 오류가 발생합니다." + id);
+
+        _useBuildPreviewDic[id].Remove(previewObject);
+        _buildPreviewPool[id].Enqueue(previewObject);
+        previewObject.gameObject.SetActive(false);
+    }
+
 
     private void BulletHoleObjectPooling()
     {
@@ -257,7 +425,10 @@ public class ObjectPoolManager : MonoBehaviour
         yield return YieldCache.WaitForSeconds(10);
 
         if (!_useZombieSet.Contains(enemy.gameObject))
+        {
+            Destroy(enemy.gameObject);
             throw new Exception("해당 몬스터는 사용중인 셋에 들어있지 않아 오류가 발생합니다." + enemy.name);
+        }
 
         _useZombieSet.Remove(enemy.gameObject);
         _zombiePool.Enqueue(enemy.gameObject);

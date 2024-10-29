@@ -19,7 +19,8 @@ public static class UserInfo
 {
     public static event Action OnChangeSpeedHandler;
     public static event Action OnChangeEquipItemHandler;
-    public static event Action OnAddBulletHandler;
+    public static event Action OnChangeBulletHandler;
+    public static event Action OnChangeLoadBulletHandler;
 
     private static int _bulletCount;
     public static int BulletCount => _bulletCount;
@@ -40,6 +41,9 @@ public static class UserInfo
     private static List<SaveDropItemData> _dropItemDataList = new List<SaveDropItemData>();
     public static List<SaveDropItemData> DropItemDataList => _dropItemDataList;
 
+    private static List<SaveDoorData> _doorDataList = new List<SaveDoorData>();
+    public static List<SaveDoorData> DoorDataList => _doorDataList;
+
 
     private static Vector3 _playerPosition;
     public static Vector3 PlayerPosition => _playerPosition;
@@ -55,10 +59,9 @@ public static class UserInfo
         _playerPosition = Vector3.zero;
         _playerRotation = Quaternion.identity;
         _mouseInput = Vector2.zero;
-        _bulletCount = 0;
+        _bulletCount = 100;
         _currentHp = int.MaxValue;
-        _loadBulletCount = -1;
-        _loadBulletCount = 0;
+        _loadBulletCount = int.MaxValue;
         _invenDataList.Clear();
         _invenDataDic.Clear();
         _enemyDataList.Clear();
@@ -76,14 +79,21 @@ public static class UserInfo
             return false;
 
         _bulletCount = _bulletCount + value;
-        OnAddBulletHandler?.Invoke();
+        OnChangeBulletHandler?.Invoke();
         return true;
     }
 
     public static void AddBulletCountNoLimit(int value)
     {
         _bulletCount = Mathf.Max(0, _bulletCount + value);
-        OnAddBulletHandler?.Invoke();
+        OnChangeBulletHandler?.Invoke();
+    }
+
+
+    public static void ChangeLoadBulletCount(int value)
+    {
+        _loadBulletCount = value;
+        OnChangeLoadBulletHandler?.Invoke();
     }
 
 
@@ -147,10 +157,9 @@ public static class UserInfo
     }
 
 
-    public static void SaveGame(Player player, List<Enemy> enemyList, List<DropItem> dropItemList)
+    public static void SaveGame(Player player, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList)
     {
-        _loadBulletCount = player.GunController.CurrentBulletCount;
-        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList);
+        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList, doorList);
 
         string json = JsonUtility.ToJson(saveData, true);
         string path = Application.persistentDataPath + "/GameSave.json";
@@ -182,6 +191,9 @@ public static class UserInfo
             _dropItemDataList.Clear();
             _dropItemDataList = saveData.DropItemDataList;
 
+            _doorDataList.Clear();  
+            _doorDataList = saveData.DoorDataList;
+
             _invenDataList.Clear();
             _invenDataDic.Clear();
             for(int i = 0, cnt = saveData.InvenDataList.Count; i < cnt; i++)
@@ -208,7 +220,6 @@ public static class UserInfo
 
                 if(item is EquipmentItem equipItem)
                     ChangeEquipItem(equipItem);
-
             }
 
             DebugLog.Log("게임 데이터 불러오기 완료");

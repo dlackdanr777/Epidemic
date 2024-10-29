@@ -12,12 +12,15 @@ public class Door : MonoBehaviour, Iinteractive
     [SerializeField] private AudioClip _openClip;
     [SerializeField] private AudioClip _closeClip;
     [SerializeField] private AudioClip _lockClip;
+    [SerializeField] private Barricade _barricade;
+    public Barricade Barricade => _barricade;
 
 
     [Space]
     [Header("Option")]
     [SerializeField] private bool _isLocked;
     private bool _isOpened;
+    public bool IsOpend => _isOpened;
 
 
     public void Interact()
@@ -34,20 +37,43 @@ public class Door : MonoBehaviour, Iinteractive
 
     public void EnableInteraction()
     {
-        if(!_isLocked)
+        if (!_isLocked)
             UIManager.Instance.ShowRightText("[E] ø≠±‚/¥›±‚");
         else
             UIManager.Instance.ShowRightText("[E] ¿·±Ë");
     }
 
 
+    public void SetDoorState(bool isOpend)
+    {
+        _isOpened = isOpend;
+
+        if (isOpend)
+        {
+            _animation["DoorWide_open"].speed = 1;
+            _animation["DoorWide_open"].normalizedTime = 1;
+        }
+
+        else
+        {
+            _animation["DoorWide_open"].speed = -1;
+            _animation["DoorWide_open"].normalizedTime = 0;
+        }
+
+        _animation.Play("DoorWide_open");
+    }
+
 
     private void DoorControll()
     {
+        if (_barricade == null)
+            return;        
+
         if (_isLocked)
         {
             _audioSource.clip = _lockClip;
             _audioSource.Play();
+            return;
         }
 
         if (_animation["DoorWide_open"].normalizedTime != 0)

@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 public class InGame : MonoBehaviour
 {
@@ -24,13 +25,14 @@ public class InGame : MonoBehaviour
     public enum RoundType { Wait, Start, Proceeding, End }
 
 
+    [SerializeField] private Player _player;
     [SerializeField] private UIGame _uiGame;
     [SerializeField] private Transform _spawnPos;
     [SerializeField] private Rounds[] _rounds;
     [SerializeField] private AudioClip _bgMusic;
     [SerializeField] private List<Enemy> _defalutEnemyList;
     [SerializeField] private List<DropItem> _dropItemList;
-
+    [SerializeField] private List<Door> _doorList;
 
     
     private RoundType _roundType;
@@ -82,7 +84,6 @@ public class InGame : MonoBehaviour
             _dropItemList.Clear();
 
             List<SaveDropItemData> dropItemDataList = UserInfo.DropItemDataList;
-            DebugLog.Log(dropItemDataList.Count);
             for(int i = 0, cnt = dropItemDataList.Count; i < cnt; ++i)
             {
                 Vector3 pos = dropItemDataList[i].Position;
@@ -90,6 +91,22 @@ public class InGame : MonoBehaviour
                 DropItem dropItem = ObjectPoolManager.Instance.SpawnDropItem(dropItemDataList[i].ItemId, pos, rot);
             }
 
+            List<SaveDoorData> doorDataList = UserInfo.DoorDataList;
+            for(int i = 0, cnt = doorDataList.Count; i < cnt; ++i)
+            {
+                if (_doorList[i] == null)
+                {
+                    DebugLog.LogError("Door Index가 부족합니다: " + i);
+                    continue;
+                }
+
+                _doorList[i].SetDoorState(doorDataList[i].IsOpened);
+
+                if (_doorList[i].Barricade == null)
+                    continue;
+
+                _doorList[i].Barricade.SetHp(doorDataList[i].DoorHp);
+            }
         }
     }
 
@@ -97,6 +114,36 @@ public class InGame : MonoBehaviour
     {
         _isGameStart = true;
     }
+
+
+    private void OnSaveGame()
+    {
+        List<Enemy> enemyList = FindObjectsOfType<Enemy>().ToList();
+        for (int i = 0, cnt = enemyList.Count; i < cnt; ++i)
+        {
+            if (!enemyList[i].gameObject.activeSelf || enemyList[i].Hp <= enemyList[i].MinHp)
+            {
+                enemyList.RemoveAt(i--);
+                --cnt;
+            }
+        }
+
+        List<DropItem> dropItemList = new List<DropItem>();
+        
+        for(int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
+        {
+            if (_dropItemList[i] == null)
+                continue;
+
+            if (!_dropItemList[i].gameObject.activeSelf)
+                continue;
+
+            dropItemList.Add(_dropItemList[i]);
+        }
+
+        UserInfo.SaveGame(_player, enemyList, dropItemList, _doorList);
+    }
+
 
 
     private void EndGame()
@@ -107,6 +154,11 @@ public class InGame : MonoBehaviour
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            OnSaveGame();
+        }
+
         if (!_isGameStart)
             return;
 

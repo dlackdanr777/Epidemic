@@ -24,8 +24,9 @@ public class SaveData
     public List<string> EquipItemDataList = new List<string>();
     public List<SaveEnemyData> EnemyDataList = new List<SaveEnemyData>();
     public List<SaveDropItemData> DropItemDataList = new List<SaveDropItemData>();
+    public List<SaveDoorData> DoorDataList = new List<SaveDoorData>();
 
-    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList, List<DropItem> dropItemList)
+    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList)
     {
         PlayerPositionX = player.transform.position.x;
         PlayerPositionY = player.transform.position.y;
@@ -67,6 +68,12 @@ public class SaveData
         for(int i = 0, cnt = dropItemList.Count; i < cnt; ++i)
         {
             DropItemDataList.Add(new SaveDropItemData(dropItemList[i]));
+        }
+
+        DoorDataList.Clear();
+        for(int i = 0, cnt = doorList.Count; i < cnt; ++i)
+        {
+            DoorDataList.Add(new SaveDoorData(doorList[i]));
         }
     }
 
@@ -224,6 +231,19 @@ public class SaveDropItemData
         RotationZ = rot.z;
         RotationW = rot.w;
     }
-
 }
+
+[Serializable]
+public class SaveDoorData
+{
+    public bool IsOpened;
+    public float DoorHp;
+
+    public SaveDoorData(Door door)
+    {
+        IsOpened = door.IsOpend;
+        DoorHp = door.Barricade == null ? 0 : door.Barricade.Hp;
+    }
+}
+
 

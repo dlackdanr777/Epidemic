@@ -72,7 +72,7 @@ public class GridInventory : MonoBehaviour
         OnUpdateHandler?.Invoke();
     }
 
-    public bool UseItemByID(string id, int amount)
+    public bool IsGiveItemByID(string id, int amount)
     {
         if (amount <= 0)
         {
@@ -82,7 +82,7 @@ public class GridInventory : MonoBehaviour
 
         ItemData data = ItemManager.Instance.GetItemDataByID(id);
 
-        if(data == null)
+        if (data == null)
         {
             DebugLog.LogError("존재하지 않는 아이템 id 입니다." + id);
             return false;
@@ -95,9 +95,27 @@ public class GridInventory : MonoBehaviour
             return false;
         }
 
-        _invenData.RemoveItems(data, amount);
-        OnUpdateHandler?.Invoke();
         return true;
+    }
+
+    public bool UseItemByID(string id, int amount)
+    {
+        ItemData data = ItemManager.Instance.GetItemDataByID(id);
+
+        if (data == null)
+        {
+            DebugLog.LogError("존재하지 않는 아이템 id 입니다." + id);
+            return false;
+        }
+
+        if (IsGiveItemByID(id, amount))
+        {
+            _invenData.RemoveItems(data, amount);
+            OnUpdateHandler?.Invoke();
+            return true;
+        }
+
+        return false;
     }
 
 

@@ -1,3 +1,4 @@
+using Muks.DataBind;
 using Muks.PcUI;
 using Muks.Tween;
 using UnityEngine;
@@ -22,7 +23,7 @@ public class UIBuild : PcUIView
     [SerializeField] private TweenMode _hideTweenMode;
 
     private Vector2 _tmpPos;
-
+    private BuildData[] _buildDatas;
     public override void Init()
     {
         SetSlots();
@@ -69,25 +70,24 @@ public class UIBuild : PcUIView
 
     private void SetSlots()
     {
-        //건축물 정보 구조체 배열의 길이를 가져온다.
-        int craftItemLength = _buildSystem.GetCraftItemLength();
-        _buildSlot = new UIBuildSlot[craftItemLength];
+      //건축물 정보 구조체 배열의 길이를 가져온다.
+        _buildDatas = BuildManager.Instance.BuildDatas;
+        _buildSlot = new UIBuildSlot[_buildDatas.Length];
 
-        for (int i = 0, count = craftItemLength; i < count ; i++)
+        for (int i = 0, cnt = _buildDatas.Length; i < cnt; i++)
         {
-            _buildSlot[i] = Instantiate(_slotPrefab, Vector3.zero, Quaternion.identity);
-            _buildSlot[i].transform.parent = _gridLayout;
-            _buildSlot[i].UpdateUI(_buildSystem.GetCraftItem(i));
-
             int index = i;
-            _buildSlot[i].Button.onClick.AddListener(() => OnButtonClicked(index));
+            _buildSlot[index] = Instantiate(_slotPrefab, Vector3.zero, Quaternion.identity);
+            _buildSlot[index].transform.parent = _gridLayout;
+            _buildSlot[index].UpdateUI(_buildDatas[index]);
+            _buildSlot[index].Button.onClick.AddListener(() => OnButtonClicked(_buildDatas[index]));
         }
     }
 
 
-    private void OnButtonClicked(int index)
+    private void OnButtonClicked(BuildData buildData)
     {
-        _buildSystem.SelectCraftItem(index);
+        _buildSystem.SelectCraftItem(buildData);
         _uiNav.Pop("UIBuild");
     }
 

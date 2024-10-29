@@ -9,10 +9,16 @@ public class PreviewObject : MonoBehaviour
     private List<Collider> _colliders = new List<Collider>();
     private const int IGNORE_RAYCAST_LAYER = 2;
 
-    private string _itemID;
-    private int _itemAmount;
-
     private List<Renderer> _renderers = new List<Renderer>();
+
+    private BuildData _buildData;
+    public BuildData BuildData => _buildData;
+
+    public void SetBuildData(BuildData buildData)
+    {
+        _buildData = buildData;
+    }
+
 
     private void Start()
     {
@@ -23,21 +29,29 @@ public class PreviewObject : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_buildData == null)
+            return;
+
         ChangeColor();
     }
 
-    public void SetItem(string id, int Amount)
-    {
-        _itemID = id;
-        _itemAmount = Amount;
-    }
 
     /// <summary> 겹치는 오브젝트가 있는지, 재료 아이템 보유 여부를 판단해 색을 변경하는 함수 </summary>
     private void ChangeColor()
     {
-        int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_itemID);
+        bool isGiveItem = false;
+        for (int i = 0, cnt = BuildData.NeedItemData.Length; i < cnt; ++i)
+        {
+            int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(BuildData.NeedItemData[i].NeedItemId);
 
-        if (_colliders.Count > 0 || itemCount < _itemAmount)
+            if (itemCount < BuildData.NeedItemData[i].NeedItemAmount)
+            {
+                isGiveItem = false;
+                break;
+            }
+        }
+
+        if (_colliders.Count > 0 || !isGiveItem)
             SetColor(_redMaterial);
         else
             SetColor(_greenMaterial);

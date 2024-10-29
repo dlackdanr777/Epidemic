@@ -1,3 +1,4 @@
+using Muks.DataBind;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,35 +11,43 @@ public class UIBuildSlot : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _ingredientText;
 
     private string _craftName;
-    private string _itemName;
-    private int _itemAmount;
-    private string _itemID;
+    private BuildData _buildData;
 
     public Button Button;
 
     public void OnEnable()
     {
-        int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_itemID);
+        if (_buildData == null)
+            return;
 
-        itemCount = itemCount <= 0 ? 0 : itemCount;
-
-        _ingredientText.text = _itemName;
-        _ingredientText.text += "  " + itemCount + "/" + _itemAmount;
+        _ingredientText.text = string.Empty;
+        for (int i = 0, cnt = _buildData.NeedItemData.Length; i < cnt; ++i)
+        {
+            int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_buildData.NeedItemData[i].NeedItemId);
+            _ingredientText.text += ItemManager.Instance.GetItemDataByID(_buildData.NeedItemData[i].NeedItemId).Name;
+            _ingredientText.text += "  " + itemCount + "/" + _buildData.NeedItemData[i].NeedItemAmount;
+        }
     }
 
 
 
-    public void UpdateUI(Craft craft)
+    public void UpdateUI(BuildData buildData)
     {
-        _iconImage.sprite = craft.Sprite;
-        _craftName = craft.Name;
-        _itemName = ItemManager.Instance.GetItemByID(craft.NecessaryItemId).Data.Name;
-        _itemAmount = craft.NecessaryItemAmount;
-        _itemID = craft.NecessaryItemId;
-
+        _buildData = buildData;
+        _iconImage.sprite = buildData.Sprite;
+        _craftName = buildData.Name;
         _nameText.text = _craftName;
-        _ingredientText.text = _itemName;
-        _ingredientText.text += "  0/" + _itemAmount;
+
+        _ingredientText.text = string.Empty;
+        for (int i = 0, cnt = buildData.NeedItemData.Length; i < cnt; ++i)
+        {
+            int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(buildData.NeedItemData[i].NeedItemId);
+            _ingredientText.text += ItemManager.Instance.GetItemDataByID(buildData.NeedItemData[i].NeedItemId).Name;
+            _ingredientText.text += "  " + itemCount + "/" + buildData.NeedItemData[i].NeedItemAmount;
+        }
+
+
+
     }
 
 }

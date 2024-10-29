@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4821763474736013293}
   - component: {fileID: 8813622156885327703}
   - component: {fileID: -6912649361328617565}
+  - component: {fileID: 1258912249201849693}
   m_Layer: 14
   m_Name: TeacherTable 1
   m_TagString: Wood
@@ -119,9 +120,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e7050d70f019148b6458fbd58f5b79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _targetObject: {fileID: 0}
   _maxHp: 100
   _minHp: 0
-  _debrisPrefub: {fileID: 0}
 --- !u!208 &-6912649361328617565
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -138,3 +139,15 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0.35000002, z: 0}
   m_TimeToStationary: 0.01
+--- !u!114 &1258912249201849693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520523970247434764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1624553fbca5e054a8d7aea6215cf686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

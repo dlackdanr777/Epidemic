@@ -73,9 +73,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4290045977357102}
   - component: {fileID: 65969927483025520}
-  - component: {fileID: 5302105820213132653}
   - component: {fileID: 5386373477984137580}
   - component: {fileID: 2533636340396107583}
+  - component: {fileID: 943413072547957680}
   m_Layer: 14
   m_Name: Joint
   m_TagString: Wood
@@ -120,24 +120,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.0196574, y: 2.118874, z: 0.040575966}
   m_Center: {x: 0.5071532, y: 1.094127, z: -0.023948718}
---- !u!114 &5302105820213132653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1327374635387866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dd2181adfb6392489979a1c51c22e38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _animation: {fileID: 111956634575385480}
-  _audioSource: {fileID: 4453207748688363398}
-  _openClip: {fileID: 8300000, guid: 7d492295b0947d34c8b99bb8fb81a65f, type: 3}
-  _closeClip: {fileID: 8300000, guid: d3f29e36d1ee8254ba55cc038a92f131, type: 3}
-  _lockClip: {fileID: 8300000, guid: f03382335ea0d5144b39af637398ec53, type: 3}
-  _isLocked: 0
 --- !u!114 &5386373477984137580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,9 +132,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e7050d70f019148b6458fbd58f5b79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _targetObject: {fileID: 1327374635387866}
   _maxHp: 200
   _minHp: 0
-  _debrisPrefub: {fileID: 0}
 --- !u!208 &2533636340396107583
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -169,6 +151,25 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 0
   m_Center: {x: 0.5071532, y: 1.094127, z: -0.02394872}
   m_TimeToStationary: 0.01
+--- !u!114 &943413072547957680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1327374635387866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dd2181adfb6392489979a1c51c22e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animation: {fileID: 111956634575385480}
+  _audioSource: {fileID: 4453207748688363398}
+  _openClip: {fileID: 8300000, guid: 7d492295b0947d34c8b99bb8fb81a65f, type: 3}
+  _closeClip: {fileID: 8300000, guid: d3f29e36d1ee8254ba55cc038a92f131, type: 3}
+  _lockClip: {fileID: 8300000, guid: f03382335ea0d5144b39af637398ec53, type: 3}
+  _barricade: {fileID: 5386373477984137580}
+  _isLocked: 0
 --- !u!1 &1817989828873344
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,7 +291,7 @@ Transform:
   - {fileID: 4795725551432742}
   - {fileID: 4500484949593516}
   m_Father: {fileID: 0}
-  m_RootOrder: 93
+  m_RootOrder: 68
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!111 &111956634575385480
 Animation:
