@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class EquipmentItemData : ItemData, IEquipmentItem
+public abstract class EquipmentItemData : InventoryItemData, IEquipmentItem
 {
     [Space]
     [Header("장비 아이템 정보")]

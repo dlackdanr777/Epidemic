@@ -36,7 +36,7 @@ public class InvenData
     }
 
 
-    public bool AddItem(ItemData data, int indexX, int indexY)
+    public bool AddItem(InventoryItemData data, int indexX, int indexY)
     {
         if (!IsSlotAvailable(indexX, indexY, data.Width, data.Height))
         {
@@ -59,12 +59,12 @@ public class InvenData
             }
         }
 
-        AddCount(data.ID, 1);
+        AddCount(data.Id, 1);
         return true;
     }
 
 
-    public bool AddItem(ItemData data)
+    public bool AddItem(InventoryItemData data)
     {
         Vector2Int slotIndex = GetNullSlotIndex(data);
 
@@ -87,7 +87,7 @@ public class InvenData
             }
         }
 
-        AddCount(data.ID, 1);
+        AddCount(data.Id, 1);
         return true;
     }
 
@@ -106,12 +106,12 @@ public class InvenData
             }
         }
 
-        SubCount(item.Data.ID, 1);
+        SubCount(item.Data.Id, 1);
     }
 
-    public void RemoveItems(ItemData data, int amount)
+    public void RemoveItems(InventoryItemData data, int amount)
     {
-        SubCount(data.ID, amount);
+        SubCount(data.Id, amount);
 
         for (int y = 0; y < _height; y++)
         {
@@ -120,7 +120,7 @@ public class InvenData
                 if (amount <= 0)
                     break;
 
-                if (_slots[y, x].Item.Data.ID != data.ID)
+                if (_slots[y, x].Item.Data.Id != data.Id)
                     continue;
 
                 for (int i = y, cntI = y + data.Height - 1; i < cntI; ++i)
@@ -137,7 +137,7 @@ public class InvenData
         }
     }
 
-    public void RemoveItem(ItemData data, int startX, int startY)
+    public void RemoveItem(InventoryItemData data, int startX, int startY)
     {
         int width = data.Width;
         int height = data.Height;
@@ -156,12 +156,12 @@ public class InvenData
             }
         }
 
-        AddCount(data.ID, 1);
+        AddCount(data.Id, 1);
     }
 
-    public int GetItemCount(ItemData data)
+    public int GetItemCount(InventoryItemData data)
     {
-        if (_itemCountDic.TryGetValue(data.ID, out var count))
+        if (_itemCountDic.TryGetValue(data.Id, out var count))
         {
             return count < 0 ? 0 : count;
         }
@@ -170,7 +170,7 @@ public class InvenData
     }
 
 
-    private Vector2Int GetNullSlotIndex(ItemData data)
+    private Vector2Int GetNullSlotIndex(InventoryItemData data)
     {
         for (int y = 0, cntY = _height - data.Height + 1; y < cntY; y++)
         {

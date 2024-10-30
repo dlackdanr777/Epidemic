@@ -53,7 +53,7 @@ public class GunController : MonoBehaviour, IAttack
     private void Awake()
     {
         _gunDic.Clear();
-        ItemData data = ItemManager.Instance.GetItemDataByID(_defalutGun.Id);
+        InventoryItemData data = ItemManager.Instance.GetItemDataByID(_defalutGun.Id);
         if(data is WeaponItemData defalutData)
             _defalutGun.SetWeaponData(defalutData);
         else
@@ -385,7 +385,7 @@ public class GunController : MonoBehaviour, IAttack
             return;
         }
 
-        if (_gunDic.TryGetValue(item.Data.ID, out Gun selectGun))
+        if (_gunDic.TryGetValue(item.Data.Id, out Gun selectGun))
         {
             if (selectGun == _currentGun)
             {
@@ -395,7 +395,7 @@ public class GunController : MonoBehaviour, IAttack
         }
         else
         {
-            DebugLog.LogError("해당 이름을 가진 gun id가 딕셔너리에 등록되지 않았습니다: " + item.Data.ID);
+            DebugLog.LogError("해당 이름을 가진 gun id가 딕셔너리에 등록되지 않았습니다: " + item.Data.Id);
             return;
         }
 
@@ -445,7 +445,7 @@ public class GunController : MonoBehaviour, IAttack
         }
 
 
-        if (_gunDic.TryGetValue(item.Data.ID, out Gun selectGun))
+        if (_gunDic.TryGetValue(item.Data.Id, out Gun selectGun))
         {
             if(selectGun == _currentGun)
             {
@@ -455,7 +455,7 @@ public class GunController : MonoBehaviour, IAttack
         }
         else
         {
-            DebugLog.LogError("해당 이름을 가진 gun id가 딕셔너리에 등록되지 않았습니다: " + item.Data.ID);
+            DebugLog.LogError("해당 이름을 가진 gun id가 딕셔너리에 등록되지 않았습니다: " + item.Data.Id);
             return;
         }
 

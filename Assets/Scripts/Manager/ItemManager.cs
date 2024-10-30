@@ -22,12 +22,12 @@ public class ItemManager : MonoBehaviour
 
 
     private static ItemManager _instance;
-    private static ItemData[] _items;
-    private static Dictionary<string, ItemData> _itemDic = new Dictionary<string, ItemData>();
+    private static InventoryItemData[] _items;
+    private static Dictionary<string, InventoryItemData> _itemDic = new Dictionary<string, InventoryItemData>();
 
     public Item GetItemByID(string ID) 
     { 
-        if(_itemDic.TryGetValue(ID, out ItemData data))
+        if(_itemDic.TryGetValue(ID, out InventoryItemData data))
         {
             return data.CreateItem();
         }
@@ -35,9 +35,9 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
-    public ItemData GetItemDataByID(string ID)
+    public InventoryItemData GetItemDataByID(string ID)
     {
-        if (_itemDic.TryGetValue(ID, out ItemData data))
+        if (_itemDic.TryGetValue(ID, out InventoryItemData data))
         {
             return data;
         }
@@ -46,7 +46,7 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
-    public string GetItemEffectText(ItemData data)
+    public string GetItemEffectText(InventoryItemData data)
     {
         string effectDescription = string.Empty;
 
@@ -98,11 +98,11 @@ public class ItemManager : MonoBehaviour
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
-        _items = Resources.LoadAll<ItemData>("Item");
+        _items = Resources.LoadAll<InventoryItemData>("Item");
         _itemDic.Clear();
         for(int i = 0, cnt = _items.Length; i < cnt; i++)
         {
-            _itemDic.Add(_items[i].ID, _items[i]);
+            _itemDic.Add(_items[i].Id, _items[i]);
         }
     }
 }

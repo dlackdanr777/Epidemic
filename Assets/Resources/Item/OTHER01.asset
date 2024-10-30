@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: OTHER01
   _name: "\uBAA9\uC7AC"
-  _description: 
+  _description: "\uBC84\uB824\uC9C4 \uBAA9\uC7AC\n\uAC74\uCD95\uBB3C\uC744 \uB9CC\uB4DC\uB294\uB370
+    \uC0AC\uC6A9\uD560 \uC218 \uC788\uC744\uAC70 \uAC19\uB2E4."
   _sprite: {fileID: 21300000, guid: 9e3605e7f019a70429839ab633703d72, type: 3}
   _width: 2
   _height: 1

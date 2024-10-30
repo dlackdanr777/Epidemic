@@ -25,7 +25,7 @@ public class GridInventory : MonoBehaviour
     }
 
 
-    public bool AddItem(ItemData data)
+    public bool AddItem(InventoryItemData data)
     {
         bool enabled = _invenData.AddItem(data);
 
@@ -48,7 +48,7 @@ public class GridInventory : MonoBehaviour
         return enabled;
     }
 
-    public bool AddItem(ItemData data, int indexX, int indexY)
+    public bool AddItem(InventoryItemData data, int indexX, int indexY)
     {
         bool enabled = _invenData.AddItem(data, indexX, indexY);
 
@@ -66,7 +66,7 @@ public class GridInventory : MonoBehaviour
     }
 
 
-    public void RemoveItem(ItemData item, int startX, int startY)
+    public void RemoveItem(InventoryItemData item, int startX, int startY)
     {
         _invenData.RemoveItem(item, startX, startY);
         OnUpdateHandler?.Invoke();
@@ -80,7 +80,7 @@ public class GridInventory : MonoBehaviour
             return false;
         }
 
-        ItemData data = ItemManager.Instance.GetItemDataByID(id);
+        InventoryItemData data = ItemManager.Instance.GetItemDataByID(id);
 
         if (data == null)
         {
@@ -100,7 +100,7 @@ public class GridInventory : MonoBehaviour
 
     public bool UseItemByID(string id, int amount)
     {
-        ItemData data = ItemManager.Instance.GetItemDataByID(id);
+        InventoryItemData data = ItemManager.Instance.GetItemDataByID(id);
 
         if (data == null)
         {
@@ -121,7 +121,7 @@ public class GridInventory : MonoBehaviour
 
     public int GetItemCountByID(string id)
     {
-        ItemData data = ItemManager.Instance.GetItemDataByID(id);
+        InventoryItemData data = ItemManager.Instance.GetItemDataByID(id);
 
         if (data == null)
         {

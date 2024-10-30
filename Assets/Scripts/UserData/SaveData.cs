@@ -50,7 +50,7 @@ public class SaveData
             if (equipItems[i] == null)
                 continue;
 
-            EquipItemDataList.Add(equipItems[i].Data.ID);
+            EquipItemDataList.Add(equipItems[i].Data.Id);
         }
 
         InvenDataList.Clear();
@@ -153,7 +153,7 @@ public class SaveGridSlot
         if (slot.Item.Data == null)
             return;
 
-        ItemId = slot.Item.Data.ID;
+        ItemId = slot.Item.Data.Id;
         IsMainSlot = slot.IsMainSlot;
     }
 

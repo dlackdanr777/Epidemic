@@ -187,7 +187,11 @@ public class ObjectPoolManager : MonoBehaviour
     public void DespawnDropItem(DropItem dropItem)
     {
         if (!_useDropItemDic[dropItem.ItemId].Contains(dropItem))
-            throw new Exception("해당 아이템은 사용중인 셋에 들어있지 않아 오류가 발생합니다." + dropItem.ItemId);
+        {
+            Destroy(dropItem.gameObject);
+            DebugLog.Log("해당 아이템은 사용중인 셋에 들어있지 않아 파괴합니다." + dropItem.ItemId);
+            return;
+        }
 
         _useDropItemDic[dropItem.ItemId].Remove(dropItem);
         _dropItemPool[dropItem.ItemId].Enqueue(dropItem);

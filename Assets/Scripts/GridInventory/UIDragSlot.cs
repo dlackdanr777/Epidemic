@@ -75,7 +75,7 @@ public class UIDragSlot : MonoBehaviour
     }
 
 
-    public bool AddItem(ItemData data)
+    public bool AddItem(InventoryItemData data)
     {
         return CurrentUIInven.Inven.AddItem(data);
     }

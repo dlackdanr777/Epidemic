@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -112,25 +113,45 @@ public class UIGridInventory : MonoBehaviour
     {
         int width = item.Data.Width;
         int height = item.Data.Height;
+        bool dropEnabled = true;
+
+        if (_invenHeight < y + height || _invenWidth < x + width)
+        {
+            for (int i = y, cntY = Mathf.Clamp(y + height, y, _invenHeight); i < cntY; ++i)
+            {
+                for (int j = x, cntX = Mathf.Clamp(x + width, x, _invenWidth); j < cntX; ++j)
+                {
+                    _slots[i, j].SetColor(false);
+                }
+            }
+            return;
+        }
+
         for (int i = y, cntY = Mathf.Clamp(y + height, y, _invenHeight); i < cntY; ++i)
         {
             for (int j = x, cntX = Mathf.Clamp(x + width, x, _invenWidth); j < cntX; ++j)
             {
-                if(_inven.GridSlots[i, j].Item == null)
-                {
-                    _slots[i, j].SetColor(true);
-                    continue;
-                }
 
-                if (_inven.GridSlots[i,j].Item == item)
-                {
-                    _slots[i, j].SetColor(true);
+                if(_inven.GridSlots[i, j].Item == null || _inven.GridSlots[i, j].Item == item)
                     continue;
-                }
 
-                _slots[i, j].SetColor(false);
+                dropEnabled = false;
+                break;
+            }
+
+            if (!dropEnabled)
+                break;
+        }
+
+        for (int i = y, cntY = Mathf.Clamp(y + height, y, _invenHeight); i < cntY; ++i)
+        {
+            for (int j = x, cntX = Mathf.Clamp(x + width, x, _invenWidth); j < cntX; ++j)
+            {
+                _slots[i, j].SetColor(dropEnabled);
             }
         }
+
+
     }
 
 

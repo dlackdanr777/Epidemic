@@ -31,7 +31,7 @@ public class DropItem : MonoBehaviour, Iinteractive
 
     public void EnableInteraction()
     {
-        UIManager.Instance.ShowRightText("[E] "+ _itemName);
+        UIManager.Instance.ShowRightText("[E] " + _itemName);
     }
 
 
@@ -52,10 +52,15 @@ public class DropItem : MonoBehaviour, Iinteractive
         }
         else
         {
-            GameManager.Instance.Player.Inventory.AddItem(_itemId);
+            if (!GameManager.Instance.Player.Inventory.AddItem(_itemId))
+            {
+                UIManager.Instance.ShowCenterText("¿Œ∫•≈‰∏Æ∞° ∞°µÊ √°Ω¿¥œ¥Ÿ.");
+                return;
+            }
         }
 
         UIManager.Instance.ShowCenterText(_itemName + "¿ª(∏¶) »πµÊ«œø¥Ω¿¥œ¥Ÿ.");
-        Destroy(gameObject);
+
+        ObjectPoolManager.Instance.DespawnDropItem(this);
     }
 }

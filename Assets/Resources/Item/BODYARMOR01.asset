@@ -16,9 +16,9 @@ MonoBehaviour:
   _name: "\uB0A1\uC740 \uBC29\uD0C4\uBCF5"
   _description: "\uB9CE\uC774 \uD5E4\uC9C4 \uBC29\uD0C4\uBCF5\n\uC131\uB2A5\uC740
     \uAE30\uB300\uD558\uC9C0 \uB9D0\uC790"
-  _sprite: {fileID: 21300000, guid: 1b4becbf34fbf0c49bd5df46763cd427, type: 3}
-  _width: 2
-  _height: 2
+  _sprite: {fileID: 21300000, guid: 193cdecb06baf4c4e96e2b609b05597c, type: 3}
+  _width: 3
+  _height: 3
   _type: 5
-  _addArmor: 5
-  _addSpeedMul: -0.1
+  _addArmor: 20
+  _addSpeed: -0.2

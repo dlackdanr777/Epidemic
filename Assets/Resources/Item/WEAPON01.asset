@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: WEAPON01
   _name: AK47
-  _description: "\uAC15\uB825\uD55C \uCD1D"
-  _sprite: {fileID: 21300000, guid: f23c6f625ecc547479e7e307569e3e3c, type: 3}
+  _description: "\uC0AC\uACA9\uC18D\uB3C4\uB294 \uB290\uB9AC\uC9C0\uB9CC \uAC15\uB825\uD55C
+    \uD654\uB825\uC744 \uBF50\uB0B8\uB2E4."
+  _sprite: {fileID: 21300000, guid: 85d3f2a215b0d8b4cb5839b576e3fe8c, type: 3}
   _width: 4
   _height: 2
   _type: 4

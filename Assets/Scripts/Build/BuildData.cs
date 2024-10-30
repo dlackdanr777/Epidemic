@@ -2,17 +2,8 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildData", menuName = "BuildData")]
-public class BuildData : ScriptableObject
+public class BuildData : BasicData
 {
-    [SerializeField] private string _id;
-    public string Id => _id;
-
-    [SerializeField] private Sprite _sprite;
-    public Sprite Sprite => _sprite;
-
-    [SerializeField] private string _name;
-    public string Name => _name;
-
     [SerializeField] private int _hp;
     public int Hp => _hp;
 
