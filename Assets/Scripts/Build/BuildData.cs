@@ -13,6 +13,9 @@ public class BuildData : ScriptableObject
     [SerializeField] private string _name;
     public string Name => _name;
 
+    [SerializeField] private int _hp;
+    public int Hp => _hp;
+
     [SerializeField] private NeedItemData[] _needItemData;
     public NeedItemData[] NeedItemData => _needItemData;
 

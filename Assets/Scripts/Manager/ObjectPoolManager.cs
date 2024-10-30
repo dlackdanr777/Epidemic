@@ -237,6 +237,7 @@ public class ObjectPoolManager : MonoBehaviour
         buildObject = _buildObjectPool[id].Dequeue();
         buildObject.transform.position = pos;
         buildObject.transform.rotation = rot;
+        buildObject.SetHp(buildObject.MaxHp);
         _useBuildObjectDic[id].Add(buildObject);
         buildObject.gameObject.SetActive(true);
         return buildObject;

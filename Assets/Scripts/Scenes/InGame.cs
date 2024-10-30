@@ -107,6 +107,14 @@ public class InGame : MonoBehaviour
 
                 _doorList[i].Barricade.SetHp(doorDataList[i].DoorHp);
             }
+
+            List<SaveBuildObjectData> buildObjectDataList = UserInfo.BuildObjectDataList;
+            for(int i = 0, cnt = buildObjectDataList.Count; i < cnt; ++i)
+            {
+                Vector3 pos = buildObjectDataList[i].Position;
+                Quaternion rot = buildObjectDataList[i].Rotation;
+                BuildObject buildObject = ObjectPoolManager.Instance.SpawnBuildObject(buildObjectDataList[i].Id, pos, rot);
+            }
         }
     }
 
@@ -141,7 +149,17 @@ public class InGame : MonoBehaviour
             dropItemList.Add(_dropItemList[i]);
         }
 
-        UserInfo.SaveGame(_player, enemyList, dropItemList, _doorList);
+        List<BuildObject> buildObjectList = FindObjectsOfType<BuildObject>().ToList();
+        for(int i = 0, cnt = buildObjectList.Count; i < cnt; ++i)
+        {
+            if (!enemyList[i].gameObject.activeSelf || buildObjectList[i].Hp <= buildObjectList[i].MinHp)
+            {
+                buildObjectList.RemoveAt(i--);
+                --cnt;
+            }
+        }
+
+        UserInfo.SaveGame(_player, enemyList, dropItemList, _doorList, buildObjectList);
     }
 
 

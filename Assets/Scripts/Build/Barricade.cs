@@ -13,10 +13,7 @@ public class Barricade : MonoBehaviour, IHp
             if (_hp == value)
                 return;
 
-            if (value > _maxHp)
-                value = _maxHp;
-            else if (value < _minHp)
-                value = _minHp;
+            _hp = Mathf.Clamp(value, _minHp, _maxHp);
 
             _hp = value;
             OnHpChanged?.Invoke(value);
@@ -39,21 +36,13 @@ public class Barricade : MonoBehaviour, IHp
 
     private float _hp;
     [SerializeField] private GameObject _targetObject;
-    [SerializeField] private float _maxHp;
-    [SerializeField] private float _minHp = 0;
+    [SerializeField] protected float _maxHp;
+    [SerializeField] protected float _minHp = 0;
 
 
     public void Awake()
     {
         Hp = _maxHp;
-        OnHpMin += DestroyObject;
-    }
-
-
-    private void DestroyObject()
-    {
-        Destroy(_targetObject);
-        OnHpMin = null;
     }
 
 
@@ -61,17 +50,16 @@ public class Barricade : MonoBehaviour, IHp
     {
         if (value == 0)
         {
-            DestroyObject();
+            OnHpMinEvcent();
             return;
         }
 
-        _hp = value;
+        Hp = value;
     }
 
     public void DepleteHp(object subject, float value)
     {
         Hp -= value;
-        DebugLog.Log("¸ÂÀ½" + Hp);
         OnHpDepleted?.Invoke(subject, value);
     }
 
@@ -79,5 +67,11 @@ public class Barricade : MonoBehaviour, IHp
     public void RecoverHp(object subject, float value)
     {
         OnHpRecoverd?.Invoke(subject, value);
+    }
+
+
+    protected virtual void OnHpMinEvcent()
+    {
+        Destroy(_targetObject);
     }
 }

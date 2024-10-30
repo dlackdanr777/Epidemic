@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour
 
     private static UIManager _instance;
 
-    private UIManagerCanvas _uiManagerCanvas;
+    private static UIManagerCanvas _uiManagerCanvas;
 
     public void Awake()
     {
@@ -31,6 +31,8 @@ public class UIManager : MonoBehaviour
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
+        if (_uiManagerCanvas != null)
+            return;
 
         UIManagerCanvas uIManagerCanvas = Resources.Load<UIManagerCanvas>("UI/UIManagerCanvas");
         _uiManagerCanvas = Instantiate(uIManagerCanvas, transform);

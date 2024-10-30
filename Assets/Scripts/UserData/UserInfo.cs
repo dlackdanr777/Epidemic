@@ -44,6 +44,9 @@ public static class UserInfo
     private static List<SaveDoorData> _doorDataList = new List<SaveDoorData>();
     public static List<SaveDoorData> DoorDataList => _doorDataList;
 
+    private static List<SaveBuildObjectData> _buildObjectDataList = new List<SaveBuildObjectData>();
+    public static List<SaveBuildObjectData> BuildObjectDataList => _buildObjectDataList;
+
 
     private static Vector3 _playerPosition;
     public static Vector3 PlayerPosition => _playerPosition;
@@ -157,9 +160,9 @@ public static class UserInfo
     }
 
 
-    public static void SaveGame(Player player, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList)
+    public static void SaveGame(Player player, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList, List<BuildObject> buildObjectList)
     {
-        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList, doorList);
+        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList, doorList, buildObjectList);
 
         string json = JsonUtility.ToJson(saveData, true);
         string path = Application.persistentDataPath + "/GameSave.json";
@@ -193,6 +196,9 @@ public static class UserInfo
 
             _doorDataList.Clear();  
             _doorDataList = saveData.DoorDataList;
+
+            _buildObjectDataList.Clear();
+            _buildObjectDataList = saveData.BuildObjectDataList;
 
             _invenDataList.Clear();
             _invenDataDic.Clear();

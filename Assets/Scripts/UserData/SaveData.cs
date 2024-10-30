@@ -25,8 +25,9 @@ public class SaveData
     public List<SaveEnemyData> EnemyDataList = new List<SaveEnemyData>();
     public List<SaveDropItemData> DropItemDataList = new List<SaveDropItemData>();
     public List<SaveDoorData> DoorDataList = new List<SaveDoorData>();
+    public List<SaveBuildObjectData> BuildObjectDataList = new List<SaveBuildObjectData>();
 
-    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList)
+    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList, List<BuildObject> buildObjectList)
     {
         PlayerPositionX = player.transform.position.x;
         PlayerPositionY = player.transform.position.y;
@@ -74,6 +75,12 @@ public class SaveData
         for(int i = 0, cnt = doorList.Count; i < cnt; ++i)
         {
             DoorDataList.Add(new SaveDoorData(doorList[i]));
+        }
+
+        BuildObjectDataList.Clear();
+        for(int i = 0, cnt = buildObjectList.Count; i < cnt; ++i)
+        {
+            BuildObjectDataList.Add(new SaveBuildObjectData(buildObjectList[i]));
         }
     }
 
@@ -243,6 +250,42 @@ public class SaveDoorData
     {
         IsOpened = door.IsOpend;
         DoorHp = door.Barricade == null ? 0 : door.Barricade.Hp;
+    }
+}
+
+
+[Serializable]
+public class SaveBuildObjectData
+{
+    public string Id;
+    public float Hp;
+    public float PositionX;
+    public float PositionY;
+    public float PositionZ;
+    public float RotationX;
+    public float RotationY;
+    public float RotationZ;
+    public float RotationW;
+
+    public Vector3 Position => new Vector3(PositionX, PositionY, PositionZ);
+    public Quaternion Rotation => new Quaternion(RotationX, RotationY, RotationZ, RotationW);
+
+    public SaveBuildObjectData(BuildObject buildObject)
+    {
+        Id = buildObject.BuildData.Id;
+        Hp = buildObject.Hp;
+
+        Vector3 pos = buildObject.transform.position;
+        Quaternion rot = buildObject.transform.rotation;
+
+        PositionX = pos.x;
+        PositionY = pos.y;
+        PositionZ = pos.z;
+
+        RotationX = rot.x;
+        RotationY = rot.y;
+        RotationZ = rot.z;
+        RotationW = rot.w;
     }
 }
 

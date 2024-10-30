@@ -8,7 +8,7 @@ public class UIManagerCanvas : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _aimRightText;
     private Coroutine ShowCenterTextRoutine;
 
-    public void Start()
+    public void Awake()
     {
         _centerText.alpha = 0;
         _aimRightText.alpha = 0;
@@ -43,7 +43,7 @@ public class UIManagerCanvas : MonoBehaviour
 
         while (tmpText.alpha > 0)
         {
-            tmpText.alpha -= 0.02f;
+            tmpText.alpha -= 0.1f;
             yield return YieldCache.WaitForSeconds(0.02f);
         }
     }

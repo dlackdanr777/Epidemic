@@ -8,6 +8,7 @@ public class UIBuildSlot : MonoBehaviour
 {
     [SerializeField] private Image _iconImage;
     [SerializeField] private TextMeshProUGUI _nameText;
+    [SerializeField] private TextMeshProUGUI _hpText;
     [SerializeField] private TextMeshProUGUI _ingredientText;
 
     private string _craftName;
@@ -39,6 +40,8 @@ public class UIBuildSlot : MonoBehaviour
         _nameText.text = _craftName;
 
         _ingredientText.text = string.Empty;
+        _hpText.text = "³»±¸µµ: " + buildData.Hp;
+
         for (int i = 0, cnt = buildData.NeedItemData.Length; i < cnt; ++i)
         {
             int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(buildData.NeedItemData[i].NeedItemId);
