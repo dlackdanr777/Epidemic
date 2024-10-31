@@ -28,10 +28,10 @@ public class ObjectPoolManager : MonoBehaviour
     private Queue<GameObject> _bulletHolePool = new Queue<GameObject>();
     private HashSet<GameObject> _useBulletHoleSet = new HashSet<GameObject>();
 
-    private GameObject _zombiePrefab;
     private GameObject _zombieParent;
-    private Queue<GameObject> _zombiePool = new Queue<GameObject>();
-    private HashSet<GameObject> _useZombieSet = new HashSet<GameObject>();
+    private Enemy _zombiePrefab;
+    private Queue<Enemy> _zombiePool = new Queue<Enemy>();
+    private HashSet<Enemy> _useZombieSet = new HashSet<Enemy>();
 
     private GameObject _dropItemParent;
     private Dictionary<string, DropItem> _dropItemPrefabDic = new Dictionary<string, DropItem>();
@@ -76,7 +76,7 @@ public class ObjectPoolManager : MonoBehaviour
         }
 
 
-        foreach(GameObject obj in _useZombieSet)
+        foreach(Enemy obj in _useZombieSet)
         {
             _zombiePool.Enqueue(obj);
             obj.gameObject.SetActive(false);
@@ -342,14 +342,14 @@ public class ObjectPoolManager : MonoBehaviour
         _zombieParent = new GameObject("ZombleParent");
         _zombieParent.transform.parent = transform;
 
-        _zombiePrefab = Resources.Load<GameObject>("ObjectPool/BasicZombie");
+        _zombiePrefab = Resources.Load<Enemy>("ObjectPool/BasicZombie");
 
         for (int i = 0; i < 100; i++)
         {
-            GameObject zombie = Instantiate(_zombiePrefab, Vector3.zero, Quaternion.identity);
+            Enemy zombie = Instantiate(_zombiePrefab, Vector3.zero, Quaternion.identity);
             zombie.transform.parent = _zombieParent.transform;
             _zombiePool.Enqueue(zombie);
-            zombie.SetActive(false);
+            zombie.gameObject.SetActive(false);
         }
     }
 
@@ -380,7 +380,7 @@ public class ObjectPoolManager : MonoBehaviour
 
     public Enemy SpawnZombie(Vector3 pos, Quaternion rot)
     {
-        GameObject zombie;
+        Enemy zombie;
         if(_zombiePool.Count == 0)
         {
             zombie = Instantiate(_zombiePrefab, _zombieParent.transform);
@@ -403,7 +403,7 @@ public class ObjectPoolManager : MonoBehaviour
 
     public Enemy SpawnZombie(Vector3 pos, Quaternion rot, GameObject target)
     {
-        GameObject zombie;
+        Enemy zombie;
         if (_zombiePool.Count == 0)
         {
             zombie = Instantiate(_zombiePrefab, _zombieParent.transform);
@@ -429,28 +429,27 @@ public class ObjectPoolManager : MonoBehaviour
     {
         yield return YieldCache.WaitForSeconds(10);
 
-        if (!_useZombieSet.Contains(enemy.gameObject))
+        if (!_useZombieSet.Contains(enemy))
         {
             Destroy(enemy.gameObject);
             throw new Exception("해당 몬스터는 사용중인 셋에 들어있지 않아 오류가 발생합니다." + enemy.name);
         }
 
-        _useZombieSet.Remove(enemy.gameObject);
-        _zombiePool.Enqueue(enemy.gameObject);
+        _useZombieSet.Remove(enemy);
+        _zombiePool.Enqueue(enemy);
         enemy.gameObject.SetActive(false);
     }
 
-    public int ZombieCounting()
+    public int GetSpawnZombieCount()
     {
         int zombieCount = 0;
 
-        Enemy[] objs = _zombieParent.GetComponentsInChildren<Enemy>();
-        zombieCount += objs.Length;
-
-        foreach (var obj in objs)
+        foreach(Enemy enemy in _useZombieSet)
         {
-            if (obj.IsDead)
-                zombieCount--;
+            if (enemy.Hp <= enemy.MinHp)
+                continue;
+
+            zombieCount++;
         }
 
         return zombieCount;

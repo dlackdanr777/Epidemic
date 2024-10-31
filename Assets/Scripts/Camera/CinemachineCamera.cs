@@ -23,7 +23,6 @@ public class CinemachineCamera : MonoBehaviour
 
 
     private CinemachineBasicMultiChannelPerlin _virtualCameraNoise;
-    private Vector3 _tempPos;
     private float _shakeTime;
     private float _mouseX;
     private float _mouseY;
@@ -36,8 +35,8 @@ public class CinemachineCamera : MonoBehaviour
             _virtualCameraNoise = _zoomVitualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         _brainCamera.enabled = false;
-        _mouseX = UserInfo.MouseInput == Vector2.zero ? 0 : UserInfo.MouseInput.x;
-        _mouseY = UserInfo.MouseInput == Vector2.zero ? 0 : UserInfo.MouseInput.y;
+        _mouseX = UserInfo.SaveData == null ? 0 : UserInfo.SaveData.MouseInput.x;
+        _mouseY = UserInfo.SaveData == null ? 0 : UserInfo.SaveData.MouseInput.y;
         _brainCamera.enabled = true;
     }
 

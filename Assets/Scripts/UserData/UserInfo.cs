@@ -35,39 +35,16 @@ public static class UserInfo
     
     private static EquipmentItem[] _equipItems = new EquipmentItem[(int)EquipItemType.Length];
 
-    private static List<SaveEnemyData> _enemyDataList = new List<SaveEnemyData>();
-    public static List<SaveEnemyData> EnemyDataList => _enemyDataList;
-
-    private static List<SaveDropItemData> _dropItemDataList = new List<SaveDropItemData>();
-    public static List<SaveDropItemData> DropItemDataList => _dropItemDataList;
-
-    private static List<SaveDoorData> _doorDataList = new List<SaveDoorData>();
-    public static List<SaveDoorData> DoorDataList => _doorDataList;
-
-    private static List<SaveBuildObjectData> _buildObjectDataList = new List<SaveBuildObjectData>();
-    public static List<SaveBuildObjectData> BuildObjectDataList => _buildObjectDataList;
-
-
-    private static Vector3 _playerPosition;
-    public static Vector3 PlayerPosition => _playerPosition;
-
-    private static Quaternion _playerRotation;
-    public static Quaternion PlayerRotation => _playerRotation;
-
-    private static Vector2 _mouseInput;
-    public static Vector2 MouseInput => _mouseInput;
+    private static SaveData _saveData;
+    public static SaveData SaveData => _saveData;
 
     public static void ClearData()
     {
-        _playerPosition = Vector3.zero;
-        _playerRotation = Quaternion.identity;
-        _mouseInput = Vector2.zero;
         _bulletCount = 100;
         _currentHp = int.MaxValue;
         _loadBulletCount = int.MaxValue;
         _invenDataList.Clear();
         _invenDataDic.Clear();
-        _enemyDataList.Clear();
 
         for (int i = 0, cnt = _equipItems.Length; i < cnt; i++)
         {
@@ -160,9 +137,9 @@ public static class UserInfo
     }
 
 
-    public static void SaveGame(Player player, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList, List<BuildObject> buildObjectList)
+    public static void SaveGame(GameStateSaveData gameStateSaveData, Player player, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList, List<BuildObject> buildObjectList)
     {
-        SaveData saveData = new SaveData(player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList, doorList, buildObjectList);
+        SaveData saveData = new SaveData(gameStateSaveData, player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList, doorList, buildObjectList);
 
         string json = JsonUtility.ToJson(saveData, true);
         string path = Application.persistentDataPath + "/GameSave.json";
@@ -179,32 +156,17 @@ public static class UserInfo
         if(File.Exists(path))
         {
             string json = File.ReadAllText(path);
-            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
+            _saveData = JsonUtility.FromJson<SaveData>(json);
 
-            _playerPosition = new Vector3(saveData.PlayerPositionX, saveData.PlayerPositionY, saveData.PlayerPositionZ);
-            _playerRotation = new Quaternion(saveData.PlayerRotationX, saveData.PlayerRotationY, saveData.PlayerRotationZ, saveData.PlayerRotationW);
-            _mouseInput = new Vector2(saveData.CameraMouseInputX, saveData.CameraMouseInputY);
-            _bulletCount = saveData.BulletCount;
-            _loadBulletCount = saveData.LoadBulletCount;
-            _currentHp = saveData.CurrentHp;
-
-            _enemyDataList.Clear();
-            _enemyDataList = saveData.EnemyDataList;
-
-            _dropItemDataList.Clear();
-            _dropItemDataList = saveData.DropItemDataList;
-
-            _doorDataList.Clear();  
-            _doorDataList = saveData.DoorDataList;
-
-            _buildObjectDataList.Clear();
-            _buildObjectDataList = saveData.BuildObjectDataList;
+            _bulletCount = _saveData.BulletCount;
+            _loadBulletCount = _saveData.LoadBulletCount;
+            _currentHp = _saveData.CurrentHp;
 
             _invenDataList.Clear();
             _invenDataDic.Clear();
-            for(int i = 0, cnt = saveData.InvenDataList.Count; i < cnt; i++)
+            for(int i = 0, cnt = _saveData.InvenDataList.Count; i < cnt; i++)
             {
-                InvenData data = saveData.InvenDataList[i].ToOriginalInvenData();
+                InvenData data = _saveData.InvenDataList[i].ToOriginalInvenData();
                 _invenDataList.Add(data);
                 _invenDataDic.Add(data.Name, data);
             }
@@ -214,13 +176,13 @@ public static class UserInfo
                 _equipItems[i] = null;
             }
 
-            for(int i = 0, cnt = saveData.EquipItemDataList.Count; i < cnt; ++i)
+            for(int i = 0, cnt = _saveData.EquipItemDataList.Count; i < cnt; ++i)
             {
-                Item item = ItemManager.Instance.GetItemByID(saveData.EquipItemDataList[i]);
+                Item item = ItemManager.Instance.GetItemByID(_saveData.EquipItemDataList[i]);
 
                 if(item == null)
                 {
-                    DebugLog.LogError("해당하는 아이템이 존재하지 않습니다: " + saveData.EquipItemDataList[i]);
+                    DebugLog.LogError("해당하는 아이템이 존재하지 않습니다: " + _saveData.EquipItemDataList[i]);
                     continue;
                 }
 

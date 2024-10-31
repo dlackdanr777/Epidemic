@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using Unity.VisualScripting;
 
 [Serializable]
 public class SaveData
 {
+    public GameStateSaveData GameStateSaveData;
     public float PlayerPositionX;
     public float PlayerPositionY;
     public float PlayerPositionZ;
@@ -13,9 +13,12 @@ public class SaveData
     public float PlayerRotationX;
     public float PlayerRotationY;
     public float PlayerRotationZ;
+    public Vector3 PlayerPosition => new Vector3(PlayerPositionX, PlayerPositionY, PlayerPositionZ);
+    public Quaternion PlayerRotation => new Quaternion(PlayerRotationX, PlayerRotationY, PlayerRotationZ, PlayerRotationW);
 
     public float CameraMouseInputX;
     public float CameraMouseInputY;
+    public Vector2 MouseInput => new Vector2(CameraMouseInputX, CameraMouseInputY);
 
     public int BulletCount;
     public int LoadBulletCount;
@@ -27,8 +30,10 @@ public class SaveData
     public List<SaveDoorData> DoorDataList = new List<SaveDoorData>();
     public List<SaveBuildObjectData> BuildObjectDataList = new List<SaveBuildObjectData>();
 
-    public SaveData(Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList, List<BuildObject> buildObjectList)
+    public SaveData(GameStateSaveData gameStateSaveData, Player player, int bulletCount, int loadBulletCount, List<InvenData> invenDataList, EquipmentItem[] equipItems, List<Enemy> enemyList, List<DropItem> dropItemList, List<Door> doorList, List<BuildObject> buildObjectList)
     {
+        GameStateSaveData = gameStateSaveData;
+
         PlayerPositionX = player.transform.position.x;
         PlayerPositionY = player.transform.position.y;
         PlayerPositionZ = player.transform.position.z;
@@ -286,6 +291,24 @@ public class SaveBuildObjectData
         RotationY = rot.y;
         RotationZ = rot.z;
         RotationW = rot.w;
+    }
+}
+
+
+[Serializable]
+public class GameStateSaveData
+{
+    public int GameState;
+    public int RoundState;
+    public int CurrentRound;
+    public float CurrentTime;
+
+    public GameStateSaveData(int gameState, int roundState, int currentRound, float currentTime)
+    {
+        GameState = gameState;
+        RoundState = roundState;
+        CurrentRound = currentRound;
+        CurrentTime = currentTime;
     }
 }
 

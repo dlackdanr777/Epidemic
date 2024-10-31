@@ -1,18 +1,31 @@
 using Muks.DataBind;
 using System;
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+
+public enum GameState
+{
+    None,
+    Set,
+    Wait,
+    Start,
+    End,
+}
+
+public enum RoundState { Wait, Proceeding, End }
 
 public class InGame : MonoBehaviour
 {
     [Serializable]
     public struct Rounds
     {
-        public SpawnZombie[] SpawnZombies;
-        public float LimitTime;
-        public float WaitingTime;
+        [SerializeField] private SpawnZombie[] _spawnZombies;
+        public SpawnZombie[] SpawnZombies => _spawnZombies;
+
+        [SerializeField] private float _roundTime;
+        public float RoundTime => _roundTime;
     }
 
     [Serializable]
@@ -22,10 +35,8 @@ public class InGame : MonoBehaviour
         public int SpawnCount;
     }
 
-    public enum RoundType { Wait, Start, Proceeding, End }
-
-
     [SerializeField] private Player _player;
+    [SerializeField] private GameObject _ingameTrigger;
     [SerializeField] private UIGame _uiGame;
     [SerializeField] private Transform _spawnPos;
     [SerializeField] private Rounds[] _rounds;
@@ -34,95 +45,101 @@ public class InGame : MonoBehaviour
     [SerializeField] private List<DropItem> _dropItemList;
     [SerializeField] private List<Door> _doorList;
 
-    
-    private RoundType _roundType;
-    private int _enemyCount;
+
+    private GameState _gameState;
+    private RoundState _roundState;
     private int _currentRound;
-    
     private float _currentTime;
 
-    private bool _isEndTime;
-    private bool _isGameStart;
-    private bool _roundClear;
 
 
     public void Start()
     {
+        _gameState = GameState.None;
+        _roundState = RoundState.Wait;
         _currentRound = 1;
-        _roundType = RoundType.Wait;
         _uiGame.SetZombieCountText("학교를 수색하십시오");
-        _isGameStart = false;
+
         GameManager.Instance.IsGameEnd = false;
         SoundManager.Instance.PlayAudio(AudioType.Background, _bgMusic);
         GameManager.Instance.CursorHidden();
         GameManager.Instance.Player.OnHpMin += EndGame;
 
-        if(UserInfo.IsSaveFileExists())
+        LoadGame();
+    }
+
+
+    private void LoadGame()
+    {
+        if (!UserInfo.IsSaveFileExists())
+            return;
+
+        SaveData saveData = UserInfo.SaveData;
+        if (UserInfo.SaveData == null)
+            return;
+        _ingameTrigger.SetActive(false);
+        _gameState = (GameState)saveData.GameStateSaveData.GameState;
+        _roundState = (RoundState)saveData.GameStateSaveData.RoundState;
+        _currentRound = saveData.GameStateSaveData.CurrentRound;
+        SetRoundState(_roundState);
+        _currentTime = saveData.GameStateSaveData.CurrentTime;
+
+        for (int i = 0, cnt = _defalutEnemyList.Count; i < cnt; ++i)
         {
-            DebugLog.Log("저장 파일 존재");
-            for(int i = 0, cnt =  _defalutEnemyList.Count; i < cnt; ++i)
+            Destroy(_defalutEnemyList[i].gameObject);
+        }
+        _defalutEnemyList.Clear();
+
+        List<SaveEnemyData> enemyDataList = saveData.EnemyDataList;
+        for (int i = 0, cnt = enemyDataList.Count; i < cnt; ++i)
+        {
+            Vector3 pos = enemyDataList[i].EnemyPosition;
+            Quaternion rot = enemyDataList[i].EnemyRotation;
+            Enemy enemy = ObjectPoolManager.Instance.SpawnZombie(pos, rot);
+            float depleteHpValue = enemy.MaxHp - enemyDataList[i].Hp;
+            enemy.DepleteHp(null, depleteHpValue);
+        }
+
+        for (int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
+        {
+            Destroy(_dropItemList[i].gameObject);
+        }
+        _dropItemList.Clear();
+
+        List<SaveDropItemData> dropItemDataList = saveData.DropItemDataList;
+        for (int i = 0, cnt = dropItemDataList.Count; i < cnt; ++i)
+        {
+            Vector3 pos = dropItemDataList[i].Position;
+            Quaternion rot = dropItemDataList[i].Rotation;
+            ObjectPoolManager.Instance.SpawnDropItem(dropItemDataList[i].ItemId, pos, rot);
+        }
+
+        List<SaveDoorData> doorDataList = saveData.DoorDataList;
+        for (int i = 0, cnt = doorDataList.Count; i < cnt; ++i)
+        {
+            if (_doorList[i] == null)
             {
-                Destroy(_defalutEnemyList[i].gameObject);
-            }
-            _defalutEnemyList.Clear();
-
-            List<SaveEnemyData> enemyDataList = UserInfo.EnemyDataList;
-            for(int i = 0, cnt = enemyDataList.Count; i < cnt; ++i)
-            {
-                Vector3 pos = enemyDataList[i].EnemyPosition;
-                Quaternion rot = enemyDataList[i].EnemyRotation;
-                Enemy enemy = ObjectPoolManager.Instance.SpawnZombie(pos, rot);
-                float depleteHpValue = enemy.MaxHp - enemyDataList[i].Hp;
-                enemy.DepleteHp(null, depleteHpValue);
-            }
-
-
-            for(int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
-            {
-                Destroy(_dropItemList[i].gameObject);  
-            }
-            _dropItemList.Clear();
-
-            List<SaveDropItemData> dropItemDataList = UserInfo.DropItemDataList;
-            for(int i = 0, cnt = dropItemDataList.Count; i < cnt; ++i)
-            {
-                Vector3 pos = dropItemDataList[i].Position;
-                Quaternion rot = dropItemDataList[i].Rotation;
-                DropItem dropItem = ObjectPoolManager.Instance.SpawnDropItem(dropItemDataList[i].ItemId, pos, rot);
-            }
-
-            List<SaveDoorData> doorDataList = UserInfo.DoorDataList;
-            for(int i = 0, cnt = doorDataList.Count; i < cnt; ++i)
-            {
-                if (_doorList[i] == null)
-                {
-                    DebugLog.LogError("Door Index가 부족합니다: " + i);
-                    continue;
-                }
-
-                _doorList[i].SetDoorState(doorDataList[i].IsOpened);
-
-                if (_doorList[i].Barricade == null)
-                    continue;
-
-                _doorList[i].Barricade.SetHp(doorDataList[i].DoorHp);
+                DebugLog.LogError("Door Index가 부족합니다: " + i);
+                continue;
             }
 
-            List<SaveBuildObjectData> buildObjectDataList = UserInfo.BuildObjectDataList;
-            for(int i = 0, cnt = buildObjectDataList.Count; i < cnt; ++i)
-            {
-                Vector3 pos = buildObjectDataList[i].Position;
-                Quaternion rot = buildObjectDataList[i].Rotation;
-                BuildObject buildObject = ObjectPoolManager.Instance.SpawnBuildObject(buildObjectDataList[i].Id, pos, rot);
-            }
+            _doorList[i].SetDoorState(doorDataList[i].IsOpened);
+
+            if (_doorList[i].Barricade == null)
+                continue;
+
+            _doorList[i].Barricade.SetHp(doorDataList[i].DoorHp);
+        }
+
+        List<SaveBuildObjectData> buildObjectDataList = saveData.BuildObjectDataList;
+        for (int i = 0, cnt = buildObjectDataList.Count; i < cnt; ++i)
+        {
+            Vector3 pos = buildObjectDataList[i].Position;
+            Quaternion rot = buildObjectDataList[i].Rotation;
+            BuildObject buildObject = ObjectPoolManager.Instance.SpawnBuildObject(buildObjectDataList[i].Id, pos, rot);
+            buildObject.SetHp(buildObjectDataList[i].Hp);
         }
     }
-
-    public void StartGame()
-    {
-        _isGameStart = true;
-    }
-
 
     private void OnSaveGame()
     {
@@ -137,8 +154,8 @@ public class InGame : MonoBehaviour
         }
 
         List<DropItem> dropItemList = new List<DropItem>();
-        
-        for(int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
+
+        for (int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
         {
             if (_dropItemList[i] == null)
                 continue;
@@ -150,7 +167,7 @@ public class InGame : MonoBehaviour
         }
 
         List<BuildObject> buildObjectList = FindObjectsOfType<BuildObject>().ToList();
-        for(int i = 0, cnt = buildObjectList.Count; i < cnt; ++i)
+        for (int i = 0, cnt = buildObjectList.Count; i < cnt; ++i)
         {
             if (!enemyList[i].gameObject.activeSelf || buildObjectList[i].Hp <= buildObjectList[i].MinHp)
             {
@@ -158,11 +175,129 @@ public class InGame : MonoBehaviour
                 --cnt;
             }
         }
+        GameStateSaveData gameStateSaveData = new GameStateSaveData((int)_gameState, (int)_roundState, _currentRound, _currentTime);
+        UserInfo.SaveGame(gameStateSaveData, _player, enemyList, dropItemList, _doorList, buildObjectList);
+    }
 
-        UserInfo.SaveGame(_player, enemyList, dropItemList, _doorList, buildObjectList);
+    public void StartGame(GameObject triggerObj)
+    {
+        triggerObj.gameObject.SetActive(false);
+        _gameState = GameState.Set;
     }
 
 
+  
+
+
+    private void FixedUpdate()
+    {
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            OnSaveGame();
+        }
+
+        if(_gameState == GameState.Set)
+        {
+            SetRoundState(_roundState);
+            _gameState = GameState.Start;
+        }
+
+        else if (_gameState == GameState.Start)
+        {
+            switch (_roundState)
+            {
+                case RoundState.Wait:
+                    RoundTimer();
+                    break;
+
+                case RoundState.Proceeding:
+                    RoundTimer();
+                    RoundProceeding();
+                    break;
+
+                case RoundState.End:
+                    break;
+            }
+        }
+    }
+
+    private void RoundProceeding()
+    {
+        int _enemyCount = ObjectPoolManager.Instance.GetSpawnZombieCount();
+        _uiGame.SetZombieCountText("남은 좀비 수: " + _enemyCount);
+
+        if (_currentTime <= 0 || _enemyCount <= 0)
+            SetRoundState(RoundState.End);
+    }
+
+    private void RoundTimer()
+    {     
+        _currentTime = Mathf.Max(0, _currentTime - Time.deltaTime);
+        _uiGame.SetGameTimerText(Enum.GetName(typeof(RoundState), _roundState) +": " + Mathf.Floor(_currentTime * 100f) / 100f);
+        if (_currentTime <= 0)
+            SetRoundState(++_roundState);
+    }
+
+    private void SetRoundState(RoundState roundState)
+    {
+        _roundState = roundState;
+        switch (_roundState)
+        {
+            case RoundState.Wait:
+                SetRoundWait(_currentRound);
+                break;
+
+            case RoundState.Proceeding:
+                SetRoundProceeding(_currentRound);
+                break;
+
+            case RoundState.End:
+                StartCoroutine(SetRoundEndRoutine());
+                break;
+        }
+
+    }
+
+    private void SetRoundWait(int round)
+    {
+        _uiGame.SetZombieCountText("곧 좀비가 몰려옵니다...");
+        _currentTime = 10;
+    }
+
+
+    private void SetRoundProceeding(int round)
+    {
+        _currentTime = _rounds[round - 1].RoundTime;
+        for (int i = 0; i < _rounds[round - 1].SpawnZombies.Length; i++)
+        {
+            for (int j = 0; j < _rounds[round - 1].SpawnZombies[i].SpawnCount; j++)
+                ObjectPoolManager.Instance.SpawnZombie(_spawnPos.position, Quaternion.Euler(0, 180, 0), GameManager.Instance.Player.gameObject);
+        }
+    }
+
+    private IEnumerator SetRoundEndRoutine()
+    {
+        int _enemyCount = ObjectPoolManager.Instance.GetSpawnZombieCount();
+        if (0 < _enemyCount)
+        {
+            EndGame();
+            yield break;
+        }
+
+        yield return YieldCache.WaitForSeconds(3);
+        if (_currentRound < _rounds.Length)
+        {
+            SetRoundState(RoundState.Wait);
+            _gameState = GameState.Start;
+            _currentRound++;
+        }
+        else
+        {
+            _gameState = GameState.End;
+            GameManager.Instance.GameEnd();
+            DataBind.GetUnityActionValue("ShowWin")?.Invoke();
+        }
+    }
 
     private void EndGame()
     {
@@ -170,130 +305,11 @@ public class InGame : MonoBehaviour
         GameManager.Instance.Player.OnHpMin -= EndGame;
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.H))
-        {
-            OnSaveGame();
-        }
-
-        if (!_isGameStart)
-            return;
-
-        if (!_roundClear)
-        {
-            RoundTimer();
-            RoundUpdate();
-        }
-        else
-        {
-            RoundClear();
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if(_roundType == RoundType.Proceeding)
-        {
-            _enemyCount = ObjectPoolManager.Instance.ZombieCounting();
-            _uiGame.SetZombieCountText("남은 좀비 수: " + _enemyCount);
-
-            if (_enemyCount <= 0)
-            {
-                _roundClear = true;
-            }
-                
-        }
-    }
-
-    private void RoundTimer()
-    {
-        
-        _currentTime -= Time.deltaTime;
-        _uiGame.SetGameTimerText(Enum.GetName(typeof(RoundType), _roundType) +": " + Mathf.Floor(_currentTime * 100f) / 100f);
-        if (_currentTime <= 0)
-            _isEndTime = true;
-    }
-
-    private void RoundUpdate()
-    {
-        if (_isEndTime)
-        {
-            switch (_roundType)
-            {
-                case RoundType.Wait:
-                    RoundWait(_currentRound);
-                    break;
-                case RoundType.Start:
-                    RoundStart(_currentRound);
-                    break;
-                case RoundType.Proceeding:
-                    RoundProceeding(_currentRound);
-                    break;
-            }
-            _roundType++;
-            _roundType = (RoundType)((int)_roundType % 3);
-
-            _isEndTime = false;
-        }
-    }
-
-
-    private void RoundStart(int round)
-    {
-        _currentTime = _rounds[round - 1].LimitTime;
-        for(int i = 0; i < _rounds[round - 1].SpawnZombies.Length; i++)
-        {
-            for(int j = 0; j < _rounds[round - 1].SpawnZombies[i].SpawnCount; j++)
-                ObjectPoolManager.Instance.SpawnZombie(_spawnPos.position, Quaternion.Euler(0,180,0), GameManager.Instance.Player.gameObject);
-        }
-    }
-
-    private void RoundWait(int round)
-    {
-        _uiGame.SetZombieCountText("곧 좀비가 몰려옵니다...");
-        _currentTime = _rounds[round - 1].WaitingTime;
-    }
-
-    private void RoundProceeding(int round)
-    {
-        if(_enemyCount >= 0)
-        {
-            GameManager.Instance.GameEnd();
-            DataBind.GetUnityActionValue("ShowLose")?.Invoke();
-            //게임오버
-        }
-    }
-
-    private float _clearWaitTime;
-    private void RoundClear()
-    {
-        _clearWaitTime += Time.deltaTime;
-        if (_clearWaitTime > 5)
-        {        
-            if(_rounds.Length > _currentRound)
-            {
-                _clearWaitTime = 0;
-                _roundType = RoundType.Wait;
-                _currentRound++;
-                _isEndTime = true;
-                _roundClear = false;
-            }
-            else
-            {
-                GameManager.Instance.GameEnd();
-                DataBind.GetUnityActionValue("ShowWin")?.Invoke();
-                
-            }
-
-        }
-    }
-
 
     private IEnumerator EndGameRoutine()
     {
+        _gameState = GameState.End;
         yield return YieldCache.WaitForSeconds(3);
-        _isGameStart = false;
         DataBind.GetUnityActionValue("ShowLose")?.Invoke();
     }
 }

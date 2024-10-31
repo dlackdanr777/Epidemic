@@ -8,8 +8,8 @@ public class InGameTrigger : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            _ingame.StartGame();
-            this.enabled = false;
+            _ingame.StartGame(gameObject);
+            enabled = false;
         }
     }
 }

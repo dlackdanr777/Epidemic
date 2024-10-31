@@ -79,8 +79,8 @@ public class Player : MonoBehaviour, IHp
     {
         _hp = MaxHp < UserInfo.CurrentHp || UserInfo.CurrentHp <= MinHp ? MaxHp : UserInfo.CurrentHp;
         CharacterController.enabled = false;
-        transform.position = UserInfo.PlayerPosition == Vector3.zero ? transform.position : UserInfo.PlayerPosition;
-        transform.rotation = UserInfo.PlayerRotation == Quaternion.identity ? transform.rotation : UserInfo.PlayerRotation;
+        transform.position = UserInfo.SaveData == null ? transform.position : UserInfo.SaveData.PlayerPosition;
+        transform.rotation = UserInfo.SaveData == null ? transform.rotation : UserInfo.SaveData.PlayerRotation;
         CharacterController.enabled = true;
         ActionInit();
         GunController.DisableCrossHair();
