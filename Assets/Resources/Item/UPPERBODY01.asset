@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: UPPERBODY01
   m_EditorClassIdentifier: 
   _id: UPPERBODY01
-  _name: "\uCEF4\uBC43 \uC154\uCE20"
-  _description: "\uAD70\uB300\uC5D0\uC11C \uC4F0\uC77C\uBC95\uD55C \uC154\uCE20\n\uD65C\uB3D9\uC131\uC774
-    \uC88B\uC544\uBCF4\uC778\uB2E4."
+  _name: "\uC154\uCE20"
+  _description: "\uC785\uAE30 \uBB34\uB09C\uD55C \uC154\uCE20\n\uC57D\uAC04 \uB450\uAECD\uB2E4."
   _sprite: {fileID: 21300000, guid: 210cdf981f4559143accd439fab44435, type: 3}
   _width: 2
   _height: 2
   _type: 1
-  _addArmor: 5
-  _addSpeedMul: 0.1
+  _addArmor: 2
+  _addSpeedMul: -0.1

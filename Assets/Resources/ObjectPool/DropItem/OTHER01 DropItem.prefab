@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4406674162264108241}
   - component: {fileID: 4695957256498148490}
   - component: {fileID: 3563026611126632426}
+  - component: {fileID: 3562507439125623625}
   m_Layer: 15
   m_Name: OTHER01 DropItem
   m_TagString: Wood
@@ -33,7 +34,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &567428863876838943
 MeshFilter:
@@ -104,8 +105,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4, y: 0.03999996, z: 0.33000022}
-  m_Center: {x: 0, y: 0.020000018, z: 0.00000029802322}
+  m_Size: {x: 4, y: 0.11023808, z: 0.67371374}
+  m_Center: {x: 0, y: 0.030053195, z: -0.027662888}
 --- !u!114 &3563026611126632426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,3 +120,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _itemId: OTHER01
+--- !u!114 &3562507439125623625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2991547842259038660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dafa58ddc370f641b0436c07135567d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _activeRenderers:
+  - {fileID: 4406674162264108241}
+  _outlineThickness: 7

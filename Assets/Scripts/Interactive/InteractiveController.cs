@@ -1,5 +1,6 @@
+using System.Linq;
 using UnityEngine;
-
+using System.Collections.Generic;
 
 /// <summary> IInteractive interface를 가진 오브젝트를 조작하는 클래스 </summary>
 public class InteractiveController : MonoBehaviour
@@ -10,8 +11,8 @@ public class InteractiveController : MonoBehaviour
     
     private Ray _ray;
     private RaycastHit _hit;
-    private Iinteractive _interactive;
-
+    private List<Iinteractive> _interactiveList = new List<Iinteractive>();
+    private RaycastHit _tmpRaycastHit;
 
     private void Update()
     {
@@ -29,39 +30,61 @@ public class InteractiveController : MonoBehaviour
         //만약 hit된 오브젝트가 없을 경우
         if (!Physics.Raycast(_ray, out _hit, _rayDistance, _layerMask))
         {
-            //변수가 null일경우 종료
-            if (_interactive == null)
+            //리스트의 크기가 0일 경우 리턴
+            if (_interactiveList.Count <= 0)
                 return;
 
             //아닐경우 비활성화 함수를 실행후 null로 변경
-            _interactive.DisableInteraction();
-            _interactive = null;
+            for(int i = 0, cnt = _interactiveList.Count; i < cnt; ++i)
+            {
+                _interactiveList[i].DisableInteraction();
+            }
+            _interactiveList.Clear();
             return;
         }
+        
+        if(!_hit.Equals(_tmpRaycastHit))
+        {
+            for (int i = 0, cnt = _interactiveList.Count; i < cnt; ++i)
+            {
+                _interactiveList[i].DisableInteraction();
+            }
+            _interactiveList.Clear();
+        }
 
-        if (_interactive != null)
-            return;
-
-        if (_hit.transform.GetComponent<Iinteractive>() == null)
-            return;
-
+        Iinteractive[] tmpIinteractive = _hit.transform.GetComponents<Iinteractive>();
         //해당 오브젝트에서 Iinteractive 인터페이스를 참조후 활성화 함수 실행
-        _interactive = _hit.transform.GetComponent<Iinteractive>();
-        _interactive.EnableInteraction();
+        for (int i = 0, cnt = tmpIinteractive.Length; i < cnt; ++i)
+        {
+            if (!_interactiveList.Contains(tmpIinteractive[i]))
+            {
+                tmpIinteractive[i].EnableInteraction();
+                _interactiveList.Add(tmpIinteractive[i]);
+                continue;
+            }
+        }
+
+        _tmpRaycastHit = _hit;
     }
 
 
     /// <summary> 키를 입력해 상호작용을 하는 함수 </summary>
     private void InputInteractive()
     {
-        if (_interactive == null)
+        if (_interactiveList.Count <= 0)
             return;
 
-        if (!Input.GetKeyDown(_interactive.InputKey))
-            return;
+        for(int i = 0; i < _interactiveList.Count; ++i)
+        {
+            if (!Input.GetKeyDown(_interactiveList[i].InputKey))
+                continue;
 
-            _interactive.Interact();
-            _interactive.DisableInteraction();
-            _interactive = null;
+            _interactiveList[i].Interact();
+            _interactiveList[i].DisableInteraction();
+            _interactiveList.RemoveAt(i);
+            i--;
+        }
+
+
     }
 }

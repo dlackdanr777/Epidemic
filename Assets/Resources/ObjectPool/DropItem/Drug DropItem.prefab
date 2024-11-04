@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7261250443769751901}
   - component: {fileID: 5028826562508183950}
   - component: {fileID: 897684696074741556}
+  - component: {fileID: 2616620178850213461}
   m_Layer: 15
   m_Name: Drug DropItem
   m_TagString: Untagged
@@ -33,7 +34,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 25
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!33 &1024447678864997161
 MeshFilter:
@@ -104,8 +105,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.8154834, y: 0.3475596, z: 0.62949526}
-  m_Center: {x: -0.0068259835, y: 0.1600316, z: 0.0025842488}
+  m_Size: {x: 0.8154834, y: 0.4457663, z: 0.8605}
+  m_Center: {x: -0.0068259775, y: 0.17680219, z: 0.008994396}
 --- !u!114 &897684696074741556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,3 +120,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _itemId: POTION01
+--- !u!114 &2616620178850213461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494744351099796513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dafa58ddc370f641b0436c07135567d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _activeRenderers:
+  - {fileID: 7261250443769751901}
+  _outlineThickness: 6.5

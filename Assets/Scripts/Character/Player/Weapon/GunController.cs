@@ -190,18 +190,24 @@ public class GunController : MonoBehaviour, IAttack
         //대리자를 사용하여 이 클래스를 참조하는 클래스에서 발사함수에 코드를 추가할 수 있도록 한다.
         OnFireHandler?.Invoke();
 
+        Quaternion targetDir = Quaternion.LookRotation(ray.direction);
         //최종적으로 레이를 발사하여 물체에 맞았을 경우 풀링한 탄흔을 해당위치에 소환하고
         //만약 IHp인터페이스를 가진 물체 였다면 액션을 수행하게 한다.
         if (Physics.Raycast(ray, out hit, distance, _hitLayerMask))
         {
             Quaternion bulletHoleRotation = Quaternion.LookRotation(ray.direction);
             GameObject bulletHole = ObjectPoolManager.Instance.SpawnBulletHole(hit.point, bulletHoleRotation);
+            ObjectPoolManager.Instance.SpawnBullet(350, _hitLayerMask, distance, hit.point, _currentGun.MuzzleFlash.transform.position, targetDir);
             bulletHole.transform.parent = hit.transform;
             if (hit.transform.GetComponent<IHp>() != null)
             {
                 TargetDamage(hit.transform.GetComponent<IHp>(), _currentGun.Damage);
             }
 
+        }
+        else
+        {
+            ObjectPoolManager.Instance.SpawnBullet(350, _hitLayerMask, distance, Vector3.zero, _currentGun.MuzzleFlash.transform.position, targetDir);
         }
     }
 

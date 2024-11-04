@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 233762724616040237}
   - component: {fileID: 4111766726381332038}
   - component: {fileID: 1422608320695549446}
+  - component: {fileID: 2160436420879600492}
   m_Layer: 15
   m_Name: LOWERBODY01_DropItem
   m_TagString: Untagged
@@ -119,3 +120,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _itemId: LOWERBODY01
+--- !u!114 &2160436420879600492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3783614604239441318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dafa58ddc370f641b0436c07135567d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _activeRenderers:
+  - {fileID: 233762724616040237}

@@ -25,8 +25,15 @@ public class ObjectPoolManager : MonoBehaviour
     private static ObjectPoolManager _instance;
 
     private GameObject _bulletHoleParent;
+    private GameObject _bulletHolePrefab;
     private Queue<GameObject> _bulletHolePool = new Queue<GameObject>();
     private HashSet<GameObject> _useBulletHoleSet = new HashSet<GameObject>();
+
+
+    private GameObject _bulletParent;
+    private Bullet _bulletPrefab;
+    private Queue<Bullet> _bulletPool = new Queue<Bullet>();
+    private HashSet<Bullet> _useBulletSet = new HashSet<Bullet>();
 
     private GameObject _zombieParent;
     private Enemy _zombiePrefab;
@@ -58,6 +65,7 @@ public class ObjectPoolManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         BulletHoleObjectPooling();
+        BulletPooling();
         ZombieObjectPooling();
         DropItemPooling();
         BuildObjectPooling();
@@ -72,18 +80,29 @@ public class ObjectPoolManager : MonoBehaviour
             if (obj == null)
                 continue;
 
+            obj.transform.parent = _bulletHoleParent.transform;
             obj.SetActive(false);
         }
+        _useBulletHoleSet.Clear();
 
+        foreach (Bullet bullet in _useBulletSet)
+        {
+            if (bullet == null)
+                continue;
+
+            bullet.gameObject.SetActive(false);
+        }
+        _useBulletSet.Clear();
 
         foreach(Enemy obj in _useZombieSet)
         {
             _zombiePool.Enqueue(obj);
             obj.gameObject.SetActive(false);
         }
+        _useZombieSet.Clear();
 
 
-        foreach(HashSet<DropItem> dropItemSet in _useDropItemDic.Values)
+        foreach (HashSet<DropItem> dropItemSet in _useDropItemDic.Values)
         {
             if (dropItemSet.Count <= 0)
                 continue;
@@ -131,9 +150,6 @@ public class ObjectPoolManager : MonoBehaviour
             }
             hashSet.Clear();
         }
-
-        _useBulletHoleSet.Clear();
-        _useZombieSet.Clear();
     }
 
 
@@ -325,14 +341,30 @@ public class ObjectPoolManager : MonoBehaviour
         _bulletHoleParent = new GameObject("BulletHoleParent");
         _bulletHoleParent.transform.parent = transform;
 
-        GameObject bulletHolePrefab = Resources.Load<GameObject>("ObjectPool/BulletHole");
+        _bulletHolePrefab = Resources.Load<GameObject>("ObjectPool/BulletHole");
 
         for(int i = 0; i < 100; i++)
         {
-            GameObject bulletHole = Instantiate(bulletHolePrefab, Vector3.zero, Quaternion.identity);
+            GameObject bulletHole = Instantiate(_bulletHolePrefab, Vector3.zero, Quaternion.identity);
             bulletHole.transform.parent = _bulletHoleParent.transform;
             _bulletHolePool.Enqueue(bulletHole);
             bulletHole.SetActive(false);
+        }
+    }
+
+
+    private void BulletPooling()
+    {
+        _bulletParent = new GameObject("BulletParent");
+        _bulletParent.transform.parent = transform;
+
+        Bullet bulletPrefab = Resources.Load<Bullet>("ObjectPool/Bullet");
+        for (int i = 0; i < 100; i++)
+        {
+            Bullet bullet = Instantiate(bulletPrefab, Vector3.zero, Quaternion.identity);
+            bullet.transform.parent = _bulletParent.transform;
+            _bulletPool.Enqueue(bullet);
+            bullet.gameObject.SetActive(false);
         }
     }
 
@@ -356,7 +388,15 @@ public class ObjectPoolManager : MonoBehaviour
 
     public GameObject SpawnBulletHole( Vector3 pos, Quaternion rot)
     {
-        GameObject bulletHole = _bulletHolePool.Dequeue();
+        GameObject bulletHole;
+        if (_bulletHolePool.Count <= 0)
+        {
+            bulletHole = Instantiate(_bulletHolePrefab, Vector3.zero, Quaternion.identity);
+            bulletHole.transform.parent = _bulletHoleParent.transform;
+            _bulletHolePool.Enqueue(bulletHole);
+        }
+
+        bulletHole = _bulletHolePool.Dequeue();
 
         bulletHole.SetActive(false);
         bulletHole.SetActive(true);
@@ -367,13 +407,36 @@ public class ObjectPoolManager : MonoBehaviour
         return bulletHole;
     }
 
+    public Bullet SpawnBullet(float speed, LayerMask layerMask, float distance, Vector3 targetPos, Vector3 pos, Quaternion rot)
+    {
+        Bullet bullet = _bulletPool.Dequeue();
+
+        bullet.gameObject.SetActive(false);
+        bullet.gameObject.SetActive(true);
+        bullet.transform.position = pos;
+        bullet.transform.rotation = rot;
+        _bulletPool.Enqueue(bullet);
+        _useBulletSet.Add(bullet);
+        bullet.SetBullet(speed, layerMask, distance, targetPos);
+        return bullet;
+    }
+
     public void DespawnBulletHole(GameObject bulletHole)
     {
         if(!_useBulletHoleSet.Contains(bulletHole))
-            throw new Exception("해당 몬스터는 사용중인 셋에 들어있지 않아 오류가 발생합니다." + bulletHole.name);
+            throw new Exception("해당 탄흔는 사용중인 셋에 들어있지 않아 오류가 발생합니다." + bulletHole.name);
 
         _useBulletHoleSet.Remove(bulletHole);
         bulletHole.SetActive(false);
+    }
+
+    public void DespawnBullet(Bullet bullet)
+    {
+        if (!_useBulletSet.Contains(bullet))
+            throw new Exception("해당 총알은 사용중인 셋에 들어있지 않아 오류가 발생합니다." + bullet.name);
+
+        _useBulletSet.Remove(bullet);
+        bullet.gameObject.SetActive(false);
     }
 
 

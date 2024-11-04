@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: BUILD01
   m_EditorClassIdentifier: 
   _id: BUILD01
-  _sprite: {fileID: 21300000, guid: 4ae010ad0c3a67c41a804ad436d29ed8, type: 3}
   _name: "\uBC14\uB9AC\uCF00\uC774\uD2B8"
+  _description: 
+  _sprite: {fileID: 21300000, guid: 4ae010ad0c3a67c41a804ad436d29ed8, type: 3}
   _hp: 200
   _needItemData:
   - _needItemId: OTHER01
-    _needItemAmount: 5
+    _needItemAmount: 1
+  - _needItemId: OTHER02
+    _needItemAmount: 1
   _buildObjectPrefab: {fileID: -6287492795791678985, guid: 4fe77c9e653fd684faf845d69357951b,
     type: 3}
   _previewPrefab: {fileID: 5652679370851082935, guid: d78f4c47ee67b2f46b265af54325a674,

@@ -50,7 +50,7 @@ public class EnemyStateMachine
     {
         if (CurrentState == nextState) //현재상태와 입력받은 상태가 같을때에는 함수를 종료한다.
         {
-            Debug.Log("현재 이미 해당 상태입니다.");
+            DebugLog.Log("현재 이미 해당 상태입니다.");
             return;
         }
 

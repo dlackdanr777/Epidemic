@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 8471924202988660604}
   - component: {fileID: 5392238009623919967}
   - component: {fileID: 7121460944407298451}
+  - component: {fileID: 3372412966457064259}
   m_Layer: 15
   m_Name: WEAPON01_DropItem
   m_TagString: Untagged
@@ -108,7 +109,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2115271349643236429}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 27.676136, y: 0.07324958, z: 58.71203}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -154,6 +155,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _itemId: WEAPON01
+--- !u!114 &3372412966457064259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2115271349643236429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dafa58ddc370f641b0436c07135567d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _activeRenderers:
+  - {fileID: 4177834464135031684}
+  - {fileID: 47238553966002416}
+  - {fileID: 1945133718000020238}
 --- !u!1 &3583702038207116287
 GameObject:
   m_ObjectHideFlags: 0

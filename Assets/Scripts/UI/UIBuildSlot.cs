@@ -26,7 +26,7 @@ public class UIBuildSlot : MonoBehaviour
         {
             int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_buildData.NeedItemData[i].NeedItemId);
             _ingredientText.text += ItemManager.Instance.GetItemDataByID(_buildData.NeedItemData[i].NeedItemId).Name;
-            _ingredientText.text += "  " + itemCount + "/" + _buildData.NeedItemData[i].NeedItemAmount;
+            _ingredientText.text += "  " + itemCount + "/" + _buildData.NeedItemData[i].NeedItemAmount + "\n";
         }
     }
 
@@ -46,7 +46,7 @@ public class UIBuildSlot : MonoBehaviour
         {
             int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(buildData.NeedItemData[i].NeedItemId);
             _ingredientText.text += ItemManager.Instance.GetItemDataByID(buildData.NeedItemData[i].NeedItemId).Name;
-            _ingredientText.text += "  " + itemCount + "/" + buildData.NeedItemData[i].NeedItemAmount;
+            _ingredientText.text += "  " + itemCount + "/" + buildData.NeedItemData[i].NeedItemAmount + "\n";
         }
 
 
