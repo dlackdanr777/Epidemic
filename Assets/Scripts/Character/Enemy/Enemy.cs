@@ -13,8 +13,6 @@ public class Enemy : MonoBehaviour, IHp
     public event Action OnHpMax;
     public event Action OnHpMin;
     public event Action OnTargetDamaged;
-    public Action OnTargetLossHandler;
-    public Action OnTargetFollowedHandler;
 
     [Header("Components")]
     public AudioSource AudioSource;
@@ -31,6 +29,7 @@ public class Enemy : MonoBehaviour, IHp
     [SerializeField] private EnemyData _enemyData;
 
     public EnemyType EnemyType => _enemyData.EnemyType;
+    public float MoveSpeed => _enemyData.MoveSpeed;
     public float MaxHp => _enemyData.MaxHp;
     public float MinHp => _enemyData.MinHp;
 
@@ -43,7 +42,7 @@ public class Enemy : MonoBehaviour, IHp
     private bool _isDead;
     public bool IsDead => _isDead;
     private EnemyStateMachine _machine;
-    [HideInInspector] public Transform Target;
+    public Transform Target;
 
 
     public void RecoverHp(object subject, float value)
@@ -145,9 +144,6 @@ public class Enemy : MonoBehaviour, IHp
                 _isDead = true;
             }
         };
-
-        OnTargetFollowedHandler = () => { if (Target != null) Navmesh.StartNavMesh(Target); };
-        OnTargetLossHandler = () => { if (Target == null) Navmesh.StopNavMesh(); };
     }
 
 

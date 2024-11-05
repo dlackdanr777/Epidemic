@@ -25,8 +25,11 @@ public class UIBuildSlot : MonoBehaviour
         for (int i = 0, cnt = _buildData.NeedItemData.Length; i < cnt; ++i)
         {
             int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(_buildData.NeedItemData[i].NeedItemId);
+            int needItemCount = _buildData.NeedItemData[i].NeedItemAmount;
+            string itemCountStr = itemCount < needItemCount ? Utility.SetStringColor(Color.red, itemCount.ToString()) : Utility.SetStringColor(Color.white, itemCount.ToString());
+
             _ingredientText.text += ItemManager.Instance.GetItemDataByID(_buildData.NeedItemData[i].NeedItemId).Name;
-            _ingredientText.text += "  " + itemCount + "/" + _buildData.NeedItemData[i].NeedItemAmount + "\n";
+            _ingredientText.text += "  " + itemCountStr + "/" + _buildData.NeedItemData[i].NeedItemAmount + "\n";
         }
     }
 
@@ -45,8 +48,11 @@ public class UIBuildSlot : MonoBehaviour
         for (int i = 0, cnt = buildData.NeedItemData.Length; i < cnt; ++i)
         {
             int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(buildData.NeedItemData[i].NeedItemId);
+            int needItemCount = buildData.NeedItemData[i].NeedItemAmount;
+            string itemCountStr = itemCount < needItemCount ? Utility.SetStringColor(Color.red, itemCount.ToString()) : Utility.SetStringColor(Color.white, itemCount.ToString());
+
             _ingredientText.text += ItemManager.Instance.GetItemDataByID(buildData.NeedItemData[i].NeedItemId).Name;
-            _ingredientText.text += "  " + itemCount + "/" + buildData.NeedItemData[i].NeedItemAmount + "\n";
+            _ingredientText.text += "  " + itemCountStr + "/" + buildData.NeedItemData[i].NeedItemAmount + "\n";
         }
 
 

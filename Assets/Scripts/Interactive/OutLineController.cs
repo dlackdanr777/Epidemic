@@ -49,7 +49,6 @@ public class OutLineController : MonoBehaviour, Iinteractive
         for (int i = 0, cnt = _activeMaterials.Count; i < cnt; ++i)
         {
             _activeMaterials[i].SetFloat("_OutlineEnabled", 1);
-            DebugLog.Log("½ÇÇàÁß");
         }
     }
 

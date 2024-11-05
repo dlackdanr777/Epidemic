@@ -43,6 +43,7 @@ public class Barricade : MonoBehaviour, IHp
     public void Awake()
     {
         Hp = _maxHp;
+        OnHpMin += OnHpMinEvcent;
     }
 
 

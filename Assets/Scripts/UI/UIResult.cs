@@ -6,11 +6,14 @@ using UnityEngine.UI;
 public class UIResult : PcUIView
 {
     [SerializeField] private CanvasGroup _canvasGroup;
+    [SerializeField] private InGame _inGame;
     [SerializeField] private Button _exitButton;
+    [SerializeField] private Button _saveButton;
 
     public override void Init()
     {
         _exitButton.onClick.AddListener(onButtonClicked);
+        _saveButton?.onClick.AddListener(_inGame.OnSaveGame);
         gameObject.SetActive(false);
     }
 

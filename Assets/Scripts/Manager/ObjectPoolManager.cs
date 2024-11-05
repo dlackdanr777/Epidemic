@@ -14,6 +14,7 @@ public class ObjectPoolManager : MonoBehaviour
             if (_instance == null)
             {
                 GameObject obj = new GameObject("ObjectPoolManager");
+                obj.transform.position = Vector3.zero;
                 _instance = obj.AddComponent<ObjectPoolManager>();
                 DontDestroyOnLoad(obj);
             }
@@ -62,6 +63,7 @@ public class ObjectPoolManager : MonoBehaviour
             return;
 
         _instance = this;
+        transform.position = Vector3.zero;
         DontDestroyOnLoad(gameObject);
 
         BulletHoleObjectPooling();
@@ -373,7 +375,6 @@ public class ObjectPoolManager : MonoBehaviour
     {
         _zombieParent = new GameObject("ZombleParent");
         _zombieParent.transform.parent = transform;
-
         _zombiePrefab = Resources.Load<Enemy>("ObjectPool/BasicZombie");
 
         for (int i = 0; i < 100; i++)

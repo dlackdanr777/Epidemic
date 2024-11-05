@@ -93,6 +93,9 @@ namespace Muks.MobileUI
             }
 
             MobileUIView selectView = _activeViewList[Count - 1];
+            if (!selectView.PopEnabled)
+                return;
+
             selectView.Hide();
             _activeViewList.RemoveAt(Count - 1);
             OnFocusHandler?.Invoke();
@@ -118,6 +121,9 @@ namespace Muks.MobileUI
                 Debug.LogError("해당 uiView가 열려있지 않습니다.");
                 return;
             }
+
+            if (!view.PopEnabled)
+                return;
 
             view.Hide();
             _activeViewList.Remove(view);

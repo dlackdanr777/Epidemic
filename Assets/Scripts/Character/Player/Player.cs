@@ -84,7 +84,7 @@ public class Player : MonoBehaviour, IHp
         CharacterController.enabled = true;
         ActionInit();
         GunController.DisableCrossHair();
-
+        OnHpDepleted += (subject, value) => PlayerCamera.CameraShakeStart();
         DataBind.SetTextValue("PlayerMaxHp", Mathf.FloorToInt(MaxHp).ToString());
         DataBind.SetTextValue("PlayerCurrentHp", Mathf.FloorToInt(_hp).ToString());
     }

@@ -99,7 +99,11 @@ namespace Muks.PcUI
             if (_activeViewList.First == null)
                 return;
 
-            _activeViewList.First.Value.Hide();
+            PcUIView view = _activeViewList.First.Value;
+            if (!view.PopEnabled)
+                return;
+
+            view.Hide();
             _activeViewList.RemoveFirst();
             OnFocusHandler?.Invoke();
             OnChangeViewHandler?.Invoke();
@@ -116,6 +120,9 @@ namespace Muks.PcUI
             if (_viewDic.TryGetValue(viewName, out PcUIView uiView))
             {
                 if (!_activeViewList.Contains(uiView))
+                    return;
+
+                if (!uiView.PopEnabled)
                     return;
 
                 _activeViewList.Remove(uiView);

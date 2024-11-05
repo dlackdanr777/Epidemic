@@ -13,7 +13,7 @@ public class EIdleState : EnemyState
     {
         _playSoundTime = Random.Range(8f, 15f);
         _enemy.MeshController.Play("Idle");
-        _enemy.OnTargetLossHandler();
+        _enemy.Navmesh.SetSpeed(0);
     }
 
 

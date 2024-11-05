@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5e62c4750898c94bb15d8229cbaadc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animationSO: {fileID: 11400000, guid: 3da8b502c3f734242bc5ae940b6acbde, type: 2}
+  _animationSO: {fileID: 11400000, guid: d66ec63d1755cd741bbb96b3adf46d6d, type: 2}
   _meshCollider: {fileID: 903189339389994635}
   _tick: 1
   _animationIndex: 0
@@ -1723,7 +1723,7 @@ Transform:
   - {fileID: 1436186853377583274}
   - {fileID: 2920886483924953966}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &2412075932470140715
 NavMeshAgent:

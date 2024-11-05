@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: BUILD01
   _name: "\uBC14\uB9AC\uCF00\uC774\uD2B8"
   _description: 
-  _sprite: {fileID: 21300000, guid: 4ae010ad0c3a67c41a804ad436d29ed8, type: 3}
+  _sprite: {fileID: 21300000, guid: 7b3519a13c9b6c74abc8994293b35e13, type: 3}
   _hp: 200
   _needItemData:
   - _needItemId: OTHER01

@@ -36,6 +36,8 @@ public class UIManager : MonoBehaviour
 
         UIManagerCanvas uIManagerCanvas = Resources.Load<UIManagerCanvas>("UI/UIManagerCanvas");
         _uiManagerCanvas = Instantiate(uIManagerCanvas, transform);
+
+        LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
     }
 
     public void ShowRightText(string textContent)
@@ -45,12 +47,18 @@ public class UIManager : MonoBehaviour
 
     public void HiddenRightText()
     {
-        _uiManagerCanvas.HiddenRightText();
+        _uiManagerCanvas.HideRightText();
     }
 
 
     public void ShowCenterText(string textContent)
     {
         _uiManagerCanvas.ShowCenterText(textContent);
+    }
+
+    private void OnChangeSceneEvent()
+    {
+        _uiManagerCanvas.HideCenterText();
+        _uiManagerCanvas.HideRightText();
     }
 }

@@ -12,11 +12,13 @@ public class EnemyStateMachine
 
     private Enemy _enemy;
     private float _changeTimer;
+    private bool _attackEnabled;
 
-
+    private float _checkAttackTime;
     public EnemyStateMachine(Enemy enemy)
     {
         _enemy = enemy;
+        _checkAttackTime = 0;
         StateInit();
     }
 
@@ -25,12 +27,21 @@ public class EnemyStateMachine
     {
         CurrentState.OnStateUpdate();
         CurrentState.OnUpdate();
+
+
     }
 
 
     public void OnFixedUpdate()
     {
         CurrentState.OnFixedUpdate();
+
+        _checkAttackTime -= Time.fixedDeltaTime;
+        if (_checkAttackTime <= 0)
+        {
+            _attackEnabled = _enemy.Attack.GetCheckPlayerAtAttackRange();
+            _checkAttackTime = 0.5f;
+        }
     }
     
 
@@ -101,6 +112,6 @@ public class EnemyStateMachine
     /// <summary> 공격 상태로 전이할 수 있으면 참, 아니면 거짓을 반환하는 함수 </summary>
     public bool AttackStateCondition()
     {
-        return _enemy.Attack.GetCheckPlayerAtAttackRange();
+        return _attackEnabled;
     }
 }

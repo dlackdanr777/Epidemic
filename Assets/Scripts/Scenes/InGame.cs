@@ -50,22 +50,50 @@ public class InGame : MonoBehaviour
     private RoundState _roundState;
     private int _currentRound;
     private float _currentTime;
+    private float _saveTime => 300;
+    private float _saveTimer;
 
 
-
-    public void Start()
+    private void Start()
     {
         _gameState = GameState.None;
         _roundState = RoundState.Wait;
         _currentRound = 1;
+        _saveTimer = _saveTime;
         _uiGame.SetZombieCountText("학교를 수색하십시오");
 
         GameManager.Instance.IsGameEnd = false;
         SoundManager.Instance.PlayAudio(AudioType.Background, _bgMusic);
         GameManager.Instance.CursorHidden();
         GameManager.Instance.Player.OnHpMin += EndGame;
-
         LoadGame();
+    }
+
+    private void FixedUpdate()
+    {
+        if (_gameState == GameState.Set)
+        {
+            SetRoundState(_roundState);
+            _gameState = GameState.Start;
+        }
+
+        else if (_gameState == GameState.Start)
+        {
+            switch (_roundState)
+            {
+                case RoundState.Wait:
+                    RoundTimer();
+                    break;
+
+                case RoundState.Proceeding:
+                    RoundTimer();
+                    RoundProceeding();
+                    break;
+
+                case RoundState.End:
+                    break;
+            }
+        }
     }
 
 
@@ -141,7 +169,7 @@ public class InGame : MonoBehaviour
         }
     }
 
-    private void OnSaveGame()
+    public void OnSaveGame()
     {
         List<Enemy> enemyList = FindObjectsOfType<Enemy>().ToList();
         for (int i = 0, cnt = enemyList.Count; i < cnt; ++i)
@@ -177,6 +205,8 @@ public class InGame : MonoBehaviour
         }
         GameStateSaveData gameStateSaveData = new GameStateSaveData((int)_gameState, (int)_roundState, _currentRound, _currentTime);
         UserInfo.SaveGame(gameStateSaveData, _player, enemyList, dropItemList, _doorList, buildObjectList);
+
+        UIManager.Instance.ShowCenterText("현재 상황이 저장되었습니다.");
     }
 
     public void StartGame(GameObject triggerObj)
@@ -184,42 +214,7 @@ public class InGame : MonoBehaviour
         triggerObj.gameObject.SetActive(false);
         _gameState = GameState.Set;
     }
-
-
   
-
-
-    private void FixedUpdate()
-    {
-        if(Input.GetKeyDown(KeyCode.H))
-        {
-            OnSaveGame();
-        }
-
-        if(_gameState == GameState.Set)
-        {
-            SetRoundState(_roundState);
-            _gameState = GameState.Start;
-        }
-
-        else if (_gameState == GameState.Start)
-        {
-            switch (_roundState)
-            {
-                case RoundState.Wait:
-                    RoundTimer();
-                    break;
-
-                case RoundState.Proceeding:
-                    RoundTimer();
-                    RoundProceeding();
-                    break;
-
-                case RoundState.End:
-                    break;
-            }
-        }
-    }
 
     private void RoundProceeding()
     {
@@ -261,7 +256,7 @@ public class InGame : MonoBehaviour
     private void SetRoundWait(int round)
     {
         _uiGame.SetZombieCountText("곧 좀비가 몰려옵니다...");
-        _currentTime = 10;
+        _currentTime = 30;
     }
 
 
@@ -271,7 +266,31 @@ public class InGame : MonoBehaviour
         for (int i = 0; i < _rounds[round - 1].SpawnZombies.Length; i++)
         {
             for (int j = 0; j < _rounds[round - 1].SpawnZombies[i].SpawnCount; j++)
-                ObjectPoolManager.Instance.SpawnZombie(_spawnPos.position, Quaternion.Euler(0, 180, 0), GameManager.Instance.Player.gameObject);
+            {
+                bool isSpawnEnabled = true;
+                float randX = 0;
+                float randZ = 0;
+                float count = 0;
+                do
+                {
+                    randX = _spawnPos.position.x + UnityEngine.Random.Range(-10f, 10f);
+                    randZ = _spawnPos.position.z + UnityEngine.Random.Range(-10f, 10f);
+
+                    if (0 < Physics.OverlapBox(new Vector3(randX, _spawnPos.position.y, randZ), Vector3.one * 0.5f, Quaternion.identity, LayerMask.GetMask("Enemy", "Obstacle")).Length)
+                    {
+                        isSpawnEnabled = false;
+                    }
+                    count++;
+                } while (!isSpawnEnabled && count <= 20);
+
+                if(21 <= count)
+                {
+                    randX = _spawnPos.position.x;
+                    randZ = _spawnPos.position.z;
+                }
+                ObjectPoolManager.Instance.SpawnZombie(new Vector3(randX, _spawnPos.position.y, randZ), Quaternion.Euler(0, 180, 0), GameManager.Instance.Player.gameObject);
+            }
+
         }
     }
 

@@ -20,7 +20,7 @@ public class UIManagerCanvas : MonoBehaviour
         _aimRightText.text = textContent;
     }
 
-    public void HiddenRightText()
+    public void HideRightText()
     {
         _aimRightText.alpha = 0;
     }
@@ -34,17 +34,24 @@ public class UIManagerCanvas : MonoBehaviour
         ShowCenterTextRoutine = StartCoroutine(ShowText(_centerText, textContent));
     }
 
+    public void HideCenterText()
+    {
+        if (ShowCenterTextRoutine != null)
+            StopCoroutine(ShowCenterTextRoutine);
+
+        _centerText.alpha = 0;
+    }
+
     private IEnumerator ShowText(TextMeshProUGUI tmpText, string textContent)
     {
         tmpText.alpha = 1.0f;
         tmpText.text = textContent;
 
-        yield return YieldCache.WaitForSeconds(2);
-
+        yield return new WaitForSecondsRealtime(2);
         while (tmpText.alpha > 0)
         {
             tmpText.alpha -= 0.1f;
-            yield return YieldCache.WaitForSeconds(0.02f);
+            yield return new WaitForSecondsRealtime(0.02f);
         }
     }
 }

@@ -14,6 +14,11 @@ public class PreviewObject : MonoBehaviour
     private BuildData _buildData;
     public BuildData BuildData => _buildData;
 
+    private bool _isOverlap;
+    public bool IsOverlap => _isOverlap;
+    private bool _isGiveItem;
+
+    public bool IsGiveItem => _isGiveItem;
     public void SetBuildData(BuildData buildData)
     {
         _buildData = buildData;
@@ -39,22 +44,30 @@ public class PreviewObject : MonoBehaviour
     /// <summary> 겹치는 오브젝트가 있는지, 재료 아이템 보유 여부를 판단해 색을 변경하는 함수 </summary>
     private void ChangeColor()
     {
-        bool isGiveItem = false;
+        _isGiveItem = true;
         for (int i = 0, cnt = BuildData.NeedItemData.Length; i < cnt; ++i)
         {
             int itemCount = GameManager.Instance.Player.Inventory.GetItemCountByID(BuildData.NeedItemData[i].NeedItemId);
 
             if (itemCount < BuildData.NeedItemData[i].NeedItemAmount)
             {
-                isGiveItem = false;
+                _isGiveItem = false;
                 break;
             }
         }
 
-        if (_colliders.Count > 0 || !isGiveItem)
+        _isOverlap = 0 < _colliders.Count;
+        if (_isOverlap || !_isGiveItem)
+        {
             SetColor(_redMaterial);
+            DebugLog.Log("건축 불가능");
+        }
         else
+        {
             SetColor(_greenMaterial);
+            DebugLog.Log("건축 가능");
+        }
+
     }
 
     /// <summary> 오브젝트의 마테리얼들을 변경하는 함수 </summary>
@@ -79,10 +92,5 @@ public class PreviewObject : MonoBehaviour
         {
             _colliders.Remove(other);
         }
-    }
-
-    public bool isBuildable()
-    {
-        return _colliders.Count == 0;
     }
 }

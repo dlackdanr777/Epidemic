@@ -7,6 +7,9 @@ public class EnemyData : ScriptableObject
     [SerializeField] private EnemyType _enemyType;
     public EnemyType EnemyType => _enemyType;
 
+    [SerializeField] private float _moveSpeed;
+    public float MoveSpeed => _moveSpeed;
+
     [SerializeField] private float _maxHp;
     public float MaxHp => _maxHp;
 

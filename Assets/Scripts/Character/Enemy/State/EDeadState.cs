@@ -6,6 +6,8 @@ public class EDeadState : EnemyState
 
     public override void OnStart()
     {
+        _enemy.Navmesh.SetSpeed(0);
+        _enemy.Navmesh.StopNavMesh();
     }
 
 

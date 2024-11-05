@@ -16,6 +16,7 @@ public class EAttackState : EnemyState
     {
         _useAttack = new bool[_enemy.AttackIndex.Length];
         _enemy.MeshController.Play("Attack");
+        _enemy.Navmesh.SetSpeed(0);
         _enemy.EnemySounds.PlayZombieSoundClip(EnemySoundType.Attack);
     }
 
@@ -42,7 +43,6 @@ public class EAttackState : EnemyState
 
     public override void OnFixedUpdate()
     {
-        _enemy.OnTargetFollowedHandler?.Invoke();
         PlaySound();
     }
 

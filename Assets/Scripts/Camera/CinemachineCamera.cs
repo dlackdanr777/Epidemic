@@ -22,7 +22,8 @@ public class CinemachineCamera : MonoBehaviour
     [SerializeField] private float _shakeDuration = 0.1f;
 
 
-    private CinemachineBasicMultiChannelPerlin _virtualCameraNoise;
+    private CinemachineBasicMultiChannelPerlin _zoomVirtualCameraNoise;
+    private CinemachineBasicMultiChannelPerlin _mainVirtualCameraNoise;
     private float _shakeTime;
     private float _mouseX;
     private float _mouseY;
@@ -31,8 +32,11 @@ public class CinemachineCamera : MonoBehaviour
 
     private void Start()
     {
-        if (_virtualCameraNoise == null)
-            _virtualCameraNoise = _zoomVitualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        if (_zoomVirtualCameraNoise == null)
+            _zoomVirtualCameraNoise = _zoomVitualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        if (_mainVirtualCameraNoise == null)
+            _mainVirtualCameraNoise = _mainVitualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         _brainCamera.enabled = false;
         _mouseX = UserInfo.SaveData == null ? 0 : UserInfo.SaveData.MouseInput.x;
@@ -66,6 +70,16 @@ public class CinemachineCamera : MonoBehaviour
         transform.localEulerAngles = new Vector3(-_mouseY, _mouseX, 0);
     }
 
+    public void AddMouseY(float value)
+    {
+        _mouseY += value;
+    }
+
+    public void AddMouseX(float value)
+    {
+        _mouseX += value;
+    }
+
 
     /// <summary> 줌 인 기능 </summary>
     public bool ZoomIn()
@@ -97,23 +111,25 @@ public class CinemachineCamera : MonoBehaviour
         _shakeTime = _shakeDuration;
     }
 
-
     /// <summary> CameraShakeStart함수가 실행되면 카메라에 흔들림을 지속적으로 주는 함수 </summary>
     private void CameraShake()
     {
-        if (_virtualCameraNoise == null || _zoomVitualCamera == null)
+        if (_zoomVirtualCameraNoise == null || _zoomVitualCamera == null)
             return;
 
         if (_shakeTime > 0)
         {
-            _virtualCameraNoise.m_AmplitudeGain = _shakeAmplitude;
-            _virtualCameraNoise.m_FrequencyGain = _shakeFrequency;
+            _zoomVirtualCameraNoise.m_AmplitudeGain = _shakeAmplitude;
+            _zoomVirtualCameraNoise.m_FrequencyGain = _shakeFrequency;
+            _mainVirtualCameraNoise.m_AmplitudeGain = _shakeAmplitude;
+            _mainVirtualCameraNoise.m_FrequencyGain = _shakeFrequency;
 
             _shakeTime -= Time.deltaTime;
         }
         else
         {
-            _virtualCameraNoise.m_AmplitudeGain = 0f;
+            _zoomVirtualCameraNoise.m_AmplitudeGain = 0f;
+            _mainVirtualCameraNoise.m_AmplitudeGain = 0f;
             _shakeTime = 0f;
         }
     }

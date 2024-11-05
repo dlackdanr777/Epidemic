@@ -29,24 +29,11 @@ public class Navmesh : MonoBehaviour
         StopCoroutine(_coroutine);
     }
 
-
-    public void TargetOn(Transform transform)
-    {
-        _target = transform;
-        _agent.SetDestination(_target.position);
-    }
-
     
     public void NaveMeshEnabled(bool value)
     {
         _target = null;
         _agent.enabled = value;
-    }
-
-
-    public void StopNavMesh()
-    {
-        NaveMeshEnabled(false);
     }
 
 
@@ -57,14 +44,28 @@ public class Navmesh : MonoBehaviour
         _agent.isStopped = false;
     }
 
+    public void StopNavMesh()
+    {
+        _target = null;
+    }
+
+    public void SetSpeed(float speed)
+    {
+        _agent.speed = speed;   
+    }
+
 
     /// <summary> 이동 위치를 일정주기로 갱신하는 함수 </summary>
     private IEnumerator UpdateDestination()
     {
         while (true)
         {
+            if(_target == null)
+                _agent.SetDestination(transform.position);
+
             if(_target != null && _agent.enabled)
                 _agent.SetDestination(_target.position);
+
 
             yield return YieldCache.WaitForSeconds(0.2f);
         }

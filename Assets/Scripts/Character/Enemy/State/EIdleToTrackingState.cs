@@ -16,8 +16,9 @@ public class EIdleToTrackingState : EnemyState
     public override void OnStart()
     {
         _enemy.EnemySounds.PlayZombieSoundClip(EnemySoundType.Detection);
-        _enemy.MeshController.Play("Walk");
-
+        _enemy.MeshController.Play("Idle");
+        _enemy.Navmesh.StartNavMesh(_enemy.Target);
+        _enemy.Navmesh.SetSpeed(0);
         _rotateTime = Random.Range(0.3f, 1f);
         _transitionTime = Random.Range(3f, 4f);
     }

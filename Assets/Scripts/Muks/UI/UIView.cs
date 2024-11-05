@@ -7,6 +7,8 @@ namespace Muks.UI
     {
         ///  <summary> Appeared, Disappeared일때 Show(), Hide()실행 가능</summary>
         public VisibleState VisibleState;
+        public bool PopEnabled = true;
+
         protected UINavigation _uiNav;
         protected RectTransform _rectTransform;
 

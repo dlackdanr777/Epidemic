@@ -14,6 +14,7 @@ public class ETrackingState : EnemyState
     public override void OnStart()
     {
         _enemy.MeshController.Play("Walk");
+        _enemy.Navmesh.SetSpeed(_enemy.MoveSpeed);
     }
 
     public override void OnUpdate()
@@ -24,8 +25,6 @@ public class ETrackingState : EnemyState
 
     public override void OnFixedUpdate()
     {
-        _enemy.OnTargetFollowedHandler?.Invoke();
-
         _playSoundTimer += Time.deltaTime;
         PlaySound();
     }

@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 
 public class BuildSystem : MonoBehaviour
@@ -83,25 +81,19 @@ public class BuildSystem : MonoBehaviour
             return;
 
         //건축이 가능한지 확인 후 해당 위치에 건축물 생성
-        if (!_previewObj.isBuildable())
+        if (_previewObj.IsOverlap)
         {
             UIManager.Instance.ShowCenterText("그곳엔 건설할 수 없습니다.");
             return;
         }
 
-        bool isGiveItem = true;
-        for (int i = 0, cnt = _selectBuildData.NeedItemData.Length; i < cnt; ++i)
+        if (_previewObj.IsGiveItem)
         {
-
-            if (!_player.Inventory.UseItemByID(_selectBuildData.NeedItemData[i].NeedItemId, _selectBuildData.NeedItemData[i].NeedItemAmount))
+            for (int i = 0, cnt = _selectBuildData.NeedItemData.Length; i < cnt; ++i)
             {
-                isGiveItem = false;
-                break;
+                _player.Inventory.UseItemByID(_selectBuildData.NeedItemData[i].NeedItemId, _selectBuildData.NeedItemData[i].NeedItemAmount);
             }
-        }
 
-        if (isGiveItem)
-        {
             BuildObject buildObject = ObjectPoolManager.Instance.SpawnBuildObject(_selectBuildData.Id, _previewObj.transform.position, _previewObj.transform.rotation);
             SoundManager.Instance.PlayAudio(AudioType.Effect, _buildSuccessClip);
         }

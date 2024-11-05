@@ -14,6 +14,7 @@ public class GunController : MonoBehaviour, IAttack
     public event Action OnTargetDamaged;
 
     [Header("Components")]
+    [SerializeField] private CinemachineCamera _camera;
     [SerializeField] private Gun _currentGun; //현재 들고있는 총
     [SerializeField] private CrossHair _crossHair;
     [SerializeField] private Animator _playerAnimator;
@@ -173,14 +174,17 @@ public class GunController : MonoBehaviour, IAttack
         //거리 비율을 곱하여 거리가 가까워질수록 탄착 지점을 좁혀 원뿔형의 형태로 탄이 튀도록 한다.
         fireDirection = _crossHair.transform.position - _currentGun.MuzzleFlash.transform.position;
         fireDirection = Quaternion.AngleAxis(yError * distanceScale, Vector3.up) * fireDirection;
-        fireDirection = Quaternion.AngleAxis(xError * distanceScale, Vector3.right) * fireDirection;
+        fireDirection = Quaternion.AngleAxis(xError * distanceScale, Vector3.forward) * fireDirection;
 
         //총이 발사됬을때 설정한 반동값만큼 탄착지점의 넓이를 점차적으로 늘려 연속 발사시 명중률을 떨어트리게 한다.
         if(_nowRecoil < _currentGun.MaxRecoil)
         {
             _nowRecoil += _currentGun.Recoil;
+            _camera.AddMouseY(_currentGun.Recoil);
             if (_nowRecoil > _currentGun.MaxRecoil)
                 _nowRecoil = _currentGun.MaxRecoil;
+
+
         }
 
         RaycastHit hit;
