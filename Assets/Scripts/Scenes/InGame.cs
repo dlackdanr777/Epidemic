@@ -42,7 +42,7 @@ public class InGame : MonoBehaviour
     [SerializeField] private Rounds[] _rounds;
     [SerializeField] private AudioClip _bgMusic;
     [SerializeField] private List<Enemy> _defalutEnemyList;
-    [SerializeField] private List<DropItem> _dropItemList;
+    [SerializeField] private GameObject _dropItemParent;
     [SerializeField] private List<Door> _doorList;
 
 
@@ -128,18 +128,19 @@ public class InGame : MonoBehaviour
             enemy.DepleteHp(null, depleteHpValue);
         }
 
-        for (int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
+        DropItem[] items = _dropItemParent.GetComponentsInChildren<DropItem>();
+        for (int i = 0, cnt = items.Length; i < cnt; ++i)
         {
-            Destroy(_dropItemList[i].gameObject);
+            Destroy(items[i].gameObject);
         }
-        _dropItemList.Clear();
 
         List<SaveDropItemData> dropItemDataList = saveData.DropItemDataList;
         for (int i = 0, cnt = dropItemDataList.Count; i < cnt; ++i)
         {
             Vector3 pos = dropItemDataList[i].Position;
             Quaternion rot = dropItemDataList[i].Rotation;
-            ObjectPoolManager.Instance.SpawnDropItem(dropItemDataList[i].ItemId, pos, rot);
+            DropItem dropItem = ObjectPoolManager.Instance.SpawnDropItem(dropItemDataList[i].ItemId, pos, rot);
+            dropItem.SetCount(dropItemDataList[i].Count);
         }
 
         List<SaveDoorData> doorDataList = saveData.DoorDataList;
@@ -181,23 +182,24 @@ public class InGame : MonoBehaviour
             }
         }
 
+        DropItem[] items = _dropItemParent.GetComponentsInChildren<DropItem>();
         List<DropItem> dropItemList = new List<DropItem>();
 
-        for (int i = 0, cnt = _dropItemList.Count; i < cnt; ++i)
+        for (int i = 0, cnt = items.Length; i < cnt; ++i)
         {
-            if (_dropItemList[i] == null)
+            if (items[i] == null)
                 continue;
 
-            if (!_dropItemList[i].gameObject.activeSelf)
+            if (!items[i].gameObject.activeSelf)
                 continue;
 
-            dropItemList.Add(_dropItemList[i]);
+            dropItemList.Add(items[i]);
         }
 
         List<BuildObject> buildObjectList = FindObjectsOfType<BuildObject>().ToList();
         for (int i = 0, cnt = buildObjectList.Count; i < cnt; ++i)
         {
-            if (!enemyList[i].gameObject.activeSelf || buildObjectList[i].Hp <= buildObjectList[i].MinHp)
+            if (!buildObjectList[i].gameObject.activeSelf || buildObjectList[i].Hp <= buildObjectList[i].MinHp)
             {
                 buildObjectList.RemoveAt(i--);
                 --cnt;

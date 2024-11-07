@@ -217,6 +217,7 @@ public class SaveEnemyData
 public class SaveDropItemData
 {
     public string ItemId;
+    public int Count;
     public float PositionX;
     public float PositionY;
     public float PositionZ;
@@ -231,6 +232,7 @@ public class SaveDropItemData
     public SaveDropItemData(DropItem dropItem)
     {
         ItemId = dropItem.ItemId;
+        Count = dropItem.Count;
         Vector3 pos = dropItem.transform.position;
         Quaternion rot = dropItem.transform.rotation;
 

@@ -36,9 +36,9 @@ public class UIGridInventory : MonoBehaviour
 
 
 
-    private void Start()
-    {    
-        Init();
+    public void Init()
+    {
+        InitInven();
         InitShowItemSlot();
         UpdateUI();
 
@@ -49,12 +49,20 @@ public class UIGridInventory : MonoBehaviour
         EndDragHandler += EndDrag;
         EndDragHandler += ResetSlotEffect;
 
-        SceneManager.activeSceneChanged += (scene1, scene2) =>
-        {
-            _inven.OnUpdateHandler -= UpdateUI;
-            StartDragHandler -= StartDrag;
-            EndDragHandler -= EndDrag;
-        };
+        LoadingSceneManager.OnChangeSceneHandler += OnChangeSceneEvent;
+    }
+
+    private void OnEnable()
+    {
+        UpdateUI();
+    }
+
+    private void OnChangeSceneEvent()
+    {
+        _inven.OnUpdateHandler -= UpdateUI;
+        StartDragHandler -= StartDrag;
+        EndDragHandler -= EndDrag;
+        LoadingSceneManager.OnChangeSceneHandler -= OnChangeSceneEvent;
     }
 
 
@@ -81,7 +89,7 @@ public class UIGridInventory : MonoBehaviour
         UpdateUI();
     }
 
-    public void Init()
+    public void InitInven()
     {
         _slotSizeX = _slotPrefab.GetComponent<RectTransform>().sizeDelta.x;
         _slotSizeY = _slotPrefab.GetComponent<RectTransform>().sizeDelta.y;
@@ -264,6 +272,7 @@ public class UIGridInventory : MonoBehaviour
             return;
 
         _showItemSlotQueue.Clear();
+        DebugLog.Log("¾÷µ¥ÀÌÆ® µÊ");
         for (int i = 0, cnt = _showItemSlotList.Count; i < cnt; i++)
         {
             _showItemSlotList[i].gameObject.SetActive(false);

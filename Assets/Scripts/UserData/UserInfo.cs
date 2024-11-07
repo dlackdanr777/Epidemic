@@ -63,6 +63,11 @@ public static class UserInfo
         return true;
     }
 
+    public static int GetAddBulletCount()
+    {
+        return ConstValue.MAX_BULLET_COUNT - _bulletCount;
+    }
+
     public static void AddBulletCountNoLimit(int value)
     {
         _bulletCount = Mathf.Max(0, _bulletCount + value);
@@ -142,7 +147,8 @@ public static class UserInfo
         SaveData saveData = new SaveData(gameStateSaveData, player, _bulletCount, _loadBulletCount, _invenDataList, _equipItems, enemyList, dropItemList, doorList, buildObjectList);
 
         string json = JsonUtility.ToJson(saveData, true);
-        string path = Application.persistentDataPath + "/GameSave.json";
+        string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+        string path = Path.Combine(documentsPath, "GameSave.json");
         File.WriteAllText(path, json);
 
         DebugLog.Log("게임 데이터 저장 완료: " + path);
@@ -151,9 +157,9 @@ public static class UserInfo
 
     public static void LoadGame()
     {
-        string path = Application.persistentDataPath + "/GameSave.json";
-        
-        if(File.Exists(path))
+        string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+        string path = Path.Combine(documentsPath, "GameSave.json");
+        if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
             _saveData = JsonUtility.FromJson<SaveData>(json);
@@ -201,7 +207,8 @@ public static class UserInfo
 
     public static bool IsSaveFileExists()
     {
-        string path = Application.persistentDataPath + "/GameSave.json";
+        string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+        string path = Path.Combine(documentsPath, "GameSave.json");
         if (File.Exists(path))
             return true;
 
@@ -210,8 +217,9 @@ public static class UserInfo
 
     public static void DeleteSaveFile()
     {
-        string path = Application.persistentDataPath + "/GameSave.json";
-        if(File.Exists(path))
+        string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+        string path = Path.Combine(documentsPath, "GameSave.json");
+        if (File.Exists(path))
         {
             File.Delete(path);
             DebugLog.Log("저장 파일이 삭제되었습니다.");

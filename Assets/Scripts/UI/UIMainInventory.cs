@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class UIMainInventory : PcUIView
 {
+    [Header("Comonents")]
+    [SerializeField] private UIGridInventory _uiInven;
+
     [Header("Animation Options")]
     [SerializeField] private GameObject _animeUI;
     [SerializeField] private CanvasGroup _canvasGroup;
@@ -20,6 +23,7 @@ public class UIMainInventory : PcUIView
 
     public override void Init()
     {
+        _uiInven.Init();
         gameObject.SetActive(false);
     }
 

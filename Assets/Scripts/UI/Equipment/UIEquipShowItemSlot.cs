@@ -80,8 +80,8 @@ public class UIEquipShowItemSlot : MonoBehaviour, IPointerClickHandler, IPointer
     public void OnPointerEnter(PointerEventData eventData)
     {
         Vector2 pos = _rectTransform.TransformPoint(_rectTransform.rect.center);
-        pos += new Vector2(_rectTransform.sizeDelta.x * 0.5f, _rectTransform.sizeDelta.y * 0.5f);
-        _itemDescription.UpdateUI(Item, pos);
+        Vector2 slotSize = _rectTransform.sizeDelta;
+        _itemDescription.UpdateUI(Item, pos, slotSize);
     }
 
     public void OnPointerExit(PointerEventData eventData)

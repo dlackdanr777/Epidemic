@@ -60,6 +60,7 @@ public class InvenData
         }
 
         AddCount(data.Id, 1);
+        OnUpdateHandler?.Invoke();
         return true;
     }
 
@@ -88,6 +89,7 @@ public class InvenData
         }
 
         AddCount(data.Id, 1);
+        OnUpdateHandler?.Invoke();
         return true;
     }
 
@@ -107,6 +109,7 @@ public class InvenData
         }
 
         SubCount(item.Data.Id, 1);
+        OnUpdateHandler?.Invoke();
     }
 
     public void RemoveItems(InventoryItemData data, int amount)
@@ -120,20 +123,24 @@ public class InvenData
                 if (amount <= 0)
                     break;
 
-                if (_slots[y, x].Item.Data.Id != data.Id)
+                if (_slots[y, x].Item == null || _slots[y, x].Item.Data == null || _slots[y, x].Item.Data.Id != data.Id)
                     continue;
 
-                for (int i = y, cntI = y + data.Height - 1; i < cntI; ++i)
+                int minY = Mathf.Min(y + data.Height, _height);
+                int minX = Mathf.Min(x + data.Width, _width);
+                for (int i = y; i < minY; ++i)
                 {
-                    for (int j = x, cntJ = x + data.Width - 1; j < cntJ; ++j)
+                    for (int j = x; j < minX; ++j)
                     {
-                        _slots[y, x].Item = null;
-                        _slots[y, x].IsMainSlot = false;
+                        _slots[i, j].Item = null;
+                        _slots[i, j].IsMainSlot = false;
+                        DebugLog.Log(data.Id + "위치: " + (i) + (j));
                     }
                 }
 
                 --amount;
             }
+            OnUpdateHandler?.Invoke();
         }
     }
 
@@ -141,6 +148,7 @@ public class InvenData
     {
         int width = data.Width;
         int height = data.Height;
+        SubCount(data.Id, 1);
         if (_height < startY + height || _width < startX + width)
         {
             DebugLog.LogError("범위를 넘어섰습니다.");
@@ -156,7 +164,8 @@ public class InvenData
             }
         }
 
-        AddCount(data.Id, 1);
+
+        OnUpdateHandler?.Invoke();
     }
 
     public int GetItemCount(InventoryItemData data)

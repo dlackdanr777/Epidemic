@@ -40,6 +40,11 @@ public class PreviewObject : MonoBehaviour
         ChangeColor();
     }
 
+    private void OnEnable()
+    {
+        _colliders.Clear();
+    }
+
 
     /// <summary> 겹치는 오브젝트가 있는지, 재료 아이템 보유 여부를 판단해 색을 변경하는 함수 </summary>
     private void ChangeColor()

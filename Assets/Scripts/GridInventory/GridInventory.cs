@@ -108,14 +108,12 @@ public class GridInventory : MonoBehaviour
             return false;
         }
 
-        if (IsGiveItemByID(id, amount))
-        {
-            _invenData.RemoveItems(data, amount);
-            OnUpdateHandler?.Invoke();
-            return true;
-        }
+        if (!IsGiveItemByID(id, amount))
+            return false;
 
-        return false;
+        _invenData.RemoveItems(data, amount);
+        OnUpdateHandler?.Invoke();
+        return true;
     }
 
 

@@ -61,9 +61,9 @@ public class Navmesh : MonoBehaviour
         while (true)
         {
             if(_target == null)
-                _agent.SetDestination(transform.position);
+                yield return YieldCache.WaitForSeconds(0.2f);
 
-            if(_target != null && _agent.enabled)
+            if (_target != null && _agent.enabled)
                 _agent.SetDestination(_target.position);
 
 

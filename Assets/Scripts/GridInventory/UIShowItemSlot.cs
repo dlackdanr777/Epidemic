@@ -98,15 +98,14 @@ public class UIShowItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             return;
 
         _uiInven.SlotRightClicked(_item.Item);
-
-
+        _itemDescription.End();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         Vector2 pos = _rectTransform.TransformPoint(_rectTransform.rect.center);
-        pos += new Vector2(_rectTransform.sizeDelta.x * 0.5f, _rectTransform.sizeDelta.y * 0.5f);
-        _itemDescription.UpdateUI(_item.Item, pos);
+        Vector2 slotSize = _rectTransform.sizeDelta;
+        _itemDescription.UpdateUI(_item.Item, pos, slotSize);
     }
 
     public void OnPointerExit(PointerEventData eventData)
